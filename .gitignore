@@ -1,0 +1,21 @@
+# فولدر node_modules
+node_modules/
+
+# ملف env
+.env
+
+# ملفات build
+dist/
+build/
+
+# ملفات النظام
+.DS_Store
+
+# ملفات VS Code
+.vscode/
+
+# اللوجز
+*.log
+
+# صور أو ملفات معينة
+secret.png
