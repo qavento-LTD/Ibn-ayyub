@@ -5,7 +5,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>تسجيل الدخول - محل هدايا</title>
-	<link rel="stylesheet" href="../Front-End/Appearance/main.css">
+	<link rel="stylesheet" href="../Front-End/Appearance/login.css">
 </head>
 
 <body>
@@ -14,65 +14,15 @@
 		
 		<div class="login-card">
 			<p class="subtitle">سجّل دخولك</p>
-
-			<!-- تسجيل دخول باستخدام جوجل -->
 			<button class="google-btn hidden-send" id="googleLogin">
 				<img src="https://www.svgrepo.com/show/475656/google-color.svg" class="google-icon">
 				تسجيل الدخول باستخدام جوجل
 			</button>
-
-			<hr class="divider">
-
-			<p class="subtitle hidden-send">أدخل رقم واتساب</p>
-
-			<div class="input-group hidden-send">
-				<label>رقم الهاتف</label>
-				<div class="phone-wrapper">
-					<input type="tel" id="phone" placeholder="1234567890" required />
-					<input type="tel" id="countryCode" value="+20" class="country-code" readonly />
-				</div>
 			</div>
-
-			<button class="btn" id="sendCodeBtn">إرسال كود التحقق</button>
-
-			<!-- قسم إدخال الكود -->
-			<div id="otpSection" style="display:none; margin-top:15px;">
-				<div class="input-group">
-					<label>الكود المرسل</label>
-
-					<div class="otp-wrapper">
-						<input type="number" maxlength="1" class="otp-input">
-						<input type="number" maxlength="1" class="otp-input">
-						<input type="number" maxlength="1" class="otp-input">
-						<input type="number" maxlength="1" class="otp-input">
-					</div>
-				</div>
-
-				<button class="btn" id="verifyOtpBtn">تأكيد الدخول</button>
-			</div>
-
-			<p id="msg" class="message"></p>
-		</div>
-	</div>
-
 	<script type="module" src="../Front-End/Interaction/auth.js"></script>
-	<script>
-		// الحركة اللذيذة للانتقال بين حقول OTP
-		const otpInputs = document.querySelectorAll(".otp-input");
-		otpInputs.forEach((input, index) => {
-			input.addEventListener("input", () => {
-				if (input.value.length === 1 && index < 3) {
-					otpInputs[index + 1].focus();
-				}
-			});
-
-			input.addEventListener("keydown", (e) => {
-				if (e.key === "Backspace" && index > 0 && !input.value) {
-					otpInputs[index - 1].focus();
-				}
-			});
-		});
 	</script>
 </body>
 
 </html>
+
+

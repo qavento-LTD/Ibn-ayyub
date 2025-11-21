@@ -1,0 +1,6 @@
+@font-face {
+    font-family: 'Cairo'; /* الاسم اللي هتستخدمه في CSS */
+    src: url('../../assets/fonts/Cairo-Medium.ttf') format('truetype'); /* المسار للخط + النوع */
+    font-weight: normal; /* الوزن الافتراضي */
+    font-style: normal;  /* ستايل الخط الافتراضي */
+}
