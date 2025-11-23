@@ -1,105 +1,180 @@
 @font-face {
-    font-family: 'Cairo'; /* الاسم اللي هتستخدمه في CSS */
-    src: url('../../assets/fonts/Cairo-Medium.ttf') format('truetype'); /* المسار للخط + النوع */
-    font-weight: normal; /* الوزن الافتراضي */
-    font-style: normal;  /* ستايل الخط الافتراضي */
+    font-family: 'Cairo';
+    /* الاسم اللي هتستخدمه في CSS */
+    src: url('../../assets/fonts/Cairo-Medium.ttf') format('truetype');
+    /* المسار للخط + النوع */
+    font-weight: normal;
+    /* الوزن الافتراضي */
+    font-style: normal;
+    /* ستايل الخط الافتراضي */
 }
-*{
+
+:root {
+    --size: 40px;
+    --bar-height: 2px;
+    --gap: 12px;
+    --color: #fff;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.25);
+}
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: Cairo;
 }
-body{
-    background: black;
+
+body {
+    background: white;
 }
-header{
+
+header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    border-bottom: 1px solid #42445A;
+    max-width: 900px;
+    margin: auto;
+
+    /* الزجاج الحقيقي */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid #C7C7C7;
 }
-header .login{
+
+header .login {
     border: 1px solid red;
     padding: 4px 16px;
     border-radius: 50px;
-    box-shadow: 0 0 10px red;
 }
-header .login a{
+
+header .login a {
     color: red;
     text-decoration: none;
     
 }
-header nav{
+
+header nav {
     display: none;
     
-}.menu{
-	width: 50px;
-	height: 27px;
-}
-.menu span {
-	background: #FFFFFF;
-	display: flex;
-	width: 100%;
-	height: 2px;
-	border-radius: 50px;
-	position: relative;
-	left: 0;
-	transition: all .3s ease;
 }
 
-.menu span:last-child {
-	top: -32px;
-	width: 40%;
-}
-.menu span:nth-child(1) {
-	top: 12px;
-	width: 70%;
-}
-.menu span:nth-child(2) {
-	top: 23px;
-	width: 70%;
-}
-
-.menu:hover span:first-child,
-.menu:hover span:last-child {
-	width: 100%;
-}
-
-
-.menu{
-    width: 40px;
-    height: 30px;
+.menu {
+    width: var(--size);
+    height: calc(var(--bar-height) * 3 + var(--gap) * 2);
     position: relative;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    
+    border-radius: 14px;
+    transition: .25s ease;
+    top: -2px;
 }
 
-.menu span{
+/* أنيميشن خفيف للزرار */
+.menu:hover {
+    transform: scale(1.05);
+}
+
+/* الأشرطة */
+.menu span {
     position: absolute;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: #fff;
-    border-radius: 50px;
-    transition: .3s;
+    width: 70%;
+    height: var(--bar-height);
+    background: red;
+    border-radius: 999px;
+    transition: transform .25s cubic-bezier(.2, .9, .2, 1),
+        top .25s,
+        opacity .18s,
+        width .18s;
 }
 
-.menu span:nth-child(1){ top: 0; }
-.menu span:nth-child(2){ top: 13px; }
-.menu span:nth-child(3){ top: 26px; }
+/* مواضع الخطوط */
+.menu span:nth-child(1) {
+    top: 4px;
+}
 
-/* عند التفعيل */
-.menu.active span:nth-child(1){
+.menu span:nth-child(2) {
+    top: calc(50% - var(--bar-height)/2);
+}
+
+.menu span:nth-child(3) {
+    top: calc(100% - var(--bar-height) - 4px);
+}
+
+/* hover → تمدد */
+.menu:hover span:first-child,
+.menu:hover span:last-child {
+    width: 70%;
+}
+
+/* التفعيل */
+.menu.active span:nth-child(1) {
     transform: rotate(45deg);
-    top: 13px;
+    top: calc(50% - var(--bar-height)/2);
 }
 
-.menu.active span:nth-child(2){
+.menu.active span:nth-child(2) {
     opacity: 0;
 }
 
-.menu.active span:nth-child(3){
+.menu.active span:nth-child(3) {
     transform: rotate(-45deg);
-    top: 13px;
+    top: calc(50% - var(--bar-height)/2);
+}
+/* الفوتر الزجاجي */
+.footer-container,
+.footer-bottom {
+    background: rgba(255, 255, 255, 0.87);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 24px;
+    margin: 0px auto;
+    max-width: 900px;
+}
+
+/* شكل العناصر الداخلية يكون أبيض نضيف */
+.footer-container h3,
+.footer-container p,
+.footer-container li,
+.footer-container a,
+.footer-bottom p {
+    color: #333; /* غامق بسيط عشان يبان فوق الزجاج */
+    text-decoration: none;
+}
+
+/* توزيع الفوتر */
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    border-top: 1px solid #C7C7C7;
+}
+
+/* تنسيق اللينكات */
+.footer-container ul {
+    list-style: none;
+}
+
+.footer-container ul li {
+    margin: 8px 0;
+}
+
+/* الـ bottom */
+.footer-bottom {
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+
+main{
+    margin: 22px;
+    text-align: center;
 }

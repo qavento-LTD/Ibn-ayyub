@@ -15,7 +15,37 @@ async function loadComponents() {
     
     tag.innerHTML = await res.text();
   }
+
+  // شغّل كود المينيو بعد التحميل
+  initMenu();
 }
 
-// شغّل الكومبوننت وبعدين نفّذ الكود اللي بعده
-loadComponents()
+loadComponents();
+
+
+// =================================================
+// كود المينيو – لازم يكون داخل فانكشن منفصل
+// =================================================
+function initMenu() {
+  const menuBtn = document.getElementById('menuBtn');
+  const nav = document.querySelector('.nav'); // انت كاتب navMenu وهي navLink في الهيدر
+
+  if (!menuBtn || !nav) {
+    console.error("Menu elements not found yet.");
+    return;
+  }
+
+  function toggleMenu(){
+    const active = menuBtn.classList.toggle('active');
+    active ? nav.classList.add('open') : nav.classList.remove('open');
+  }
+
+  menuBtn.addEventListener('click', toggleMenu);
+
+  menuBtn.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      toggleMenu();
+    }
+  });
+}
