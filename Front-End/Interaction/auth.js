@@ -15,7 +15,7 @@ googleLoginBtn.addEventListener("click", async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: window.location.origin + "index.html"
+      redirectTo: "https://ibnu-ayoub.netlify.app/index.html"
     }
   });
 
