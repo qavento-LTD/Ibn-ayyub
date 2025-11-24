@@ -96,6 +96,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Drop existing triggers if they exist
+DROP TRIGGER IF EXISTS update_products_updated_at ON products;
+DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
+DROP TRIGGER IF EXISTS update_cart_items_updated_at ON cart_items;
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles;
+
 -- Apply triggers
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -119,6 +125,25 @@ ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cart_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Products are viewable by everyone" ON products;
+DROP POLICY IF EXISTS "Admins can insert products" ON products;
+DROP POLICY IF EXISTS "Admins can update products" ON products;
+DROP POLICY IF EXISTS "Admins can delete products" ON products;
+DROP POLICY IF EXISTS "Users can view their own orders" ON orders;
+DROP POLICY IF EXISTS "Users can create their own orders" ON orders;
+DROP POLICY IF EXISTS "Admins can update orders" ON orders;
+DROP POLICY IF EXISTS "Users can view their order items" ON order_items;
+DROP POLICY IF EXISTS "Users can create order items for their orders" ON order_items;
+DROP POLICY IF EXISTS "Users can view their own cart" ON cart_items;
+DROP POLICY IF EXISTS "Users can add to their own cart" ON cart_items;
+DROP POLICY IF EXISTS "Users can update their own cart" ON cart_items;
+DROP POLICY IF EXISTS "Users can delete from their own cart" ON cart_items;
+DROP POLICY IF EXISTS "Users can view their own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Users can update their own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Admins can view all profiles" ON user_profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON user_profiles;
 
 -- Products: Everyone can read, only admins can modify
 CREATE POLICY "Products are viewable by everyone" ON products
@@ -206,8 +231,14 @@ CREATE POLICY "Users can delete from their own cart" ON cart_items
 CREATE POLICY "Users can view their own profile" ON user_profiles
     FOR SELECT USING (auth.uid() = id);
 
+CREATE POLICY "Users can insert their own profile" ON user_profiles
+    FOR INSERT WITH CHECK (auth.uid() = id);
+
 CREATE POLICY "Users can update their own profile" ON user_profiles
     FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can delete their own profile" ON user_profiles
+    FOR DELETE USING (auth.uid() = id);
 
 CREATE POLICY "Admins can view all profiles" ON user_profiles
     FOR SELECT USING (

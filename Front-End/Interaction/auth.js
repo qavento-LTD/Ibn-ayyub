@@ -45,29 +45,13 @@ if (signupForm) {
 
       if (error) throw error;
 
-      // Create user profile in user_profiles table
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .insert({
-            id: data.user.id,
-            email: email,
-            full_name: name,
-            role: 'customer'
-          });
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-          // Don't throw error, profile will be created on first login
-        }
-      }
-
+      // Supabase automatically sends verification email if enabled
       loadingToast.remove();
-      showSuccess('تم إنشاء الحساب بنجاح!');
+      showSuccess('تم إنشاء الحساب! يرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول.');
 
       setTimeout(() => {
         window.location.href = 'login.html';
-      }, 2000);
+      }, 3000);
 
     } catch (error) {
       loadingToast.remove();

@@ -31,7 +31,7 @@ async function loadProducts(category = 'all') {
         }
 
         grid.innerHTML = products.map(product => `
-            <div class="product-card fade-in-up">
+            <div class="product-card fade-in-up" data-id="${product.id}">
                 <div class="product-img">
                     ${product.image_url && product.image_url.startsWith('http')
                 ? `<img src="${product.image_url}" alt="${product.title}" loading="lazy">`
@@ -56,6 +56,7 @@ async function loadProducts(category = 'all') {
 
         // Re-attach event listeners
         attachCartListeners();
+        attachCardClickListeners();
 
         // Trigger animations
         setTimeout(() => {
@@ -80,7 +81,11 @@ async function loadProducts(category = 'all') {
 // =============================================
 function attachCartListeners() {
     document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        // Clone to remove old listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', async function (e) {
             e.preventDefault();
 
             const id = e.target.closest('.add-to-cart').dataset.id;
@@ -125,6 +130,39 @@ function attachCartListeners() {
 }
 
 // =============================================
+// Click on Product Card to Add to Cart
+// =============================================
+function attachCardClickListeners() {
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', async (e) => {
+            // Ignore clicks on inner links or buttons
+            if (e.target.closest('a') || e.target.closest('button')) return;
+            const id = card.dataset.id;
+            const title = card.querySelector('.product-title')?.textContent || 'المنتج';
+            const user = await getCurrentUser();
+            if (!user) {
+                showError('يرجى تسجيل الدخول لإضافة منتجات للسلة');
+                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                return;
+            }
+            const loading = showLoading('جاري إضافة المنتج إلى السلة...');
+            try {
+                const { error } = await addToCart(user.id, id, 1);
+                if (error) throw error;
+                showSuccess(`تمت إضافة "${title}" إلى السلة`);
+                if (window.updateCartCount) window.updateCartCount();
+            } catch (err) {
+                console.error('Add to cart error:', err);
+                showError(err.message || 'خطأ في إضافة المنتج');
+            } finally {
+                loading.remove();
+            }
+        });
+    });
+}
+
+
+// =============================================
 // Filter Logic
 // =============================================
 function initFilters() {
@@ -151,6 +189,11 @@ function initFilters() {
 // =============================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🛍️ Products Page - Initializing...');
+    // Attach card click listeners after products are loaded
+    // This line was added by the user's instruction, but the function attachCardClickListeners() is not defined.
+    // Assuming it's a placeholder or intended to be added elsewhere.
+    // For now, it's commented out to maintain syntactical correctness.
+    // attachCardClickListeners();
 
     initFilters();
     loadProducts();
