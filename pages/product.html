@@ -1,99 +1,160 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Detailed product page for Gift Store - View details, price, and buy now">
-	<meta name="keywords" content="gift, product, buy, shop, online, gift store">
-	<title>Product Details - Gift Store</title>
-	
-	<!-- Google Fonts -->
-	<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
-	
-	<!-- Font Awesome Icons -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-	
-	<!-- Custom CSS -->
-	<link rel="stylesheet" href="../Front-End/Appearance/index.css" type="text/css" media="all" />
-	
+	<title>تفاصيل المنتج - هديتي</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../Front-End/Appearance/index.css">
 	<style>
-		.product-detail {
-			max-width: 800px;
-			margin: 80px auto;
+		/* Page specific overrides */
+		header {
+			position: sticky;
+		}
+
+		.product-detail-page {
+			padding: 60px 20px;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.product-detail-container {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 50px;
+			background: white;
 			padding: 40px;
-			background: #fff;
-			border-radius: 20px;
-			box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
-			position: relative;
+			border-radius: 24px;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
 		}
-		
-		.product-image {
+
+		.product-image-container {
 			width: 100%;
-			height: 400px;
-			object-fit: cover;
+			height: 500px;
 			border-radius: 16px;
-			margin-bottom: 30px;
-			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-		}
-		
-		.product-title {
-			font-size: 36px;
-			color: #ff2a2a;
-			margin-bottom: 15px;
-			font-weight: 700;
-		}
-		
-		.product-price {
-			font-size: 28px;
-			color: #ff2a2a;
-			font-weight: 700;
-			margin: 20px 0;
-			display: inline-block;
-		}
-		
-		.product-description {
-			font-size: 18px;
-			color: #555;
-			line-height: 1.8;
-			margin-bottom: 30px;
-		}
-		
-		.btn-buy {
-			background: linear-gradient(135deg, #ff2a2a 0%, #ff5c5c 100%);
-			color: #fff;
-			padding: 15px 35px;
-			font-weight: 700;
-			border-radius: 12px;
-			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-			transition: all 0.4s ease;
-			display: inline-block;
-			text-align: center;
-			font-size: 18px;
+			overflow: hidden;
+			background: #f8f9fa;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			gap: 10px;
 		}
-		
-		.btn-buy:hover {
-			background: #fff;
-			color: #ff2a2a;
-			transform: scale(1.05);
-			box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+
+		.product-image-container img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
 		}
-		
-		.back-link {
-			display: inline-block;
-			margin-top: 20px;
-			color: #ff2a2a;
+
+		.product-image-container i {
+			font-size: 5rem;
+			color: #ddd;
+		}
+
+		.product-info-container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		.product-category {
+			color: var(--primary);
 			font-weight: 600;
-			transition: all 0.3s ease;
+			margin-bottom: 10px;
+			font-size: 0.9rem;
+			text-transform: uppercase;
+			letter-spacing: 1px;
 		}
-		
-		.back-link:hover {
-			color: #ff5c5c;
-			transform: translateX(-5px);
+
+		.product-title-large {
+			font-size: 2.5rem;
+			margin-bottom: 20px;
+			color: var(--text-main);
+			line-height: 1.2;
+		}
+
+		.product-price-large {
+			font-size: 2rem;
+			color: var(--primary);
+			font-weight: 700;
+			margin-bottom: 30px;
+		}
+
+		.product-description-large {
+			color: var(--text-light);
+			line-height: 1.8;
+			font-size: 1.1rem;
+			margin-bottom: 40px;
+		}
+
+		.actions {
+			display: flex;
+			gap: 20px;
+			align-items: center;
+		}
+
+		.quantity-selector {
+			display: flex;
+			align-items: center;
+			border: 2px solid #eee;
+			border-radius: 50px;
+			padding: 5px;
+		}
+
+		.qty-btn {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			border: none;
+			background: white;
+			cursor: pointer;
+			font-size: 1.2rem;
+			color: var(--text-main);
+			transition: 0.3s;
+		}
+
+		.qty-btn:hover {
+			background: #f5f5f5;
+		}
+
+		.qty-input {
+			width: 50px;
+			text-align: center;
+			border: none;
+			font-size: 1.2rem;
+			font-weight: 600;
+			outline: none;
+		}
+
+		.add-to-cart-large {
+			flex: 1;
+			padding: 15px 30px;
+			background: var(--primary);
+			color: white;
+			border: none;
+			border-radius: 50px;
+			font-size: 1.1rem;
+			font-weight: 700;
+			cursor: pointer;
+			transition: 0.3s;
+			box-shadow: 0 10px 20px rgba(183, 28, 28, 0.2);
+		}
+
+		.add-to-cart-large:hover {
+			background: #7F0000;
+			transform: translateY(-3px);
+			box-shadow: 0 15px 30px rgba(183, 28, 28, 0.3);
+		}
+
+		@media (max-width: 768px) {
+			.product-detail-container {
+				grid-template-columns: 1fr;
+				padding: 20px;
+			}
+
+			.product-image-container {
+				height: 300px;
+			}
 		}
 	</style>
 </head>
@@ -102,102 +163,111 @@
 	<!-- Header -->
 	<header>
 		<div class="logo">
-			<h1><i class="fas fa-gift me-2"></i>Gift Store</h1>
+			<a href="../index.html" style="text-decoration: none;">
+				<h2 style="color: var(--primary); font-weight: 800; margin: 0;">هديتي</h2>
+			</a>
 		</div>
-		<div>
-			<span class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></span>
-		</div>
-		<nav>
-			<ul id="nav-list">
-				<li><a href="index.html#home"><i class="fas fa-home me-1"></i>Home</a></li>
-				<li><a href="index.html#products"><i class="fas fa-box-open me-1"></i>Our Products</a></li>
-				<li><a href="index.html#offers"><i class="fas fa-tag me-1"></i>Special Offers</a></li>
-				<li><a href="index.html#about"><i class="fas fa-info-circle me-1"></i>About Us</a></li>
-				<li><a href="index.html#testimonials"><i class="fas fa-comments me-1"></i>Customer Reviews</a></li>
-				<li><a href="index.html#newsletter"><i class="fas fa-envelope me-1"></i>Newsletter</a></li>
-			</ul>
-		</nav>
-	</header>
-	
-	<!-- Product Detail Page -->
-	<section style="padding: 100px 50px; background: #f5f5f5;">
-		<div class="product-detail">
-			<img src="https://via.placeholder.com/800x600?text=Product+Image" alt="Product Image" class="product-image">
-			<h2 class="product-title">Romantic Gift Box</h2>
-			<div class="product-price">$49.99</div>
-			<p class="product-description">
-				This romantic gift box includes a handcrafted candle, a silk scarf, and a personalized card. Perfect for anniversaries, Valentine's Day, or just because. Made with love and attention to detail.
-			</p>
-			<a href="#" class="btn-buy"><i class="fas fa-cart-plus me-2"></i>Add to Cart</a>
-			<br><br>
-			<a href="index.html" class="back-link"><i class="fas fa-arrow-left me-2"></i>Back to Products</a>
-		</div>
-	</section>
-	
-	<!-- Footer -->
-	<footer style="margin-top: 60px;">
-		<div class="footer-content">
-			<div class="footer-section">
-				<h3><i class="fas fa-gift me-2"></i>Gift Store</h3>
-				<p>We offer you the most beautiful customized gifts for every occasion, with fast delivery and excellent customer service.</p>
-				<div class="social-links">
-					<a href="#"><i class="fab fa-facebook-f"></i></a>
-					<a href="#"><i class="fab fa-instagram"></i></a>
-					<a href="#"><i class="fab fa-twitter"></i></a>
-					<a href="#"><i class="fab fa-whatsapp"></i></a>
+		<div class="icon-navs">
+			<div style="position: relative;">
+				<div id="cart" style="cursor: pointer; padding: 10px;">
+					<i class="fas fa-shopping-cart fa-lg"></i>
 				</div>
-			</div>
-			<div class="footer-section">
-				<h4>Quick Links</h4>
-				<ul>
-					<li><a href="index.html#home">Home</a></li>
-					<li><a href="index.html#products">Our Products</a></li>
-					<li><a href="index.html#offers">Special Offers</a></li>
-					<li><a href="index.html#about">About Us</a></li>
-					<li><a href="index.html#testimonials">Customer Reviews</a></li>
-				</ul>
-			</div>
-			<div class="footer-section">
-				<h4>Contact Us</h4>
-				<p><i class="fas fa-phone me-2"></i> +966 50 123 4567</p>
-				<p><i class="fas fa-envelope me-2"></i> info@giftstore.com</p>
-				<p><i class="fas fa-map-marker-alt me-2"></i> Riyadh, Saudi Arabia</p>
+				<!-- Cart Dropdown -->
+				<section class="cart-container">
+					<!-- Header -->
+					<header>
+						<div class="logo">
+							<h2>Ibn <span>Ayyub</span></h2>
+						</div>
+
+						<div class="icon-navs">
+							<div class="cart-icon-wrapper" id="cart-btn">
+								<i class="fa-solid fa-bag-shopping"></i>
+								<span class="cart-count" id="cart-count">0</span>
+							</div>
+							<div class="login" id="auth-section">
+								<!-- Dynamic Auth Content -->
+							</div>
+							<div class="menu" id="menu-btn">
+								<span></span>
+								<span></span>
+								<span></span>
+							</div>
+						</div>
+					</header>
+
+					<!-- Navigation Sidebar -->
+					<nav class="nav" id="nav-menu">
+						<ul>
+							<li><a href="../index.html">الرئيسية</a></li>
+							<li><a href="products.html">المنتجات</a></li>
+							<li><a href="cart.html">سلة الشراء</a></li>
+							<li><a href="#contact">تواصل معنا</a></li>
+						</ul>
+					</nav>
+
+					<!-- Product Details Section -->
+					<section class="product-details-container"
+						style="margin-top: 150px; padding: 0 40px; max-width: 1200px; margin-left: auto; margin-right: auto;">
+						<div id="product-content"
+							style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;">
+							<!-- Dynamic Content -->
+							<div class="loading">جاري تحميل تفاصيل المنتج...</div>
+						</div>
+					</section>
+
+					<!-- Cart Dropdown -->
+					<div class="cart-container" id="cart-dropdown">
+						<div class="cart-header"
+							style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+							<h3>سلة الشراء</h3>
+							<button id="close-cart" style="font-size: 1.2rem;"><i
+									class="fa-solid fa-xmark"></i></button>
+						</div>
+						<div class="cart-items-wrapper" id="cart-items">
+							<!-- Cart Items -->
+						</div>
+						<div class="cart-footer">
+							<div
+								style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; margin-bottom: 15px;">
+								<span>المجموع:</span>
+								<span id="cart-total">0 ج.م</span>
+							</div>
+							<button class="checkout-btn" onclick="window.location.href='cart.html'">إتمام
+								الشراء</button>
+						</div>
+					</div>
+					<p class="product-description-large" id="productDescription"></p>
+
+					<div class="actions">
+						<div class="quantity-selector">
+							<button class="qty-btn" onclick="updateQty(-1)">-</button>
+							<input type="text" value="1" class="qty-input" id="qtyInput" readonly>
+							<button class="qty-btn" onclick="updateQty(1)">+</button>
+						</div>
+						<button class="add-to-cart-large" id="addToCartBtn">أضف إلى السلة</button>
+					</div>
 			</div>
 		</div>
-		<div class="footer-bottom">
-			<p>&copy; 2025 <strong>Gift Store</strong>. All rights reserved.</p>
-		</div>
-	</footer>
-	
-	<!-- JavaScript -->
-	<script>
-		// Mobile Menu Toggle
-		const toggleButton = document.getElementById('menu-toggle');
-		const navList = document.getElementById('nav-list');
-		
-		toggleButton.addEventListener('click', () => {
-			navList.classList.toggle('show');
-		});
-		
-		// Smooth Scroll for Anchor Links
-		document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-			anchor.addEventListener('click', function(e) {
-				e.preventDefault();
-				const targetId = this.getAttribute('href');
-				const targetElement = document.querySelector(targetId);
-				if (targetElement) {
-					window.scrollTo({
-						top: targetElement.offsetTop - 80,
-						behavior: 'smooth'
-					});
-					// Close mobile menu if open
-					if (navList.classList.contains('show')) {
-						navList.classList.remove('show');
-					}
-				}
-			});
-		});
-	</script>
+		</main>
+
+		<!-- Footer -->
+		<footer style="margin-top: auto;">
+			<div class="footer-bottom">
+				<p>&copy; 2025 <strong>هديتي</strong>. جميع الحقوق محفوظة.</p>
+			</div>
+		</footer>
+
+		<script type="module" src="../Front-End/Interaction/product.js"></script>
+		<script src="../Front-End/Interaction/main.js"></script>
+		<script>
+			function updateQty(change) {
+				const input = document.getElementById('qtyInput');
+				let val = parseInt(input.value);
+				val = Math.max(1, val + change);
+				input.value = val;
+			}
+		</script>
 </body>
 
 </html>

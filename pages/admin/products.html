@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المنتجات - لوحة التحكم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            right: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            color: var(--black);
+            transition: var(--transition-base);
+            font-weight: 600;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .sidebar-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: var(--spacing-xl);
+        }
+
+        .products-table {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-xl);
+            border-bottom: 2px solid var(--gray);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--gray);
+        }
+
+        th {
+            padding: var(--spacing-md);
+            text-align: right;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        td {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--gray);
+        }
+
+        tbody tr:hover {
+            background: rgba(230, 57, 70, 0.05);
+        }
+
+        .product-img-small {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition-base);
+            margin: 0 4px;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            color: var(--black);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th,
+            td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../../index.html" style="text-decoration: none;">
+                <h2 style="color: var(--primary); font-weight: 800; margin: 0;">هديتي</h2>
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-weight: 600; color: var(--gray-dark);">إدارة المنتجات</span>
+            <a href="../../index.html" class="btn" style="padding: 8px 16px;">
+                <i class="fas fa-home"></i> الموقع الرئيسي
+            </a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="admin.html" class="sidebar-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>الإحصائيات</span>
+                </a>
+                <a href="products.html" class="sidebar-item active">
+                    <i class="fas fa-box"></i>
+                    <span>المنتجات</span>
+                </a>
+                <a href="orders.html" class="sidebar-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>الطلبات</span>
+                </a>
+                <a href="users.html" class="sidebar-item">
+                    <i class="fas fa-users"></i>
+                    <span>المستخدمين</span>
+                </a>
+                <div style="height: 1px; background: var(--gray); margin: 16px 0;"></div>
+                <a href="settings.html" class="sidebar-item">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: var(--spacing-xl); color: var(--black);">
+                إدارة المنتجات
+            </h1>
+
+            <!-- Products Table -->
+            <div class="products-table">
+                <div class="table-header">
+                    <h2 style="font-size: 1.3rem; font-weight: 700; margin: 0;">جميع المنتجات</h2>
+                    <button class="btn" id="add-product-btn">
+                        <i class="fas fa-plus"></i> إضافة منتج جديد
+                    </button>
+                </div>
+
+                <div id="products-container">
+                    <div class="loading" style="padding: 40px;">
+                        <div class="spinner"></div>
+                        <p>جاري تحميل المنتجات...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                <h2 id="modal-title" style="font-weight: 700; margin: 0;">إضافة منتج جديد</h2>
+                <button onclick="closeModal()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-dark);">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+
+                <div class="form-group">
+                    <label>اسم المنتج *</label>
+                    <input type="text" id="product-title" required placeholder="مثال: باقة ورد فاخرة">
+                </div>
+
+                <div class="form-group">
+                    <label>الوصف</label>
+                    <textarea id="product-description" placeholder="وصف تفصيلي للمنتج..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>السعر (ر.س) *</label>
+                    <input type="number" id="product-price" required min="0" step="0.01" placeholder="199.99">
+                </div>
+
+                <div class="form-group">
+                    <label>الكمية المتوفرة *</label>
+                    <input type="number" id="product-stock" required min="0" placeholder="50">
+                </div>
+
+                <div class="form-group">
+                    <label>الفئة *</label>
+                    <select id="product-category" required>
+                        <option value="">اختر الفئة</option>
+                        <option value="flowers">ورود</option>
+                        <option value="chocolate">شوكولاتة</option>
+                        <option value="perfumes">عطور</option>
+                        <option value="accessories">إكسسوارات</option>
+                        <option value="toys">ألعاب</option>
+                        <option value="other">أخرى</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>رابط الصورة</label>
+                    <input type="url" id="product-image" placeholder="https://example.com/image.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="product-featured">
+                        <span>منتج مميز (يظهر في الصفحة الرئيسية)</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: var(--spacing-xl);">
+                    <button type="button" onclick="closeModal()" class="btn-outline" style="flex: 1; padding: 12px;">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn" style="flex: 2; padding: 12px;">
+                        <i class="fas fa-save"></i> حفظ المنتج
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../../js/supabase-client.js';
+        import { isAdmin, formatPrice } from '../../js/utils.js';
+        import { showSuccess, showError, showLoading, confirm } from '../../js/toast.js';
+
+        let currentProductId = null;
+
+        // Check if user is admin
+        async function checkAdmin() {
+            const adminStatus = await isAdmin(supabase);
+            if (!adminStatus) {
+                showError('ليس لديك صلاحية للوصول لهذه الصفحة');
+                setTimeout(() => {
+                    window.location.href = '../../index.html';
+                }, 2000);
+                return false;
+            }
+            return true;
+        }
+
+        // Load products
+        async function loadProducts() {
+            const container = document.getElementById('products-container');
+
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!products || products.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; padding: 40px; color: var(--gray-dark);">لا توجد منتجات حالياً</p>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الصورة</th>
+                                <th>الاسم</th>
+                                <th>السعر</th>
+                                <th>المخزون</th>
+                                <th>الفئة</th>
+                                <th>مميز</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${products.map(product => `
+                                <tr>
+                                    <td>
+                                        ${product.image_url
+                        ? `<img src="${product.image_url}" class="product-img-small" alt="${product.title}">`
+                        : '<i class="fas fa-gift" style="font-size: 2rem; color: var(--gray-dark);"></i>'
+                    }
+                                    </td>
+                                    <td style="font-weight: 600;">${product.title}</td>
+                                    <td style="color: var(--primary); font-weight: 700;">${formatPrice(product.price)}</td>
+                                    <td>
+                                        <span style="padding: 4px 12px; border-radius: 12px; background: ${product.stock === 0 ? '#e74c3c' : product.stock <= 10 ? '#f39c12' : '#2ed573'}; color: white; font-weight: 600;">
+                                            ${product.stock}
+                                        </span>
+                                    </td>
+                                    <td>${getCategoryName(product.category)}</td>
+                                    <td>
+                                        ${product.featured
+                        ? '<i class="fas fa-star" style="color: #f39c12;"></i>'
+                        : '<i class="far fa-star" style="color: var(--gray-dark);"></i>'
+                    }
+                                    </td>
+                                    <td>
+                                        <button class="action-btn btn-edit" onclick="window.editProduct('${product.id}')">
+                                            <i class="fas fa-edit"></i> تعديل
+                                        </button>
+                                        <button class="action-btn btn-delete" onclick="window.deleteProduct('${product.id}', '${product.title}')">
+                                            <i class="fas fa-trash"></i> حذف
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+            } catch (error) {
+                console.error('Load products error:', error);
+                container.innerHTML = '<p style="text-align: center; padding: 40px; color: var(--primary);">حدث خطأ في تحميل المنتجات</p>';
+            }
+        }
+
+        function getCategoryName(category) {
+            const categories = {
+                'flowers': 'ورود',
+                'chocolate': 'شوكولاتة',
+                'perfumes': 'عطور',
+                'accessories': 'إكسسوارات',
+                'toys': 'ألعاب',
+                'other': 'أخرى'
+            };
+            return categories[category] || category;
+        }
+
+        // Open modal
+        window.openModal = function (productId = null) {
+            currentProductId = productId;
+            const modal = document.getElementById('product-modal');
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('product-form');
+
+            if (productId) {
+                title.textContent = 'تعديل المنتج';
+                loadProductData(productId);
+            } else {
+                title.textContent = 'إضافة منتج جديد';
+                form.reset();
+            }
+
+            modal.classList.add('active');
+        };
+
+        // Close modal
+        window.closeModal = function () {
+            document.getElementById('product-modal').classList.remove('active');
+            document.getElementById('product-form').reset();
+            currentProductId = null;
+        };
+
+        // Load product data for editing
+        async function loadProductData(productId) {
+            try {
+                const { data: product, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('id', productId)
+                    .single();
+
+                if (error) throw error;
+
+                document.getElementById('product-id').value = product.id;
+                document.getElementById('product-title').value = product.title;
+                document.getElementById('product-description').value = product.description || '';
+                document.getElementById('product-price').value = product.price;
+                document.getElementById('product-stock').value = product.stock;
+                document.getElementById('product-category').value = product.category;
+                document.getElementById('product-image').value = product.image_url || '';
+                document.getElementById('product-featured').checked = product.featured || false;
+
+            } catch (error) {
+                console.error('Load product error:', error);
+                showError('حدث خطأ في تحميل بيانات المنتج');
+            }
+        }
+
+        // Edit product
+        window.editProduct = function (productId) {
+            openModal(productId);
+        };
+
+        // Delete product
+        window.deleteProduct = async function (productId, productName) {
+            const confirmed = await confirm(`هل أنت متأكد من حذف "${productName}"؟`);
+
+            if (confirmed) {
+                const loadingToast = showLoading('جاري حذف المنتج...');
+
+                try {
+                    const { error } = await supabase
+                        .from('products')
+                        .delete()
+                        .eq('id', productId);
+
+                    if (error) throw error;
+
+                    loadingToast.remove();
+                    showSuccess('تم حذف المنتج بنجاح');
+                    loadProducts();
+
+                } catch (error) {
+                    loadingToast.remove();
+                    console.error('Delete product error:', error);
+                    showError('حدث خطأ في حذف المنتج');
+                }
+            }
+        };
+
+        // Save product (add or update)
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const loadingToast = showLoading(currentProductId ? 'جاري تحديث المنتج...' : 'جاري إضافة المنتج...');
+
+            try {
+                const productData = {
+                    title: document.getElementById('product-title').value,
+                    description: document.getElementById('product-description').value,
+                    price: parseFloat(document.getElementById('product-price').value),
+                    stock: parseInt(document.getElementById('product-stock').value),
+                    category: document.getElementById('product-category').value,
+                    image_url: document.getElementById('product-image').value || null,
+                    featured: document.getElementById('product-featured').checked
+                };
+
+                let error;
+
+                if (currentProductId) {
+                    // Update existing product
+                    ({ error } = await supabase
+                        .from('products')
+                        .update(productData)
+                        .eq('id', currentProductId));
+                } else {
+                    // Add new product
+                    ({ error } = await supabase
+                        .from('products')
+                        .insert([productData]));
+                }
+
+                if (error) throw error;
+
+                loadingToast.remove();
+                showSuccess(currentProductId ? 'تم تحديث المنتج بنجاح' : 'تم إضافة المنتج بنجاح');
+                closeModal();
+                loadProducts();
+
+            } catch (error) {
+                loadingToast.remove();
+                console.error('Save product error:', error);
+                showError('حدث خطأ في حفظ المنتج');
+            }
+        });
+
+        // Add product button
+        document.getElementById('add-product-btn').addEventListener('click', () => {
+            openModal();
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isAdminUser = await checkAdmin();
+            if (isAdminUser) {
+                loadProducts();
+            }
+        });
+    </script>
+</body>
+
+</html>

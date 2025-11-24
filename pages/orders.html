@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلباتي - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+            padding-top: 100px;
+        }
+
+        .orders-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+
+        .order-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-lg);
+            transition: var(--transition-base);
+        }
+
+        .order-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray);
+        }
+
+        .order-id {
+            font-weight: 700;
+            color: var(--black);
+            font-size: 1.1rem;
+        }
+
+        .order-status {
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .status-pending {
+            background: #ffa502;
+            color: white;
+        }
+
+        .status-processing {
+            background: #3498db;
+            color: white;
+        }
+
+        .status-completed {
+            background: #2ed573;
+            color: white;
+        }
+
+        .status-cancelled {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .order-items {
+            margin: var(--spacing-md) 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 2px solid var(--gray);
+        }
+
+        .order-total {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-dark);
+            margin-bottom: var(--spacing-lg);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none;">
+                <h2 style="color: var(--primary); font-weight: 800; margin: 0;">🎁 هديتي</h2>
+            </a>
+        </div>
+
+        <nav class="nav">
+            <a href="../index.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="products.html" class="nav-link">
+                <i class="fas fa-gifts"></i>
+                <span>المنتجات</span>
+            </a>
+        </nav>
+
+        <div class="icon-navs">
+            <a href="../index.html" class="btn-outline" style="padding: 8px 16px;">
+                <i class="fas fa-arrow-right"></i> العودة
+            </a>
+        </div>
+    </header>
+
+    <div class="orders-container">
+        <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: var(--spacing-xl); color: var(--black);">
+            <i class="fas fa-shopping-bag"></i> طلباتي
+        </h1>
+
+        <div id="orders-list">
+            <div class="loading" style="padding: 60px; text-align: center;">
+                <div class="spinner"></div>
+                <p>جاري تحميل الطلبات...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase, getCurrentUser } from '../js/supabase-client.js';
+        import { formatPrice } from '../js/utils.js';
+        import { showError } from '../js/toast.js';
+
+        async function loadOrders() {
+            const container = document.getElementById('orders-list');
+
+            try {
+                const user = await getCurrentUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select(`
+                        *,
+                        order_items (
+                            *,
+                            products (title, price)
+                        )
+                    `)
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!orders || orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <h2 style="font-weight: 700; margin-bottom: var(--spacing-md);">لا توجد طلبات بعد</h2>
+                            <p style="color: var(--gray-dark); margin-bottom: var(--spacing-lg);">ابدأ التسوق الآن واستمتع بأفضل العروض!</p>
+                            <a href="products.html" class="btn" style="padding: 12px 32px;">
+                                <i class="fas fa-gifts"></i> تصفح المنتجات
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = orders.map(order => {
+                    const statusClass = `status-${order.status}`;
+                    const statusText = {
+                        'pending': 'قيد الانتظار',
+                        'processing': 'قيد المعالجة',
+                        'completed': 'مكتمل',
+                        'cancelled': 'ملغي'
+                    }[order.status] || order.status;
+
+                    return `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <div class="order-id">طلب #${order.id.substring(0, 8)}</div>
+                                    <div style="color: var(--gray-dark); font-size: 0.85rem; margin-top: 4px;">
+                                        ${new Date(order.created_at).toLocaleDateString('ar-SA', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })}
+                                    </div>
+                                </div>
+                                <span class="order-status ${statusClass}">${statusText}</span>
+                            </div>
+
+                            <div class="order-items">
+                                ${order.order_items.map(item => `
+                                    <div class="order-item">
+                                        <div>
+                                            <div style="font-weight: 600;">${item.products.title}</div>
+                                            <div style="color: var(--gray-dark); font-size: 0.85rem;">الكمية: ${item.quantity}</div>
+                                        </div>
+                                        <div style="font-weight: 700; color: var(--primary);">
+                                            ${formatPrice(item.price)}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <div class="order-footer">
+                                <div>
+                                    <div style="color: var(--gray-dark); font-size: 0.85rem; margin-bottom: 4px;">المجموع الكلي</div>
+                                    <div class="order-total">${formatPrice(order.total)}</div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    ${order.status === 'pending' ? `
+                                        <button class="btn-outline" onclick="cancelOrder('${order.id}')" style="padding: 8px 16px;">
+                                            <i class="fas fa-times"></i> إلغاء الطلب
+                                        </button>
+                                    ` : ''}
+                                    <button class="btn" onclick="viewOrder('${order.id}')" style="padding: 8px 16px;">
+                                        <i class="fas fa-eye"></i> التفاصيل
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Load orders error:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--primary);"></i>
+                        <h2 style="font-weight: 700; margin-bottom: var(--spacing-md);">حدث خطأ في تحميل الطلبات</h2>
+                        <button class="btn" onclick="location.reload()" style="padding: 12px 32px;">
+                            <i class="fas fa-redo"></i> إعادة المحاولة
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        window.viewOrder = function (orderId) {
+            // TODO: Navigate to order details page
+            alert('عرض تفاصيل الطلب: ' + orderId);
+        };
+
+        window.cancelOrder = async function (orderId) {
+            if (!confirm('هل أنت متأكد من إلغاء هذا الطلب؟')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('orders')
+                    .update({ status: 'cancelled' })
+                    .eq('id', orderId);
+
+                if (error) throw error;
+
+                showSuccess('تم إلغاء الطلب بنجاح');
+                loadOrders();
+
+            } catch (error) {
+                console.error('Cancel order error:', error);
+                showError('حدث خطأ في إلغاء الطلب');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadOrders);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - لوحة التحكم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            right: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            color: var(--black);
+            transition: var(--transition-base);
+            font-weight: 600;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .sidebar-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: var(--spacing-xl);
+        }
+
+        .settings-section {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h4 {
+            font-weight: 600;
+            color: var(--black);
+            margin-bottom: 4px;
+        }
+
+        .setting-info p {
+            font-size: 0.85rem;
+            color: var(--gray-dark);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-dark);
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../../index.html" style="text-decoration: none;">
+                <h2 style="color: var(--primary); font-weight: 800; margin: 0;">هديتي</h2>
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-weight: 600; color: var(--gray-dark);">الإعدادات</span>
+            <a href="../../index.html" class="btn" style="padding: 8px 16px;">
+                <i class="fas fa-home"></i> الموقع الرئيسي
+            </a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="admin.html" class="sidebar-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>الإحصائيات</span>
+                </a>
+                <a href="products.html" class="sidebar-item">
+                    <i class="fas fa-box"></i>
+                    <span>المنتجات</span>
+                </a>
+                <a href="orders.html" class="sidebar-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>الطلبات</span>
+                </a>
+                <a href="users.html" class="sidebar-item">
+                    <i class="fas fa-users"></i>
+                    <span>المستخدمين</span>
+                </a>
+                <div style="height: 1px; background: var(--gray); margin: 16px 0;"></div>
+                <a href="settings.html" class="sidebar-item active">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: var(--spacing-xl); color: var(--black);">
+                الإعدادات
+            </h1>
+
+            <!-- General Settings -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cog"></i> الإعدادات العامة
+                </h2>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>اسم المتجر</h4>
+                        <p>اسم المتجر الذي يظهر في الموقع</p>
+                    </div>
+                    <input type="text" id="store-name" value="هديتي"
+                        style="padding: 8px 16px; border: 1px solid var(--gray); border-radius: var(--radius-md); width: 250px;">
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>البريد الإلكتروني للمتجر</h4>
+                        <p>البريد الإلكتروني الرسمي للتواصل</p>
+                    </div>
+                    <input type="email" id="store-email" placeholder="info@store.com"
+                        style="padding: 8px 16px; border: 1px solid var(--gray); border-radius: var(--radius-md); width: 250px;">
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>رقم الهاتف</h4>
+                        <p>رقم الهاتف للتواصل مع العملاء</p>
+                    </div>
+                    <input type="tel" id="store-phone" placeholder="+966 XX XXX XXXX"
+                        style="padding: 8px 16px; border: 1px solid var(--gray); border-radius: var(--radius-md); width: 250px;">
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bell"></i> الإشعارات
+                </h2>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>إشعارات الطلبات الجديدة</h4>
+                        <p>استلام إشعار عند وصول طلب جديد</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notify-orders" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>إشعارات المنتجات قاربت على النفاذ</h4>
+                        <p>تنبيه عندما يقل المخزون عن الحد الأدنى</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notify-stock" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>إشعارات المستخدمين الجدد</h4>
+                        <p>استلام إشعار عند تسجيل مستخدم جديد</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notify-users">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Store Settings -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-store"></i> إعدادات المتجر
+                </h2>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>تفعيل المتجر</h4>
+                        <p>السماح للعملاء بالشراء من المتجر</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="store-active" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>السماح بالتسجيل</h4>
+                        <p>السماح للمستخدمين الجدد بإنشاء حسابات</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="allow-registration" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>الحد الأدنى للطلب</h4>
+                        <p>الحد الأدنى لقيمة الطلب بالريال السعودي</p>
+                    </div>
+                    <input type="number" id="min-order" value="50" min="0"
+                        style="padding: 8px 16px; border: 1px solid var(--gray); border-radius: var(--radius-md); width: 150px;">
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>رسوم التوصيل</h4>
+                        <p>رسوم التوصيل الافتراضية بالريال السعودي</p>
+                    </div>
+                    <input type="number" id="shipping-fee" value="20" min="0"
+                        style="padding: 8px 16px; border: 1px solid var(--gray); border-radius: var(--radius-md); width: 150px;">
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: var(--spacing-xl);">
+                <button class="btn-outline" onclick="window.location.reload()" style="padding: 12px 32px;">
+                    إلغاء
+                </button>
+                <button class="btn" id="save-settings" style="padding: 12px 32px;">
+                    <i class="fas fa-save"></i> حفظ التغييرات
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../../js/supabase-client.js';
+        import { isAdmin } from '../../js/utils.js';
+        import { showSuccess, showError, showLoading } from '../../js/toast.js';
+
+        // Check if user is admin
+        async function checkAdmin() {
+            const adminStatus = await isAdmin(supabase);
+            if (!adminStatus) {
+                showError('ليس لديك صلاحية للوصول لهذه الصفحة');
+                setTimeout(() => {
+                    window.location.href = '../../index.html';
+                }, 2000);
+                return false;
+            }
+            return true;
+        }
+
+        // Save settings
+        document.getElementById('save-settings').addEventListener('click', async () => {
+            const loadingToast = showLoading('جاري حفظ الإعدادات...');
+
+            try {
+                // Get all settings values
+                const settings = {
+                    store_name: document.getElementById('store-name').value,
+                    store_email: document.getElementById('store-email').value,
+                    store_phone: document.getElementById('store-phone').value,
+                    notify_orders: document.getElementById('notify-orders').checked,
+                    notify_stock: document.getElementById('notify-stock').checked,
+                    notify_users: document.getElementById('notify-users').checked,
+                    store_active: document.getElementById('store-active').checked,
+                    allow_registration: document.getElementById('allow-registration').checked,
+                    min_order: parseFloat(document.getElementById('min-order').value),
+                    shipping_fee: parseFloat(document.getElementById('shipping-fee').value)
+                };
+
+                // Save to localStorage for now (you can save to Supabase later)
+                localStorage.setItem('store_settings', JSON.stringify(settings));
+
+                loadingToast.remove();
+                showSuccess('تم حفظ الإعدادات بنجاح!');
+
+            } catch (error) {
+                loadingToast.remove();
+                console.error('Save settings error:', error);
+                showError('حدث خطأ في حفظ الإعدادات');
+            }
+        });
+
+        // Load saved settings
+        function loadSettings() {
+            const saved = localStorage.getItem('store_settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+
+                if (settings.store_name) document.getElementById('store-name').value = settings.store_name;
+                if (settings.store_email) document.getElementById('store-email').value = settings.store_email;
+                if (settings.store_phone) document.getElementById('store-phone').value = settings.store_phone;
+
+                document.getElementById('notify-orders').checked = settings.notify_orders ?? true;
+                document.getElementById('notify-stock').checked = settings.notify_stock ?? true;
+                document.getElementById('notify-users').checked = settings.notify_users ?? false;
+                document.getElementById('store-active').checked = settings.store_active ?? true;
+                document.getElementById('allow-registration').checked = settings.allow_registration ?? true;
+
+                if (settings.min_order) document.getElementById('min-order').value = settings.min_order;
+                if (settings.shipping_fee) document.getElementById('shipping-fee').value = settings.shipping_fee;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isAdminUser = await checkAdmin();
+            if (isAdminUser) {
+                loadSettings();
+            }
+        });
+    </script>
+</body>
+
+</html>

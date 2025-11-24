@@ -1,14 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>المنتجات - هديتي</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../Front-End/Appearance/index.css">
+	<style>
+		/* Page specific overrides */
+		header {
+			position: sticky;
+		}
+
+		.products-page {
+			padding: 40px 20px;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.filters {
+			margin-bottom: 30px;
+			display: flex;
+			gap: 15px;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		.filter-btn {
+			padding: 8px 20px;
+			border: 1px solid #ddd;
+			border-radius: 20px;
+			background: white;
+			cursor: pointer;
+			transition: 0.3s;
+		}
+
+		.filter-btn.active,
+		.filter-btn:hover {
+			background: var(--primary);
+			color: white;
+			border-color: var(--primary);
+		}
+
+		.loading {
+			text-align: center;
+			padding: 50px;
+			font-size: 1.2rem;
+			color: #666;
+		}
+	</style>
 </head>
 
 <body>
-	
+	<!-- Header -->
+	<header>
+		<div class="logo">
+			<a href="../index.html" style="text-decoration: none;">
+				<h2 style="color: var(--primary); font-weight: 800; margin: 0;">هديتي</h2>
+			</a>
+		</div>
+		<div class="icon-navs">
+			<div class="cart-icon-wrapper" id="cart-btn">
+				<i class="fa-solid fa-bag-shopping"></i>
+				<span class="cart-count" id="cart-count">0</span>
+			</div>
+			<div class="login" id="auth-section">
+				<!-- Dynamic Auth Content -->
+			</div>
+			<div class="menu" id="menu-btn">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+		</div>
+
+		<!-- Cart Dropdown -->
+		<section class="cart-container">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+				<h2 class="section-title" style="margin: 0; font-size: 1.2rem;">سلة الشراء</h2>
+				<button id="closeCart" style="background:none; border:none; cursor:pointer;">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+
+			<div class="cart-items-wrapper" style="max-height: 300px; overflow-y: auto;">
+				<!-- Cart items will be added here dynamically -->
+				<div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">
+					سلة التسوق فارغة
+				</div>
+			</div>
+		</section>
+	</header>
+
+	<!-- Navigation Sidebar -->
+	<nav class="nav" id="nav-menu">
+		<ul>
+			<li><a href="../index.html">الرئيسية</a></li>
+			<li><a href="products.html">المنتجات</a></li>
+			<li><a href="cart.html">سلة الشراء</a></li>
+			<li><a href="#contact">تواصل معنا</a></li>
+		</ul>
+	</nav>
+
+	<main>
+		<!-- Products Section -->
+		<section class="products" style="margin-top: 150px;">
+			<h2 class="section-title">جميع المنتجات</h2>
+
+			<!-- Filters -->
+			<div class="filters" id="filters" style="text-align: center; margin-bottom: 40px;">
+				<button class="filter-btn active" data-category="all"
+					style="padding: 10px 25px; margin: 5px; border-radius: 50px; border: 1px solid #ddd; background: white; font-weight: 700; cursor: pointer; transition: 0.3s;">الكل</button>
+				<button class="filter-btn" data-category="gifts"
+					style="padding: 10px 25px; margin: 5px; border-radius: 50px; border: 1px solid #ddd; background: white; font-weight: 700; cursor: pointer; transition: 0.3s;">هدايا</button>
+				<button class="filter-btn" data-category="antiques"
+					style="padding: 10px 25px; margin: 5px; border-radius: 50px; border: 1px solid #ddd; background: white; font-weight: 700; cursor: pointer; transition: 0.3s;">تحف</button>
+				<button class="filter-btn" data-category="art"
+					style="padding: 10px 25px; margin: 5px; border-radius: 50px; border: 1px solid #ddd; background: white; font-weight: 700; cursor: pointer; transition: 0.3s;">فنون</button>
+			</div>
+
+			<div class="products-grid" id="productsGrid">
+				<div class="loading">جاري تحميل المنتجات...</div>
+			</div>
+		</section>
+	</main>
+
+	<script type="module" src="../Front-End/Interaction/products.js"></script>
+	<script type="module" src="../Front-End/Interaction/main.js"></script>
 </body>
 
 </html>

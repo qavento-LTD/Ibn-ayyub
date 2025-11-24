@@ -2,27 +2,56 @@
 <html lang="ar" dir="rtl">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>تسجيل الدخول - محل هدايا</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>تسجيل الدخول - هديتي</title>
 	<link rel="stylesheet" href="../Front-End/Appearance/login.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
 	<div class="container">
-		<img src="../assets/images/logo.png" alt="image logo">
-		
+		<a href="../index.html" style="text-decoration: none;">
+			<h2 style="color: var(--text-accent); font-weight: 800; margin-bottom: 40px; font-size: 3rem;">هديتي</h2>
+		</a>
+
 		<div class="login-card">
-			<p class="subtitle">سجّل دخولك</p>
-			<button class="google-btn hidden-send" id="googleLogin">
-				<img src="https://www.svgrepo.com/show/475656/google-color.svg" class="google-icon">
+			<h2>مرحباً بعودتك</h2>
+			<p class="subtitle">سجّل دخولك للمتابعة</p>
+
+			<form id="login-form">
+				<div class="input-group">
+					<label>البريد الإلكتروني</label>
+					<input type="email" id="email" required placeholder="example@mail.com">
+				</div>
+				<div class="input-group">
+					<label>كلمة المرور</label>
+					<input type="password" id="password" required placeholder="********">
+				</div>
+				<div style="text-align: left; margin-bottom: 16px;">
+					<a href="forgot-password.html"
+						style="color: var(--primary); font-size: 0.9rem; text-decoration: none;">
+						نسيت كلمة المرور؟
+					</a>
+				</div>
+				<button type="submit" class="btn">تسجيل الدخول</button>
+			</form>
+
+			<div class="divider"></div>
+
+			<button id="google-login" class="btn google-btn"
+				style="background: #fff; color: #333; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px;">
+				<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20">
 				تسجيل الدخول باستخدام جوجل
 			</button>
-			</div>
+
+			<p class="message">
+				ليس لديك حساب؟ <a href="sign.html" style="color: var(--primary); font-weight: bold;">إنشاء حساب جديد</a>
+			</p>
+		</div>
+	</div>
+
 	<script type="module" src="../Front-End/Interaction/auth.js"></script>
-	</script>
 </body>
 
 </html>
-
-
