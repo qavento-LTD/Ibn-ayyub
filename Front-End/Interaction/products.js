@@ -115,6 +115,12 @@ function attachCartListeners() {
                 showSuccess(`تمت إضافة "${title}" إلى السلة`);
                 button.innerHTML = '<i class="fas fa-check"></i> تمت الإضافة';
 
+                // Update cart count
+                if (window.updateCartCount) {
+                    window.updateCartCount();
+                }
+
+
             } catch (error) {
                 console.error('Add to cart error:', error);
                 showError('حدث خطأ في إضافة المنتج');

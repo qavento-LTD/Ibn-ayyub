@@ -66,6 +66,60 @@ function initCartToggle() {
 }
 
 // =============================================
+// Load Cart Dropdown
+// =============================================
+async function loadCartDropdown() {
+    const cartItemsWrapper = document.querySelector('.cart-items-wrapper');
+    if (!cartItemsWrapper) return;
+
+    const user = await getCurrentUser();
+    if (!user) {
+        cartItemsWrapper.innerHTML = '<div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">سجل دخول لعرض السلة</div>';
+        return;
+    }
+
+    try {
+        const { getCartItems } = await import('../../js/supabase-client.js');
+        const { data: items, error } = await getCartItems(user.id);
+
+        if (error) throw error;
+
+        if (!items || items.length === 0) {
+            cartItemsWrapper.innerHTML = '<div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">سلة التسوق فارغة</div>';
+            return;
+        }
+
+        const html = items.map(item => {
+            const product = item.product;
+            return `
+                <div style="display: flex; gap: 10px; padding: 12px; border-bottom: 1px solid #f0f0f0;">
+                    <div style="width: 50px; height: 50px; border-radius: 8px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        ${product.image_url && product.image_url.startsWith('http')
+                    ? `<img src="${product.image_url}" alt="${product.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`
+                    : `<i class="fas fa-gift" style="color: #dee2e6;"></i>`
+                }
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${product.title}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">الكمية: ${item.quantity}</div>
+                    </div>
+                    <div style="font-weight: 700; color: var(--primary); font-size: 0.9rem;">${formatPrice(product.price)}</div>
+                </div>`;
+        }).join('');
+
+        cartItemsWrapper.innerHTML = html + `
+            <div style="padding: 15px; text-align: center;">
+                <a href="pages/cart.html" class="btn" style="display: inline-block; width: 100%; padding: 12px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; font-weight: 700;">عرض السلة</a>
+            </div>`;
+
+    } catch (error) {
+        console.error('Load cart dropdown error:', error);
+        cartItemsWrapper.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-light);">حدث خطأ</div>';
+    }
+}
+
+
+// =============================================
 // Add to Cart Functionality
 // =============================================
 function initCart() {
@@ -108,6 +162,8 @@ function initCart() {
 
                 // Update cart count
                 updateCartCount();
+                // Reload cart dropdown to show new item
+                loadCartDropdown();
 
             } catch (error) {
                 console.error('Add to cart error:', error);
@@ -413,6 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initNewsletter();
     loadFeaturedProducts();
     updateCartCount();
+    loadCartDropdown();
 
     console.log('✅ Initialization complete!');
 });

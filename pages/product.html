@@ -8,7 +8,7 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<link rel="stylesheet" href="../Front-End/Appearance/index.css">
 	<style>
-		/* Page specific overrides */
+		/* Page specific styles */
 		header {
 			position: sticky;
 		}
@@ -17,143 +17,256 @@
 			padding: 60px 20px;
 			max-width: 1200px;
 			margin: 0 auto;
+			min-height: 70vh;
 		}
 
 		.product-detail-container {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
-			gap: 50px;
+			gap: 60px;
 			background: white;
-			padding: 40px;
+			padding: 50px;
 			border-radius: 24px;
-			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+			animation: fadeInUp 0.6s ease;
+		}
+
+		@keyframes fadeInUp {
+			from {
+				opacity: 0;
+				transform: translateY(30px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
 		}
 
 		.product-image-container {
 			width: 100%;
 			height: 500px;
-			border-radius: 16px;
+			border-radius: 20px;
 			overflow: hidden;
-			background: #f8f9fa;
+			background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			position: relative;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 		}
 
 		.product-image-container img {
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
+			transition: transform 0.5s ease;
+		}
+
+		.product-image-container:hover img {
+			transform: scale(1.05);
 		}
 
 		.product-image-container i {
-			font-size: 5rem;
-			color: #ddd;
+			font-size: 6rem;
+			color: #dee2e6;
 		}
 
 		.product-info-container {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
+			gap: 20px;
 		}
 
 		.product-category {
 			color: var(--primary);
-			font-weight: 600;
-			margin-bottom: 10px;
-			font-size: 0.9rem;
+			font-weight: 700;
+			font-size: 0.95rem;
 			text-transform: uppercase;
-			letter-spacing: 1px;
+			letter-spacing: 1.5px;
+			display: inline-block;
+			padding: 6px 16px;
+			background: rgba(183, 28, 28, 0.1);
+			border-radius: 50px;
+			width: fit-content;
 		}
 
 		.product-title-large {
-			font-size: 2.5rem;
-			margin-bottom: 20px;
+			font-size: 2.8rem;
+			margin: 10px 0 20px;
 			color: var(--text-main);
 			line-height: 1.2;
+			font-weight: 800;
 		}
 
 		.product-price-large {
-			font-size: 2rem;
+			font-size: 2.4rem;
 			color: var(--primary);
-			font-weight: 700;
-			margin-bottom: 30px;
+			font-weight: 800;
+			margin-bottom: 25px;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.product-price-large::before {
+			content: '';
+			display: inline-block;
+			width: 4px;
+			height: 40px;
+			background: var(--primary);
+			border-radius: 2px;
 		}
 
 		.product-description-large {
 			color: var(--text-light);
-			line-height: 1.8;
-			font-size: 1.1rem;
-			margin-bottom: 40px;
+			line-height: 1.9;
+			font-size: 1.15rem;
+			margin-bottom: 30px;
+			padding: 20px;
+			background: #f8f9fa;
+			border-radius: 12px;
+			border-right: 4px solid var(--primary);
 		}
 
 		.actions {
 			display: flex;
-			gap: 20px;
+			gap: 15px;
 			align-items: center;
+			flex-wrap: wrap;
 		}
 
 		.quantity-selector {
 			display: flex;
 			align-items: center;
-			border: 2px solid #eee;
+			border: 2px solid #e9ecef;
 			border-radius: 50px;
-			padding: 5px;
+			padding: 8px;
+			background: white;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 		}
 
 		.qty-btn {
-			width: 40px;
-			height: 40px;
+			width: 45px;
+			height: 45px;
 			border-radius: 50%;
 			border: none;
-			background: white;
+			background: var(--primary);
+			color: white;
 			cursor: pointer;
-			font-size: 1.2rem;
-			color: var(--text-main);
-			transition: 0.3s;
+			font-size: 1.3rem;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.qty-btn:hover {
-			background: #f5f5f5;
+			background: #7F0000;
+			transform: scale(1.1);
+		}
+
+		.qty-btn:active {
+			transform: scale(0.95);
 		}
 
 		.qty-input {
-			width: 50px;
+			width: 60px;
 			text-align: center;
 			border: none;
-			font-size: 1.2rem;
-			font-weight: 600;
+			font-size: 1.3rem;
+			font-weight: 700;
 			outline: none;
+			color: var(--text-main);
 		}
 
 		.add-to-cart-large {
 			flex: 1;
-			padding: 15px 30px;
-			background: var(--primary);
+			padding: 18px 40px;
+			background: linear-gradient(135deg, var(--primary) 0%, #7F0000 100%);
 			color: white;
 			border: none;
 			border-radius: 50px;
-			font-size: 1.1rem;
+			font-size: 1.2rem;
 			font-weight: 700;
 			cursor: pointer;
-			transition: 0.3s;
-			box-shadow: 0 10px 20px rgba(183, 28, 28, 0.2);
+			transition: all 0.3s ease;
+			box-shadow: 0 10px 30px rgba(183, 28, 28, 0.3);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
 		}
 
 		.add-to-cart-large:hover {
-			background: #7F0000;
 			transform: translateY(-3px);
-			box-shadow: 0 15px 30px rgba(183, 28, 28, 0.3);
+			box-shadow: 0 15px 40px rgba(183, 28, 28, 0.4);
+		}
+
+		.add-to-cart-large:active {
+			transform: translateY(0);
+		}
+
+		.add-to-cart-large i {
+			font-size: 1.3rem;
+		}
+
+		.loading-skeleton {
+			text-align: center;
+			padding: 100px 20px;
+			color: var(--text-light);
+		}
+
+		.loading-skeleton i {
+			font-size: 3rem;
+			margin-bottom: 20px;
+			animation: pulse 1.5s ease-in-out infinite;
+		}
+
+		@keyframes pulse {
+
+			0%,
+			100% {
+				opacity: 1;
+			}
+
+			50% {
+				opacity: 0.5;
+			}
 		}
 
 		@media (max-width: 768px) {
 			.product-detail-container {
 				grid-template-columns: 1fr;
-				padding: 20px;
+				padding: 30px 20px;
+				gap: 30px;
 			}
 
 			.product-image-container {
-				height: 300px;
+				height: 350px;
+			}
+
+			.product-title-large {
+				font-size: 2rem;
+			}
+
+			.product-price-large {
+				font-size: 1.8rem;
+			}
+
+			.actions {
+				flex-direction: column;
+				width: 100%;
+			}
+
+			.quantity-selector {
+				width: 100%;
+				justify-content: center;
+			}
+
+			.add-to-cart-large {
+				width: 100%;
 			}
 		}
 	</style>
@@ -168,106 +281,71 @@
 			</a>
 		</div>
 		<div class="icon-navs">
-			<div style="position: relative;">
-				<div id="cart" style="cursor: pointer; padding: 10px;">
-					<i class="fas fa-shopping-cart fa-lg"></i>
-				</div>
-				<!-- Cart Dropdown -->
-				<section class="cart-container">
-					<!-- Header -->
-					<header>
-						<div class="logo">
-							<h2>Ibn <span>Ayyub</span></h2>
-						</div>
-
-						<div class="icon-navs">
-							<div class="cart-icon-wrapper" id="cart-btn">
-								<i class="fa-solid fa-bag-shopping"></i>
-								<span class="cart-count" id="cart-count">0</span>
-							</div>
-							<div class="login" id="auth-section">
-								<!-- Dynamic Auth Content -->
-							</div>
-							<div class="menu" id="menu-btn">
-								<span></span>
-								<span></span>
-								<span></span>
-							</div>
-						</div>
-					</header>
-
-					<!-- Navigation Sidebar -->
-					<nav class="nav" id="nav-menu">
-						<ul>
-							<li><a href="../index.html">الرئيسية</a></li>
-							<li><a href="products.html">المنتجات</a></li>
-							<li><a href="cart.html">سلة الشراء</a></li>
-							<li><a href="#contact">تواصل معنا</a></li>
-						</ul>
-					</nav>
-
-					<!-- Product Details Section -->
-					<section class="product-details-container"
-						style="margin-top: 150px; padding: 0 40px; max-width: 1200px; margin-left: auto; margin-right: auto;">
-						<div id="product-content"
-							style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;">
-							<!-- Dynamic Content -->
-							<div class="loading">جاري تحميل تفاصيل المنتج...</div>
-						</div>
-					</section>
-
-					<!-- Cart Dropdown -->
-					<div class="cart-container" id="cart-dropdown">
-						<div class="cart-header"
-							style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-							<h3>سلة الشراء</h3>
-							<button id="close-cart" style="font-size: 1.2rem;"><i
-									class="fa-solid fa-xmark"></i></button>
-						</div>
-						<div class="cart-items-wrapper" id="cart-items">
-							<!-- Cart Items -->
-						</div>
-						<div class="cart-footer">
-							<div
-								style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; margin-bottom: 15px;">
-								<span>المجموع:</span>
-								<span id="cart-total">0 ج.م</span>
-							</div>
-							<button class="checkout-btn" onclick="window.location.href='cart.html'">إتمام
-								الشراء</button>
-						</div>
-					</div>
-					<p class="product-description-large" id="productDescription"></p>
-
-					<div class="actions">
-						<div class="quantity-selector">
-							<button class="qty-btn" onclick="updateQty(-1)">-</button>
-							<input type="text" value="1" class="qty-input" id="qtyInput" readonly>
-							<button class="qty-btn" onclick="updateQty(1)">+</button>
-						</div>
-						<button class="add-to-cart-large" id="addToCartBtn">أضف إلى السلة</button>
-					</div>
+			<div class="cart-icon-wrapper" id="cart-btn">
+				<i class="fa-solid fa-bag-shopping"></i>
+				<span class="cart-count" id="cart-count">0</span>
+			</div>
+			<div class="login" id="auth-section">
+				<!-- Dynamic Auth Content -->
+			</div>
+			<div class="menu" id="menu-btn">
+				<span></span>
+				<span></span>
+				<span></span>
 			</div>
 		</div>
-		</main>
 
-		<!-- Footer -->
-		<footer style="margin-top: auto;">
-			<div class="footer-bottom">
-				<p>&copy; 2025 <strong>هديتي</strong>. جميع الحقوق محفوظة.</p>
+		<!-- Cart Dropdown -->
+		<section class="cart-container">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+				<h2 class="section-title" style="margin: 0; font-size: 1.2rem;">سلة الشراء</h2>
+				<button id="closeCart" style="background:none; border:none; cursor:pointer;">
+					<i class="fas fa-times"></i>
+				</button>
 			</div>
-		</footer>
 
-		<script type="module" src="../Front-End/Interaction/product.js"></script>
-		<script src="../Front-End/Interaction/main.js"></script>
-		<script>
-			function updateQty(change) {
-				const input = document.getElementById('qtyInput');
-				let val = parseInt(input.value);
-				val = Math.max(1, val + change);
-				input.value = val;
-			}
-		</script>
+			<div class="cart-items-wrapper" style="max-height: 300px; overflow-y: auto;">
+				<!-- Cart items will be added here dynamically -->
+				<div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">
+					سلة التسوق فارغة
+				</div>
+			</div>
+		</section>
+	</header>
+
+	<!-- Navigation Sidebar -->
+	<nav class="nav" id="nav-menu">
+		<ul>
+			<li><a href="../index.html">الرئيسية</a></li>
+			<li><a href="products.html">المنتجات</a></li>
+			<li><a href="cart.html">سلة الشراء</a></li>
+			<li><a href="#contact">تواصل معنا</a></li>
+		</ul>
+	</nav>
+
+	<main>
+		<!-- Product Details Section -->
+		<section class="product-detail-page" style="margin-top: 100px;">
+			<div id="product-content">
+				<div class="loading-skeleton">
+					<i class="fas fa-spinner fa-spin"></i>
+					<p>جاري تحميل تفاصيل المنتج...</p>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script type="module" src="../Front-End/Interaction/product.js"></script>
+	<script type="module" src="../Front-End/Interaction/main.js"></script>
+	<script>
+		function updateQty(change) {
+			const input = document.getElementById('qtyInput');
+			if (!input) return;
+			let val = parseInt(input.value) || 1;
+			val = Math.max(1, val + change);
+			input.value = val;
+		}
+	</script>
 </body>
 
 </html>
