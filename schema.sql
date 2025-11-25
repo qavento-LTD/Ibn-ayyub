@@ -28,10 +28,11 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    total DECIMAL(10, 2) NOT NULL CHECK (total >= 0),
-    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'cancelled')),
+    total_amount DECIMAL(10, 2) NOT NULL CHECK (total_amount >= 0),
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'shipped', 'delivered', 'cancelled')),
     shipping_address TEXT,
     phone TEXT,
+    payment_method TEXT,
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -68,6 +69,7 @@ CREATE TABLE IF NOT EXISTS cart_items (
 CREATE TABLE IF NOT EXISTS user_profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name TEXT,
+    email TEXT,
     phone TEXT,
     address TEXT,
     role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
@@ -263,4 +265,52 @@ INSERT INTO products (title, description, price, category, image_url, stock, fea
 ('مجموعة شاي فاخرة', 'مجموعة شاي فاخرة مع أكواب خزفية', 280.00, 'gifts', 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=500', 60, false),
 ('دفتر ملاحظات جلدي', 'دفتر ملاحظات بغلاف جلدي فاخر', 150.00, 'gifts', 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=500', 80, false);
 
--- Note: User profiles and orders will be created when users sign up and place orders
+
+-- =============================================
+-- Store Settings Table (Singleton)
+-- =============================================
+CREATE TABLE IF NOT EXISTS store_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    store_name TEXT DEFAULT 'هديتي',
+    store_email TEXT,
+    store_phone TEXT,
+    currency TEXT DEFAULT 'SAR',
+    tax_rate DECIMAL(5, 2) DEFAULT 15.00,
+    shipping_fee DECIMAL(10, 2) DEFAULT 20.00,
+    free_shipping_threshold DECIMAL(10, 2) DEFAULT 300.00,
+    social_links JSONB DEFAULT '{"facebook": "", "instagram": "", "twitter": ""}',
+    maintenance_mode BOOLEAN DEFAULT FALSE,
+    allow_registration BOOLEAN DEFAULT TRUE,
+    features TEXT DEFAULT '',
+    discount DECIMAL(10,2) DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE store_settings ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+CREATE POLICY "Settings viewable by everyone" ON store_settings
+    FOR SELECT USING (true);
+
+CREATE POLICY "Admins can update settings" ON store_settings
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
+
+CREATE POLICY "Admins can insert settings" ON store_settings
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
+
+-- Trigger for updated_at
+CREATE TRIGGER update_store_settings_updated_at BEFORE UPDATE ON store_settings
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+

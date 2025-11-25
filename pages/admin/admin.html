@@ -130,6 +130,38 @@
             color: var(--black);
         }
 
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-shipped {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-delivered {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
@@ -152,7 +184,7 @@
     <header>
         <div class="logo">
             <a href="../../index.html" style="text-decoration: none;">
-                <h2 style="color: var(--primary); font-weight: 800; margin: 0;">هديتي</h2>
+                <img src="../../assets/images/logo.png" alt="هديتي" style="height: 50px;">
             </a>
         </div>
         <div style="display: flex; align-items: center; gap: 16px;">
@@ -167,7 +199,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-menu">
-                <a href="index.html" class="sidebar-item active">
+                <a href="admin.html" class="sidebar-item active">
                     <i class="fas fa-chart-line"></i>
                     <span>الإحصائيات</span>
                 </a>
@@ -236,7 +268,8 @@
             <div class="dashboard-card">
                 <div class="card-header">
                     <h2 class="card-title">آخر الطلبات</h2>
-                    <a href="orders.html" class="btn-outline" style="padding: 8px 16px;">عرض الكل</a>
+                    <a href="orders.html" class="btn-outline"
+                        style="padding: 8px 16px; color: var(--black); border-color: var(--gray);">عرض الكل</a>
                 </div>
                 <div id="recent-orders">
                     <div class="loading">
@@ -250,7 +283,8 @@
             <div class="dashboard-card">
                 <div class="card-header">
                     <h2 class="card-title">منتجات قاربت على النفاذ</h2>
-                    <a href="products.html" class="btn-outline" style="padding: 8px 16px;">إدارة المنتجات</a>
+                    <a href="products.html" class="btn-outline"
+                        style="padding: 8px 16px; color: var(--black); border-color: var(--gray);">إدارة المنتجات</a>
                 </div>
                 <div id="low-stock">
                     <div class="loading">
@@ -275,7 +309,7 @@
                 setTimeout(() => {
                     window.location.href = '../../index.html';
                 }, 2000);
-                return true;
+                return false;
             }
             return true;
         }
@@ -286,10 +320,10 @@
                 // Get total sales
                 const { data: orders } = await supabase
                     .from('orders')
-                    .select('total')
-                    .eq('status', 'completed');
+                    .select('total_amount')
+                    .neq('status', 'cancelled');
 
-                const totalSales = orders?.reduce((sum, order) => sum + parseFloat(order.total), 0) || 0;
+                const totalSales = orders?.reduce((sum, order) => sum + parseFloat(order.total_amount || 0), 0) || 0;
                 document.getElementById('total-sales').textContent = formatPrice(totalSales);
 
                 // Get total orders
@@ -336,20 +370,31 @@
                     return;
                 }
 
-                container.innerHTML = orders.map(order => `
+                container.innerHTML = orders.map(order => {
+                    const statusText = {
+                        'pending': 'قيد الانتظار',
+                        'processing': 'قيد التنفيذ',
+                        'shipped': 'تم الشحن',
+                        'delivered': 'تم التوصيل',
+                        'cancelled': 'ملغي'
+                    }[order.status] || order.status;
+
+                    const statusClass = `status-${order.status}`;
+
+                    return `
                     <div style="padding: 16px; border-bottom: 1px solid var(--gray); display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <div style="font-weight: 700; margin-bottom: 4px;">${order.user_profiles?.full_name || 'مستخدم'}</div>
-                            <div style="font-size: 0.85rem; color: var(--gray-dark);">${new Date(order.created_at).toLocaleDateString('ar-SA')}</div>
+                            <div style="font-size: 0.85rem; color: var(--gray-dark);">#${order.id.slice(0, 8)} - ${new Date(order.created_at).toLocaleDateString('ar-SA')}</div>
                         </div>
                         <div style="text-align: left;">
-                            <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">${formatPrice(order.total)}</div>
-                            <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; background: ${order.status === 'completed' ? '#2ed573' : '#ffa502'}; color: white;">
-                                ${order.status === 'completed' ? 'مكتمل' : order.status === 'pending' ? 'قيد الانتظار' : 'قيد المعالجة'}
+                            <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">${formatPrice(order.total_amount)}</div>
+                            <span class="status-badge ${statusClass}">
+                                ${statusText}
                             </span>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
 
             } catch (error) {
                 console.error('Load orders error:', error);

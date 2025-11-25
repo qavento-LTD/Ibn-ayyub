@@ -28,7 +28,7 @@
     <!-- Header -->
     <header>
         <div class="logo">
-            <h2 style="color: var(--primary); font-weight: 800; margin: 0;">🎁 هديتي</h2>
+            <img src="assets/images/logo.png" alt="هديتي" style="height: 50px;">
         </div>
 
         <!-- Main Navigation -->
@@ -41,6 +41,11 @@
                 <i class="fas fa-gifts"></i>
                 <span>المنتجات</span>
             </a>
+            <a href="pages/track-order.html" class="nav-link">
+                <i class="fas fa-search-location"></i>
+                <span>تتبع طلبك</span>
+            </a>
+
             <a href="pages/about.html" class="nav-link">
                 <i class="fas fa-info-circle"></i>
                 <span>من نحن</span>
@@ -249,8 +254,9 @@
                 <h3>روابط سريعة</h3>
                 <ul>
                     <li><a href="#">الرئيسية</a></li>
-                    <li><a href="#products">المنتجات</a></li>
-                    <li><a href="#categories">الأقسام</a></li>
+                    <li><a href="pages/products.html">المنتجات</a></li>
+                    <li><a href="pages/track-order.html">تتبع طلبك</a></li>
+                    <li><a href="#about">من نحن</a></li>
                     <li><a href="#testimonials">آراء العملاء</a></li>
                 </ul>
             </div>
@@ -269,6 +275,26 @@
     </footer>
 
     <script type="module" src="Front-End/Interaction/main.js"></script>
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        (async () => {
+            const { data: settings, error } = await supabase.from('store_settings').select('maintenance_mode, social_links').single();
+            if (!error && settings) {
+                if (settings.maintenance_mode) {
+                    window.location.href = 'pages/maintenance.html';
+                } else {
+                    const links = settings.social_links || {};
+                    const footerLinks = document.querySelectorAll('.footer-section .social-links a');
+                    footerLinks.forEach(a => {
+                        const label = a.getAttribute('aria-label')?.toLowerCase();
+                        if (label && links[label]) {
+                            a.href = links[label];
+                        }
+                    });
+                }
+            }
+        })();
+    </script>
 </body>
 
 </html>

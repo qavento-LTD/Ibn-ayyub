@@ -42,6 +42,18 @@ if (signupForm) {
     try {
       // Sign up the user
       const { data, error } = await signUp(email, password, name);
+      // Create user profile if sign‑up succeeded
+      if (data && data.user) {
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            full_name: name,
+            role: 'customer'
+          });
+        if (profileError) console.error('Profile creation error:', profileError);
+      }
 
       if (error) throw error;
 

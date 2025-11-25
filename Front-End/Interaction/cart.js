@@ -177,3 +177,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     console.log('✅ Cart page ready!');
 });
+

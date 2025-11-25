@@ -1137,3 +1137,121 @@ footer {
     background: var(--gray);
     margin: 8px 0;
 }
+
+/* =============================================
+   Confirm & Alert Dialogs
+   ============================================= */
+.confirm-dialog-overlay,
+.alert-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 11000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.confirm-dialog-overlay.show,
+.alert-dialog-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.confirm-dialog,
+.alert-dialog {
+    background: var(--white);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: var(--shadow-xl);
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-align: center;
+}
+
+.confirm-dialog-overlay.show .confirm-dialog,
+.alert-dialog-overlay.show .alert-dialog {
+    transform: translateY(0);
+}
+
+.confirm-title,
+.alert-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--black);
+}
+
+.confirm-message,
+.alert-message {
+    color: var(--gray-dark);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+.btn-confirm {
+    background: var(--primary);
+    color: var(--white);
+    padding: 10px 24px;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.btn-confirm:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-cancel {
+    background: var(--gray);
+    color: var(--black);
+    padding: 10px 24px;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.btn-cancel:hover {
+    background: #e5e7eb;
+}
+
+.alert-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.alert-success .alert-icon {
+    color: #27ae60;
+}
+
+.alert-error .alert-icon {
+    color: #e74c3c;
+}
+
+.alert-warning .alert-icon {
+    color: #f39c12;
+}
+
+.alert-info .alert-icon {
+    color: var(--secondary);
+}

@@ -182,7 +182,7 @@
                         *,
                         order_items (
                             *,
-                            products (title, price)
+                            product:products (title, price)
                         )
                     `)
                     .eq('user_id', user.id)
@@ -209,7 +209,8 @@
                     const statusText = {
                         'pending': 'قيد الانتظار',
                         'processing': 'قيد المعالجة',
-                        'completed': 'مكتمل',
+                        'shipped': 'تم الشحن',
+                        'delivered': 'تم التوصيل',
                         'cancelled': 'ملغي'
                     }[order.status] || order.status;
 
@@ -217,7 +218,7 @@
                         <div class="order-card">
                             <div class="order-header">
                                 <div>
-                                    <div class="order-id">طلب #${order.id.substring(0, 8)}</div>
+                                    <div class="order-id">طلب #${order.id}</div>
                                     <div style="color: var(--gray-dark); font-size: 0.85rem; margin-top: 4px;">
                                         ${new Date(order.created_at).toLocaleDateString('ar-SA', {
                         year: 'numeric',
@@ -233,7 +234,7 @@
                                 ${order.order_items.map(item => `
                                     <div class="order-item">
                                         <div>
-                                            <div style="font-weight: 600;">${item.products.title}</div>
+                                            <div style="font-weight: 600;">${item.product ? item.product.title : 'منتج محذوف'}</div>
                                             <div style="color: var(--gray-dark); font-size: 0.85rem;">الكمية: ${item.quantity}</div>
                                         </div>
                                         <div style="font-weight: 700; color: var(--primary);">
@@ -246,7 +247,7 @@
                             <div class="order-footer">
                                 <div>
                                     <div style="color: var(--gray-dark); font-size: 0.85rem; margin-bottom: 4px;">المجموع الكلي</div>
-                                    <div class="order-total">${formatPrice(order.total)}</div>
+                                    <div class="order-total">${formatPrice(order.total_amount)}</div>
                                 </div>
                                 <div style="display: flex; gap: 8px;">
                                     ${order.status === 'pending' ? `
@@ -255,7 +256,7 @@
                                         </button>
                                     ` : ''}
                                     <button class="btn" onclick="viewOrder('${order.id}')" style="padding: 8px 16px;">
-                                        <i class="fas fa-eye"></i> التفاصيل
+                                        <i class="fas fa-eye"></i> تتبع الطلب
                                     </button>
                                 </div>
                             </div>
@@ -278,8 +279,21 @@
         }
 
         window.viewOrder = function (orderId) {
-            // TODO: Navigate to order details page
-            alert('عرض تفاصيل الطلب: ' + orderId);
+            // Copy ID to clipboard or redirect to track page
+            // For now, let's redirect to track-order.html with query param if we implement it, 
+            // or just copy it. The user asked to "add track shipment page in settings".
+            // But here we are in orders. Let's redirect to track-order.html.
+            // We need to make track-order.html accept a query param or we just copy it.
+            // Let's try to set the input value in track-order.html via URL param.
+            // I'll assume track-order.html doesn't handle URL params yet, but I can add it.
+            // For now, let's just redirect.
+
+            // Actually, let's make it copy to clipboard and show toast
+            navigator.clipboard.writeText(orderId).then(() => {
+                // showSuccess('تم نسخ رقم الطلب'); // We don't have showSuccess available globally on window
+                // So let's just redirect
+                window.location.href = `track-order.html?id=${orderId}`;
+            });
         };
 
         window.cancelOrder = async function (orderId) {
@@ -293,14 +307,16 @@
 
                 if (error) throw error;
 
-                showSuccess('تم إلغاء الطلب بنجاح');
+                // showSuccess('تم إلغاء الطلب بنجاح'); // Need to import showSuccess or make it global
+                alert('تم إلغاء الطلب بنجاح');
                 loadOrders();
 
             } catch (error) {
                 console.error('Cancel order error:', error);
-                showError('حدث خطأ في إلغاء الطلب');
+                alert('حدث خطأ في إلغاء الطلب');
             }
         };
+
 
         document.addEventListener('DOMContentLoaded', loadOrders);
     </script>
