@@ -1,0 +1,25 @@
+# Ibn Ayyub Gift Store
+
+node_modules/
+.env
+.env.local
+*.log
+.DS_Store
+Thumbs.db
+
+# Supabase
+.supabase/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+dist/
+build/
+
+# Temporary
+tmp/
+temp/

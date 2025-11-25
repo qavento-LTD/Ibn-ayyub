@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+            padding-top: 100px;
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+            color: var(--white);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: var(--radius-full);
+            background: var(--white);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto var(--spacing-md);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .profile-email {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .profile-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--gray-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--black);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .stat-box {
+            background: var(--gray);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-label {
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+
+            .profile-name {
+                font-size: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn,
+            .action-buttons .btn-outline {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none;">
+                <h2 style="color: var(--primary); font-weight: 800; margin: 0;">🎁 هديتي</h2>
+            </a>
+        </div>
+
+        <nav class="nav">
+            <a href="../index.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="products.html" class="nav-link">
+                <i class="fas fa-gifts"></i>
+                <span>المنتجات</span>
+            </a>
+        </nav>
+
+        <div class="icon-navs">
+            <a href="../index.html" class="btn-outline" style="padding: 8px 16px;">
+                <i class="fas fa-arrow-right"></i> العودة
+            </a>
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1 class="profile-name" id="profile-name">جاري التحميل...</h1>
+            <p class="profile-email" id="profile-email"></p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="profile-card">
+            <h2 class="card-title">
+                <i class="fas fa-chart-bar"></i>
+                إحصائياتي
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value" id="total-orders">0</div>
+                    <div class="stat-label">إجمالي الطلبات</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="total-spent">0 ر.س</div>
+                    <div class="stat-label">إجمالي المشتريات</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="member-since">2024</div>
+                    <div class="stat-label">عضو منذ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="profile-card">
+            <h2 class="card-title">
+                <i class="fas fa-info-circle"></i>
+                المعلومات الشخصية
+            </h2>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-user"></i>
+                    الاسم الكامل
+                </div>
+                <div class="info-value" id="info-name">-</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-envelope"></i>
+                    البريد الإلكتروني
+                </div>
+                <div class="info-value" id="info-email">-</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-phone"></i>
+                    رقم الهاتف
+                </div>
+                <div class="info-value" id="info-phone">غير محدد</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-map-marker-alt"></i>
+                    العنوان
+                </div>
+                <div class="info-value" id="info-address">غير محدد</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-shield-alt"></i>
+                    نوع الحساب
+                </div>
+                <div class="info-value" id="info-role">عميل</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="profile-card">
+            <h2 class="card-title">
+                <i class="fas fa-bolt"></i>
+                إجراءات سريعة
+            </h2>
+
+            <div class="action-buttons">
+                <a href="orders.html" class="btn" style="flex: 1; text-align: center; padding: 12px;">
+                    <i class="fas fa-shopping-bag"></i> طلباتي
+                </a>
+                <a href="settings.html" class="btn-outline" style="flex: 1; text-align: center; padding: 12px;">
+                    <i class="fas fa-cog"></i> الإعدادات
+                </a>
+                <a href="products.html" class="btn-outline" style="flex: 1; text-align: center; padding: 12px;">
+                    <i class="fas fa-gifts"></i> تصفح المنتجات
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase, getCurrentUser } from '../js/supabase-client.js';
+        import { formatPrice } from '../js/utils.js';
+
+        async function loadProfile() {
+            try {
+                const user = await getCurrentUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Display basic info
+                const userName = user.user_metadata?.full_name || 'مستخدم';
+                document.getElementById('profile-name').textContent = userName;
+                document.getElementById('profile-email').textContent = user.email;
+                document.getElementById('info-name').textContent = userName;
+                document.getElementById('info-email').textContent = user.email;
+
+                // Load profile data
+                const { data: profile } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    document.getElementById('info-phone').textContent = profile.phone || 'غير محدد';
+                    document.getElementById('info-address').textContent = profile.address || 'غير محدد';
+                    document.getElementById('info-role').textContent = profile.role === 'admin' ? 'مدير' : 'عميل';
+
+                    // Member since
+                    const memberSince = new Date(profile.created_at).getFullYear();
+                    document.getElementById('member-since').textContent = memberSince;
+                }
+
+                // Load orders statistics
+                const { data: orders } = await supabase
+                    .from('orders')
+                    .select('total')
+                    .eq('user_id', user.id);
+
+                if (orders) {
+                    document.getElementById('total-orders').textContent = orders.length;
+
+                    const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
+                    document.getElementById('total-spent').textContent = formatPrice(totalSpent);
+                }
+
+            } catch (error) {
+                console.error('Load profile error:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+
+</html>
