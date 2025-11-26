@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المستخدمين - لوحة التحكم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            right: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            color: var(--black);
+            transition: var(--transition-base);
+            font-weight: 600;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .sidebar-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: var(--spacing-xl);
+        }
+
+        .dashboard-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--gray);
+            padding: 8px 16px;
+            border-radius: var(--radius-lg);
+            width: 300px;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            padding: 0 8px;
+            font-family: inherit;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 16px;
+            text-align: right;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .data-table th {
+            font-weight: 700;
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+        }
+
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .role-admin {
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--primary);
+        }
+
+        .role-customer {
+            background: rgba(69, 123, 157, 0.1);
+            color: var(--secondary);
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: var(--gray);
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../../index.html" style="text-decoration: none;">
+                <img src="../../assets/images/logo.png" alt="هديتي" style="height: 50px;">
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-weight: 600; color: var(--gray-dark);">لوحة التحكم</span>
+            <a href="../../index.html" class="btn" style="padding: 8px 16px;">
+                <i class="fas fa-home"></i> الموقع الرئيسي
+            </a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="admin.html" class="sidebar-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>الإحصائيات</span>
+                </a>
+                <a href="products.html" class="sidebar-item">
+                    <i class="fas fa-box"></i>
+                    <span>المنتجات</span>
+                </a>
+                <a href="orders.html" class="sidebar-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>الطلبات</span>
+                </a>
+                <a href="users.html" class="sidebar-item active">
+                    <i class="fas fa-users"></i>
+                    <span>المستخدمين</span>
+                </a>
+                <div style="height: 1px; background: var(--gray); margin: 16px 0;"></div>
+                <a href="settings.html" class="sidebar-item">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">إدارة المستخدمين</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search" style="color: var(--gray-dark);"></i>
+                        <input type="text" id="searchInput" placeholder="بحث بالاسم أو البريد...">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>رقم الهاتف</th>
+                                <th>الدور</th>
+                                <th>تاريخ الانضمام</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>جاري تحميل المستخدمين...</p>
+                </div>
+
+                <div id="noResults" style="display: none; text-align: center; padding: 20px; color: var(--gray-dark);">
+                    لا توجد نتائج مطابقة
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Role Modal -->
+    <div id="editRoleModal"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 400px;">
+            <h3 style="margin-bottom: 20px;">تعديل صلاحيات المستخدم</h3>
+            <p id="modalUserName" style="margin-bottom: 20px; color: var(--gray-dark);"></p>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">الدور الجديد:</label>
+                <select id="roleSelect"
+                    style="width: 100%; padding: 10px; border: 1px solid var(--gray); border-radius: 8px;">
+                    <option value="customer">عميل (Customer)</option>
+                    <option value="admin">مسؤول (Admin)</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="cancelEdit" class="btn-outline"
+                    style="color: var(--black); border-color: var(--gray);">إلغاء</button>
+                <button id="saveRole" class="btn">حفظ التغييرات</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../js/admin/users.js"></script>
+    <script type="module" src="../../js/utils.js"></script>
+    <script type="module" src="../../js/toast.js"></script>
+    <script type="module" src="../../js/supabase-client.js"></script>
+</body>
+
+</html>

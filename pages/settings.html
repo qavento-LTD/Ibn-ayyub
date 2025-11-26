@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+            padding-top: 100px;
+        }
+
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+
+        .settings-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--black);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            transition: var(--transition-base);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+        }
+
+        .toggle-setting {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .toggle-setting:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-info h4 {
+            font-weight: 600;
+            color: var(--black);
+            margin-bottom: 4px;
+        }
+
+        .toggle-info p {
+            font-size: 0.85rem;
+            color: var(--gray-dark);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-dark);
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none;">
+                <h2 style="color: var(--primary); font-weight: 800; margin: 0;">🎁 هديتي</h2>
+            </a>
+        </div>
+
+        <nav class="nav">
+            <a href="../index.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="products.html" class="nav-link">
+                <i class="fas fa-gifts"></i>
+                <span>المنتجات</span>
+            </a>
+        </nav>
+
+        <div class="icon-navs">
+            <a href="../index.html" class="btn-outline" style="padding: 8px 16px;">
+                <i class="fas fa-arrow-right"></i> العودة
+            </a>
+        </div>
+    </header>
+
+    <div class="settings-container">
+        <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: var(--spacing-xl); color: var(--black);">
+            <i class="fas fa-cog"></i> الإعدادات
+        </h1>
+
+        <!-- Personal Information -->
+        <div class="settings-card">
+            <h2 class="card-title">
+                <i class="fas fa-user"></i>
+                المعلومات الشخصية
+            </h2>
+
+            <form id="personal-info-form">
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="full-name" placeholder="أحمد محمد">
+                </div>
+
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="email" disabled style="background: var(--gray); cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="phone" placeholder="+966 XX XXX XXXX">
+                </div>
+
+                <div class="form-group">
+                    <label>العنوان</label>
+                    <input type="text" id="address" placeholder="الرياض، المملكة العربية السعودية">
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; padding: 12px;">
+                    <i class="fas fa-save"></i> حفظ التغييرات
+                </button>
+            </form>
+        </div>
+
+        <!-- Password Change -->
+        <div class="settings-card">
+            <h2 class="card-title">
+                <i class="fas fa-lock"></i>
+                تغيير كلمة المرور
+            </h2>
+
+            <form id="password-form">
+                <div class="form-group">
+                    <label>كلمة المرور الحالية</label>
+                    <input type="password" id="current-password" required>
+                </div>
+
+                <div class="form-group">
+                    <label>كلمة المرور الجديدة</label>
+                    <input type="password" id="new-password" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label>تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" id="confirm-password" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; padding: 12px;">
+                    <i class="fas fa-key"></i> تغيير كلمة المرور
+                </button>
+            </form>
+        </div>
+
+        <!-- Notifications -->
+        <div class="settings-card">
+            <h2 class="card-title">
+                <i class="fas fa-bell"></i>
+                الإشعارات
+            </h2>
+
+            <div class="toggle-setting">
+                <div class="toggle-info">
+                    <h4>إشعارات البريد الإلكتروني</h4>
+                    <p>استلام تحديثات الطلبات عبر البريد</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="email-notifications" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-setting">
+                <div class="toggle-info">
+                    <h4>إشعارات العروض</h4>
+                    <p>استلام إشعارات حول العروض والخصومات</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="offers-notifications" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-setting">
+                <div class="toggle-info">
+                    <h4>إشعارات المنتجات الجديدة</h4>
+                    <p>إشعار عند إضافة منتجات جديدة</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="new-products-notifications">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <button class="btn" id="save-notifications"
+                style="width: 100%; padding: 12px; margin-top: var(--spacing-lg);">
+                <i class="fas fa-save"></i> حفظ الإعدادات
+            </button>
+        </div>
+
+        <!-- Track Order -->
+        <div class="settings-card">
+            <h2 class="card-title">
+                <i class="fas fa-shipping-fast"></i>
+                تتبع الشحنات
+            </h2>
+            <p style="color: var(--gray-dark); margin-bottom: var(--spacing-md);">
+                يمكنك تتبع حالة طلباتك الحالية والسابقة بسهولة.
+            </p>
+            <a href="track-order.html" class="btn-outline" style="display: block; text-align: center; padding: 12px;">
+                <i class="fas fa-search-location"></i> الذهاب لصفحة التتبع
+            </a>
+        </div>
+
+        <!-- Danger Zone -->
+
+        <div class="settings-card" style="border: 2px solid #e74c3c;">
+            <h2 class="card-title" style="color: #e74c3c;">
+                <i class="fas fa-exclamation-triangle"></i>
+                منطقة الخطر
+            </h2>
+
+            <div style="margin-bottom: var(--spacing-md);">
+                <h4 style="font-weight: 600; margin-bottom: 8px;">حذف الحساب</h4>
+                <p style="color: var(--gray-dark); margin-bottom: var(--spacing-md);">
+                    حذف حسابك بشكل دائم. هذا الإجراء لا يمكن التراجع عنه.
+                </p>
+                <button class="btn" id="delete-account" style="background: #e74c3c; padding: 10px 24px;">
+                    <i class="fas fa-trash"></i> حذف الحساب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase, getCurrentUser } from '../js/supabase-client.js';
+        import { showSuccess, showError, showLoading, confirm } from '../js/toast.js';
+        import { isValidEmail, isValidPhone } from '../js/utils.js';
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const user = await getCurrentUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                document.getElementById('email').value = user.email;
+                document.getElementById('full-name').value = user.user_metadata?.full_name || '';
+
+                // Load from user_profiles
+                const { data: profile } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    document.getElementById('phone').value = profile.phone || '';
+                    document.getElementById('address').value = profile.address || '';
+                }
+
+                // Load notification settings from localStorage
+                const settings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+                document.getElementById('email-notifications').checked = settings.email_notifications ?? true;
+                document.getElementById('offers-notifications').checked = settings.offers_notifications ?? true;
+                document.getElementById('new-products-notifications').checked = settings.new_products_notifications ?? false;
+
+            } catch (error) {
+                console.error('Load user data error:', error);
+            }
+        }
+
+        // Save personal info
+        document.getElementById('personal-info-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const loadingToast = showLoading('جاري حفظ المعلومات...');
+
+            try {
+                const user = await getCurrentUser();
+                if (!user) {
+                    throw new Error('لم يتم العثور على المستخدم');
+                }
+
+                const fullName = document.getElementById('full-name').value;
+                const phone = document.getElementById('phone').value;
+                const address = document.getElementById('address').value;
+
+                // Update user metadata
+                const { error: metaError } = await supabase.auth.updateUser({
+                    data: { full_name: fullName }
+                });
+
+                if (metaError) throw metaError;
+
+                // Upsert user_profiles (insert or update)
+                const { error: profileError } = await supabase
+                    .from('user_profiles')
+                    .upsert({
+                        id: user.id,
+                        email: user.email,
+                        full_name: fullName,
+                        phone: phone || null,
+                        address: address || null,
+                        role: 'customer' // default role
+                    }, {
+                        onConflict: 'id'
+                    });
+
+                if (profileError) throw profileError;
+
+                loadingToast.remove();
+                showSuccess('تم حفظ المعلومات بنجاح!');
+
+            } catch (error) {
+                loadingToast.remove();
+                console.error('Save info error:', error);
+                showError(error.message || 'حدث خطأ في حفظ المعلومات');
+            }
+        });
+
+        // Change password
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                showError('كلمات المرور غير متطابقة');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
+
+            const loadingToast = showLoading('جاري تغيير كلمة المرور...');
+
+            try {
+                const { error } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (error) throw error;
+
+                loadingToast.remove();
+                showSuccess('تم تغيير كلمة المرور بنجاح!');
+                document.getElementById('password-form').reset();
+
+            } catch (error) {
+                loadingToast.remove();
+                console.error('Change password error:', error);
+                showError('حدث خطأ في تغيير كلمة المرور');
+            }
+        });
+
+        // Save notifications
+        document.getElementById('save-notifications').addEventListener('click', () => {
+            const settings = {
+                email_notifications: document.getElementById('email-notifications').checked,
+                offers_notifications: document.getElementById('offers-notifications').checked,
+                new_products_notifications: document.getElementById('new-products-notifications').checked
+            };
+
+            localStorage.setItem('user_settings', JSON.stringify(settings));
+            showSuccess('تم حفظ إعدادات الإشعارات!');
+        });
+
+        // Delete account
+        document.getElementById('delete-account').addEventListener('click', async () => {
+            const confirmed = await confirm('هل أنت متأكد من حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه!');
+
+            if (confirmed) {
+                const doubleConfirm = await confirm('تأكيد نهائي: سيتم حذف جميع بياناتك بشكل دائم!');
+
+                if (doubleConfirm) {
+                    const loadingToast = showLoading('جاري حذف الحساب...');
+
+                    try {
+                        const user = await getCurrentUser();
+                        if (!user) {
+                            throw new Error('لم يتم العثور على المستخدم');
+                        }
+
+                        // Delete user profile (this will cascade delete related data)
+                        const { error: profileError } = await supabase
+                            .from('user_profiles')
+                            .delete()
+                            .eq('id', user.id);
+
+                        if (profileError) {
+                            console.error('Profile deletion error:', profileError);
+                        }
+
+                        // Sign out the user
+                        const { error: signOutError } = await supabase.auth.signOut();
+                        if (signOutError) throw signOutError;
+
+                        loadingToast.remove();
+                        showSuccess('تم حذف الحساب بنجاح');
+
+                        setTimeout(() => {
+                            window.location.href = '../index.html';
+                        }, 2000);
+
+                    } catch (error) {
+                        loadingToast.remove();
+                        console.error('Delete account error:', error);
+                        showError(error.message || 'حدث خطأ في حذف الحساب');
+                    }
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadUserData);
+    </script>
+</body>
+
+</html>

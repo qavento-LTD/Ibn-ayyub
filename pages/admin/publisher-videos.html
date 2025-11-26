@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الفيديوهات - لوحة الناشر</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            right: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            color: var(--black);
+            transition: var(--transition-base);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .sidebar-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: var(--spacing-xl);
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray);
+            border-radius: var(--radius-md);
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .video-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .video-preview {
+            height: 350px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-info {
+            padding: var(--spacing-md);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="../../index.html" style="text-decoration: none;">
+                <img src="../../assets/images/logo.png" alt="هديتي" style="height: 50px;">
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-weight: 600; color: var(--gray-dark);">لوحة الناشر</span>
+            <a href="../../index.html" class="btn" style="padding: 8px 16px;">
+                <i class="fas fa-home"></i> الموقع الرئيسي
+            </a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="publisher.html" class="sidebar-item">
+                    <i class="fas fa-box-open"></i>
+                    <span>إدارة المنتجات</span>
+                </a>
+                <a href="publisher-stats.html" class="sidebar-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>الإحصائيات</span>
+                </a>
+                <a href="publisher-videos.html" class="sidebar-item active">
+                    <i class="fas fa-video"></i>
+                    <span>إدارة الفيديوهات</span>
+                </a>
+                <a href="../videos.html" class="sidebar-item" target="_blank">
+                    <i class="fas fa-play-circle"></i>
+                    <span>مشاهدة الفيديوهات</span>
+                </a>
+                <div style="height: 1px; background: var(--gray); margin: 16px 0;"></div>
+                <a href="#" class="sidebar-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1 style="font-size: 2rem; font-weight: 900; margin-bottom: var(--spacing-xl);">إدارة الفيديوهات</h1>
+
+            <div class="content-card">
+                <h3><i class="fas fa-upload"></i> رفع فيديو جديد</h3>
+
+                <div
+                    style="background: linear-gradient(135deg, #E63946 0%, #C1121F 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; color: white;">
+                    <h4 style="margin: 0 0 15px 0; font-size: 20px;"><i class="fas fa-rocket"></i> نظام رفع متطور!</h4>
+                    <p style="margin: 0; font-size: 16px; line-height: 1.8;">
+                        <strong>✨ ارفع الفيديو مباشرة من جهازك</strong><br>
+                        • دعم MP4, WebM, Ogg<br>
+                        • حد أقصى: 100 ميجابايت<br>
+                        • رفع مباشر على Supabase<br>
+                        • معاينة قبل الرفع
+                    </p>
+                </div>
+
+                <!-- File Upload Area -->
+                <div class="form-group">
+                    <label><i class="fas fa-file-video"></i> اختر ملف الفيديو</label>
+                    <input type="file" id="video-file" accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                        style="padding: 12px; border: 2px dashed #E63946; border-radius: 12px; background: #f9f9f9; cursor: pointer;">
+                    <small style="color: #666; display: block; margin-top: 8px;">
+                        <i class="fas fa-info-circle"></i> الصيغ المدعومة: MP4, WebM, Ogg (حد أقصى 100 MB)
+                    </small>
+                </div>
+
+                <!-- Video Preview -->
+                <div id="video-preview"
+                    style="display: none; margin: 20px 0; padding: 20px; background: #f0f9ff; border-radius: 12px; border-right: 4px solid #457B9D;">
+                    <!-- Preview will be inserted here -->
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="upload-progress" style="display: none; margin: 20px 0;">
+                    <div
+                        style="background: #f0f0f0; border-radius: 50px; height: 30px; overflow: hidden; position: relative;">
+                        <div id="progress-fill"
+                            style="background: linear-gradient(90deg, #E63946, #C1121F); height: 100%; width: 0%; transition: width 0.3s ease; border-radius: 50px;">
+                        </div>
+                        <span id="progress-text"
+                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 700; color: #333;">0%</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label><i class="fas fa-align-right"></i> الوصف</label>
+                    <textarea id="video-description" rows="3" placeholder="أضف وصفاً للفيديو..."
+                        style="resize: vertical;"></textarea>
+                </div>
+
+                <!-- Upload Button -->
+                <button class="btn" id="upload-btn" style="width: 100%; font-size: 18px; padding: 16px;">
+                    <i class="fas fa-cloud-upload-alt"></i> رفع الفيديو
+                </button>
+            </div>
+
+            <h3>الفيديوهات المنشورة</h3>
+            <div id="videos-grid" class="videos-grid">
+                <!-- Videos will load here -->
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../../js/admin/publisher-videos.js"></script>
+</body>
+
+</html>

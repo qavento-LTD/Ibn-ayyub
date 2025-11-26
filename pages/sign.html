@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>إنشاء حساب - هديتي</title>
+	<link rel="stylesheet" href="../Front-End/Appearance/login.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+	<div class="container">
+		<a href="../index.html" style="text-decoration: none;">
+			<h2 style="color: var(--text-accent); font-weight: 800; margin-bottom: 40px; font-size: 3rem;">هديتي</h2>
+		</a>
+
+		<div class="login-card">
+			<h2>إنشاء حساب جديد</h2>
+			<p class="subtitle">انضم إلينا واستمتع بتجربة تسوق مميزة</p>
+
+			<form id="signup-form">
+				<div class="input-group">
+					<label>الاسم الكامل</label>
+					<input type="text" id="name" required placeholder="الاسم الكامل">
+				</div>
+
+				<div class="input-group">
+					<label>البريد الإلكتروني</label>
+					<input type="email" id="email" required placeholder="example@mail.com">
+				</div>
+
+				<div class="input-group">
+					<label>كلمة المرور</label>
+					<input type="password" id="password" required placeholder="********">
+				</div>
+
+				<button type="submit" class="btn">إنشاء حساب</button>
+			</form>
+
+			<div class="message" id="message"></div>
+
+			<div class="divider"></div>
+
+			<p class="message">
+				لديك حساب بالفعل؟ <a href="login.html" style="color: var(--text-accent); font-weight: bold;">تسجيل
+					الدخول</a>
+			</p>
+		</div>
+	</div>
+	<script type="module" src="../Front-End/Interaction/auth.js"></script>
+</body>
+
+</html>

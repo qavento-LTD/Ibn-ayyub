@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            right: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            color: var(--black);
+            transition: var(--transition-base);
+            font-weight: 600;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .sidebar-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: var(--spacing-xl);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--black);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-label {
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+        }
+
+        .dashboard-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-shipped {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-delivered {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../../index.html" style="text-decoration: none;">
+                <img src="../../assets/images/logo.png" alt="هديتي" style="height: 50px;">
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-weight: 600; color: var(--gray-dark);">لوحة التحكم</span>
+            <a href="../../index.html" class="btn" style="padding: 8px 16px;">
+                <i class="fas fa-home"></i> الموقع الرئيسي
+            </a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="admin.html" class="sidebar-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>الإحصائيات</span>
+                </a>
+                <a href="products.html" class="sidebar-item">
+                    <i class="fas fa-box"></i>
+                    <span>المنتجات</span>
+                </a>
+                <a href="orders.html" class="sidebar-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>الطلبات</span>
+                </a>
+                <a href="users.html" class="sidebar-item">
+                    <i class="fas fa-users"></i>
+                    <span>المستخدمين</span>
+                </a>
+                <div style="height: 1px; background: var(--gray); margin: 16px 0;"></div>
+                <a href="settings.html" class="sidebar-item">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: var(--spacing-xl); color: var(--black);">
+                مرحباً بك في لوحة التحكم
+            </h1>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(230, 57, 70, 0.1); color: var(--primary);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-value" id="total-sales">0 ر.س</div>
+                    <div class="stat-label">إجمالي المبيعات</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(69, 123, 157, 0.1); color: var(--secondary);">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-value" id="total-orders">0</div>
+                    <div class="stat-label">إجمالي الطلبات</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-value" id="total-products">0</div>
+                    <div class="stat-label">إجمالي المنتجات</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(255, 159, 67, 0.1); color: #ff9f43;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value" id="total-users">0</div>
+                    <div class="stat-label">إجمالي المستخدمين</div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">آخر الطلبات</h2>
+                    <a href="orders.html" class="btn-outline"
+                        style="padding: 8px 16px; color: var(--black); border-color: var(--gray);">عرض الكل</a>
+                </div>
+                <div id="recent-orders">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>جاري تحميل الطلبات...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Products -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">منتجات قاربت على النفاذ</h2>
+                    <a href="products.html" class="btn-outline"
+                        style="padding: 8px 16px; color: var(--black); border-color: var(--gray);">إدارة المنتجات</a>
+                </div>
+                <div id="low-stock">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>جاري تحميل المنتجات...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../../js/supabase-client.js';
+        import { isAdmin, formatPrice } from '../../js/utils.js';
+        import { showError } from '../../js/toast.js';
+
+        // Check if user is admin
+        async function checkAdmin() {
+            const adminStatus = await isAdmin(supabase);
+            if (!adminStatus) {
+                showError('ليس لديك صلاحية للوصول لهذه الصفحة');
+                setTimeout(() => {
+                    window.location.href = '../../index.html';
+                }, 2000);
+                return false;
+            }
+            return true;
+        }
+
+        // Load dashboard stats
+        async function loadStats() {
+            try {
+                // Get total sales
+                const { data: orders } = await supabase
+                    .from('orders')
+                    .select('total_amount')
+                    .neq('status', 'cancelled');
+
+                const totalSales = orders?.reduce((sum, order) => sum + parseFloat(order.total_amount || 0), 0) || 0;
+                document.getElementById('total-sales').textContent = formatPrice(totalSales);
+
+                // Get total orders
+                const { count: ordersCount } = await supabase
+                    .from('orders')
+                    .select('*', { count: 'exact', head: true });
+
+                document.getElementById('total-orders').textContent = ordersCount || 0;
+
+                // Get total products
+                const { count: productsCount } = await supabase
+                    .from('products')
+                    .select('*', { count: 'exact', head: true });
+
+                document.getElementById('total-products').textContent = productsCount || 0;
+
+                // Get total users
+                const { count: usersCount } = await supabase
+                    .from('user_profiles')
+                    .select('*', { count: 'exact', head: true });
+
+                document.getElementById('total-users').textContent = usersCount || 0;
+
+            } catch (error) {
+                console.error('Load stats error:', error);
+            }
+        }
+
+        // Load recent orders
+        async function loadRecentOrders() {
+            const container = document.getElementById('recent-orders');
+
+            try {
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('*, user_profiles(full_name)')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (!orders || orders.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--gray-dark); padding: 24px;">لا توجد طلبات حالياً</p>';
+                    return;
+                }
+
+                container.innerHTML = orders.map(order => {
+                    const statusText = {
+                        'pending': 'قيد الانتظار',
+                        'processing': 'قيد التنفيذ',
+                        'shipped': 'تم الشحن',
+                        'delivered': 'تم التوصيل',
+                        'cancelled': 'ملغي'
+                    }[order.status] || order.status;
+
+                    const statusClass = `status-${order.status}`;
+
+                    return `
+                    <div style="padding: 16px; border-bottom: 1px solid var(--gray); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; margin-bottom: 4px;">${order.user_profiles?.full_name || 'مستخدم'}</div>
+                            <div style="font-size: 0.85rem; color: var(--gray-dark);">#${order.id.slice(0, 8)} - ${new Date(order.created_at).toLocaleDateString('ar-SA')}</div>
+                        </div>
+                        <div style="text-align: left;">
+                            <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">${formatPrice(order.total_amount)}</div>
+                            <span class="status-badge ${statusClass}">
+                                ${statusText}
+                            </span>
+                        </div>
+                    </div>
+                `}).join('');
+
+            } catch (error) {
+                console.error('Load orders error:', error);
+                container.innerHTML = '<p style="text-align: center; color: var(--primary); padding: 24px;">حدث خطأ في تحميل الطلبات</p>';
+            }
+        }
+
+        // Load low stock products
+        async function loadLowStock() {
+            const container = document.getElementById('low-stock');
+
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .lte('stock', 10)
+                    .order('stock', { ascending: true })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (!products || products.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--gray-dark); padding: 24px;">جميع المنتجات متوفرة بكميات كافية</p>';
+                    return;
+                }
+
+                container.innerHTML = products.map(product => `
+                    <div style="padding: 16px; border-bottom: 1px solid var(--gray); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; margin-bottom: 4px;">${product.title}</div>
+                            <div style="font-size: 0.85rem; color: var(--gray-dark);">${formatPrice(product.price)}</div>
+                        </div>
+                        <div style="text-align: left;">
+                            <span style="padding: 6px 16px; border-radius: 12px; font-weight: 700; background: ${product.stock === 0 ? '#e74c3c' : product.stock <= 5 ? '#f39c12' : '#ffa502'}; color: white;">
+                                ${product.stock} متبقي
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Load low stock error:', error);
+                container.innerHTML = '<p style="text-align: center; color: var(--primary); padding: 24px;">حدث خطأ في تحميل المنتجات</p>';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isAdminUser = await checkAdmin();
+            if (isAdminUser) {
+                loadStats();
+                loadRecentOrders();
+                loadLowStock();
+            }
+        });
+    </script>
+</body>
+
+</html>

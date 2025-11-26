@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="متجر الهدايا - وجهتك الأولى للهدايا المميزة والراقية لكل المناسبات. تسوق الآن واحصل على أفضل العروض.">
+    <meta name="keywords" content="هدايا, متجر هدايا, هدايا زفاف, هدايا تخرج, هدايا عيد ميلاد, تسوق اونلاين">
+    <meta name="author" content="Ibn Ayyub">
+    <meta property="og:title" content="متجر الهدايا | هدايا مميزة لكل مناسبة">
+    <meta property="og:description" content="اكتشف تشكيلة واسعة من الهدايا الفريدة والراقية.">
+    <meta property="og:image" content="assets/images/og-image.jpg">
+
+    <title>متجر الهدايا | هدايا مميزة لكل مناسبة</title>
+
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="Front-End/Appearance/index.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="assets/images/logo.png" alt="هديتي" style="height: 50px;">
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="nav">
+            <a href="index.html" class="nav-link active">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="pages/products.html" class="nav-link">
+                <i class="fas fa-gifts"></i>
+                <span>المنتجات</span>
+            </a>
+            <a href="pages/videos.html" class="nav-link">
+                <i class="fas fa-video"></i>
+                <span>الفيديوهات</span>
+            </a>
+            <a href="pages/track-order.html" class="nav-link">
+                <i class="fas fa-search-location"></i>
+                <span>تتبع طلبك</span>
+            </a>
+
+            <a href="pages/about.html" class="nav-link">
+                <i class="fas fa-info-circle"></i>
+                <span>من نحن</span>
+            </a>
+            <a href="pages/contact.html" class="nav-link">
+                <i class="fas fa-envelope"></i>
+                <span>اتصل بنا</span>
+            </a>
+        </nav>
+
+        <div class="icon-navs">
+            <div class="cart-icon-wrapper" id="cart-btn">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-count" id="cart-count">0</span>
+            </div>
+            <div class="login" id="auth-section">
+                <!-- Dynamic Auth Content -->
+            </div>
+            <div class="menu" id="menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Cart Dropdown -->
+        <section class="cart-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 class="section-title" style="margin: 0; font-size: 1.2rem;">سلة الشراء</h2>
+                <button id="closeCart" style="background:none; border:none; cursor:pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="cart-items-wrapper" style="max-height: 300px; overflow-y: auto;">
+                <!-- Cart items will be added here dynamically -->
+                <div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">
+                    سلة التسوق فارغة
+                </div>
+            </div>
+        </section>
+    </header>
+    <nav class="nav" id="navMenu">
+        <ul id="nav-list">
+            <li><a href="#"><i class="fas fa-home me-2"></i> الرئيسية</a></li>
+            <li><a href="#products"><i class="fas fa-gift me-2"></i> المنتجات</a></li>
+            <li><a href="#categories"><i class="fas fa-th-large me-2"></i> الأقسام</a></li>
+            <li><a href="#testimonials"><i class="fas fa-comments me-2"></i> آراء العملاء</a></li>
+            <li><a href="#contact"><i class="fas fa-envelope me-2"></i> تواصل معنا</a></li>
+        </ul>
+        <div class="login">
+            <a href="#"><i class="fas fa-user"></i> تسجيل الدخول</a>
+        </div>
+    </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content fade-in-up">
+                <h1>هدايا مميزة لكل مناسبة</h1>
+                <p>اختر أجمل الهدايا المخصصة لأحبائك من تشكيلتنا المتنوعة من الهدايا الفريدة والراقية التي تلامس القلوب.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#products" class="btn">تسوق الآن <i class="fas fa-arrow-left"
+                            style="margin-right: 8px;"></i></a>
+                    <a href="pages/videos.html" class="btn">مشاهدة الفيديوهات <i class="fas fa-video"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Icons -->
+        <section class="icons-container">
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <i class="fas fa-truck"></i>
+                    <h3>توصيل سريع</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 5px;">شحن لجميع المناطق</p>
+                </div>
+                <div class="icon-card">
+                    <i class="fas fa-undo"></i>
+                    <h3>استرجاع مجاني</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 5px;">خلال 14 يوم</p>
+                </div>
+                <div class="icon-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>ضمان الجودة</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 5px;">منتجات أصلية 100%</p>
+                </div>
+                <div class="icon-card">
+                    <i class="fas fa-headset"></i>
+                    <h3>دعم 24/7</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 5px;">خدمة عملاء متميزة</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="categories" id="categories">
+            <h2 class="section-title">أقسام الهدايا</h2>
+            <div class="categories-grid">
+                <a href="pages/categories/category.html?category=love-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
+                    <div class="category-icon"><i class="fas fa-heart"></i></div>
+                    <h3>هدايا الحب</h3>
+                </a>
+                <a href="pages/categories/category.html?category=birthday-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
+                    <div class="category-icon"><i class="fas fa-birthday-cake"></i></div>
+                    <h3>أعياد الميلاد</h3>
+                </a>
+                <a href="pages/categories/category.html?category=wedding-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
+                    <div class="category-icon"><i class="fas fa-glass-cheers"></i></div>
+                    <h3>هدايا الزفاف</h3>
+                </a>
+                <a href="pages/categories/category.html?category=graduation-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
+                    <div class="category-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h3>هدايا التخرج</h3>
+                </a>
+                <a href="pages/categories/category.html?category=home-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
+                    <div class="category-icon"><i class="fas fa-home"></i></div>
+                    <h3>هدايا المنزل</h3>
+                </a>
+                <a href="pages/categories/category.html?category=kids-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
+                    <div class="category-icon"><i class="fas fa-baby"></i></div>
+                    <h3>هدايا الأطفال</h3>
+                </a>
+            </div>
+        </section>
+
+        <!-- Products -->
+        <section class="products" id="products">
+            <h2 class="section-title">المنتجات المميزة</h2>
+            <div class="products-grid" id="featuredProductsGrid">
+                <div class="loading" style="grid-column: 1/-1; text-align: center;">جاري تحميل المنتجات المميزة...</div>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="pages/products.html" class="btn">عرض كل المنتجات</a>
+            </div>
+        </section>
+
+        <!-- Customer Reviews (Real) -->
+        <section class="testimonials" id="testimonials">
+            <h2 class="section-title">آراء عملائنا</h2>
+            <p style="text-align: center; color: #666; max-width: 600px; margin: 0 auto 40px; font-size: 1.1rem;">
+                تقييمات حقيقية من عملائنا الكرام
+            </p>
+            <div class="testimonials-grid" id="home-reviews-grid">
+                <!-- Reviews will be loaded dynamically -->
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                    <p>جاري تحميل التقييمات...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="newsletter">
+            <div class="newsletter-content">
+                <h2>اشترك في نشرتنا البريدية</h2>
+                <p>كن أول من يعرف عن العروض الحصرية والمنتجات الجديدة</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault();">
+                    <input type="email" placeholder="أدخل بريدك الإلكتروني" required>
+                    <button type="submit">اشتراك</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3><i class="fas fa-gift me-2"></i> <span data-store-name>هديتي</span></h3>
+                <p data-store-description>نصنع الذكريات الجميلة من خلال هدايا مميزة تلامس القلوب. جودة عالية وخدمة راقية
+                    تليق بكم.</p>
+                <div class="social-links">
+                    <a href="#" data-social="facebook" aria-label="facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" data-social="instagram" aria-label="instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" data-social="twitter" aria-label="twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" data-social="whatsapp" aria-label="whatsapp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" data-social="tiktok" aria-label="tiktok"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>روابط سريعة</h3>
+                <ul>
+                    <li><a href="#products">المنتجات</a></li>
+                    <li><a href="#categories">الأقسام</a></li>
+                    <li><a href="#testimonials">آراء العملاء</a></li>
+                    <li><a href="pages/about.html">من نحن</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>تواصل معنا</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:info@hadyti.com"
+                            data-store-email>info@hadyti.com</a></li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+966501234567" data-store-phone>+966 50 123 4567</a>
+                    </li>
+                    <li><i class="fas fa-map-marker-alt"></i> المملكة العربية السعودية</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 <span data-store-name>هديتي</span>. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="Front-End/Interaction/main.js"></script>
+    <script type="module" src="js/home-reviews.js"></script>
+    <script type="module" src="js/site-settings.js"></script>
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        (async () => {
+            const { data: settings, error } = await supabase.from('store_settings').select('maintenance_mode, social_links').single();
+            if (!error && settings) {
+                if (settings.maintenance_mode) {
+                    window.location.href = 'pages/maintenance.html';
+                } else {
+                    const links = settings.social_links || {};
+                    const footerLinks = document.querySelectorAll('.footer-section .social-links a');
+                    footerLinks.forEach(a => {
+                        const label = a.getAttribute('aria-label')?.toLowerCase();
+                        if (label && links[label]) {
+                            a.href = links[label];
+                        }
+                    });
+                }
+            }
+        })();
+    </script>
+</body>
+
+</html>
