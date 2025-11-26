@@ -4,6 +4,14 @@ import { showError, showSuccess, showLoading } from '../toast.js';
 
 let allOrders = [];
 let currentOrderId = null;
+// Mapping Arabic status text to internal keys for consistency
+const statusMap = {
+    'قيد الانتظار': 'pending',
+    'قيد التنفيذ': 'processing',
+    'تم الشحن': 'shipped',
+    'تم التوصيل': 'delivered',
+    'ملغي': 'cancelled'
+};
 
 // Check Admin Access
 async function checkAccess() {
@@ -58,15 +66,23 @@ function renderOrders(orders) {
     orders.forEach(order => {
         const row = document.createElement('tr');
         const date = new Date(order.created_at).toLocaleDateString('ar-SA');
-        const statusClass = `status-${order.status}`;
-
+        // Map Arabic status text to internal keys for class and filtering
+        const statusMap = {
+            'قيد الانتظار': 'pending',
+            'قيد التنفيذ': 'processing',
+            'تم الشحن': 'shipped',
+            'تم التوصيل': 'delivered',
+            'ملغي': 'cancelled'
+        };
+        const statusKey = statusMap[order.status] || order.status; // fallback if already key
+        const statusClass = `status-${statusKey}`;
         const statusText = {
             'pending': 'قيد الانتظار',
             'processing': 'قيد التنفيذ',
             'shipped': 'تم الشحن',
             'delivered': 'تم التوصيل',
             'cancelled': 'ملغي'
-        }[order.status] || order.status;
+        }[statusKey] || order.status;
 
         row.innerHTML = `
             <td>#${order.id.slice(0, 8)}</td>
@@ -104,7 +120,10 @@ function initFilters() {
             if (status === 'all') {
                 renderOrders(allOrders);
             } else {
-                const filtered = allOrders.filter(order => order.status === status);
+                const filtered = allOrders.filter(order => {
+                    const key = statusMap[order.status] || order.status;
+                    return key === status;
+                });
                 renderOrders(filtered);
             }
         });
@@ -142,7 +161,7 @@ async function openOrderModal(orderId) {
         document.getElementById('modalPayment').textContent = order.payment_method || 'غير محدد';
         document.getElementById('modalDate').textContent = new Date(order.created_at).toLocaleString('ar-SA');
         document.getElementById('modalTotal').textContent = formatPrice(order.total_amount);
-        document.getElementById('modalStatusSelect').value = order.status;
+        document.getElementById('modalStatusSelect').value = statusMap[order.status] || order.status;
 
         // Populate Products
         const productsList = document.getElementById('modalProductsList');
