@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتبع الطلب - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../Front-End/Appearance/index.css">
+    <style>
+        .track-page {
+            padding: 80px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 60vh;
+        }
+
+        .track-container {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .track-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .track-input-group {
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+            margin: 30px auto;
+            width: 100%;
+        }
+
+        .track-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            margin-right: -27px;
+            font-family: 'Cairo', sans-serif;
+            
+        }
+
+        .track-btn {
+            padding: 15px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .track-btn:hover {
+            background: #7F0000;
+        }
+
+        .order-status {
+            margin-top: 40px;
+            text-align: right;
+            border-top: 1px solid #eee;
+            padding-top: 30px;
+            display: none;
+        }
+
+        .status-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            position: relative;
+        }
+
+        .status-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #eee;
+            z-index: 0;
+        }
+
+        .step {
+            position: relative;
+            z-index: 1;
+            background: white;
+            padding: 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+        }
+
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            background: #eee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .step.active {
+            color: var(--primary);
+        }
+
+        .step.active .step-icon {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step.completed .step-icon {
+            background: #28a745;
+            color: white;
+        }
+
+        .step.completed {
+            color: #28a745;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none;">
+                <img src="../assets/images/logo.png" alt="هديتي" style="height: 50px;">
+            </a>
+        </div>
+        <div class="icon-navs">
+            <div class="cart-icon-wrapper" id="cart-btn">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-count" id="cart-count">0</span>
+            </div>
+            <div class="login" id="auth-section">
+                <!-- Dynamic Auth Content -->
+            </div>
+            <div class="menu" id="menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Cart Dropdown -->
+        <section class="cart-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 class="section-title" style="margin: 0; font-size: 1.2rem;">سلة الشراء</h2>
+                <button id="closeCart" style="background:none; border:none; cursor:pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="cart-items-wrapper" style="max-height: 300px; overflow-y: auto;">
+                <div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">
+                    سلة التسوق فارغة
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <!-- Navigation Sidebar -->
+    <nav class="nav" id="nav-menu">
+        <ul>
+            <li><a href="../index.html">الرئيسية</a></li>
+            <li><a href="products.html">المنتجات</a></li>
+            <li><a href="cart.html">سلة الشراء</a></li>
+            <li><a href="track-order.html">تتبع الطلب</a></li>
+            <li><a href="#contact">تواصل معنا</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="track-page" style="margin-top: 100px;">
+            <div class="track-container">
+                <i class="fas fa-search-location track-icon"></i>
+                <h1 style="margin-bottom: 10px;">تتبع طلبك</h1>
+                <p style="color: var(--text-light);">أدخل رقم الطلب لمعرفة حالته الحالية</p>
+
+                <div class="track-input-group">
+                    <input type="text" id="orderIdInput" class="track-input" placeholder="رقم الطلب (مثال: 5)">
+                    <button id="trackBtn" class="track-btn">تتبع</button>
+                </div>
+
+                <div id="orderResult" class="order-status">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 id="orderIdDisplay">طلب #0</h3>
+                        <span id="orderDateDisplay" style="color: var(--text-light);">01/01/2025</span>
+                    </div>
+
+                    <div class="status-steps">
+                        <div class="step" id="step-pending">
+                            <div class="step-icon"><i class="fas fa-clock"></i></div>
+                            <span>قيد المراجعة</span>
+                        </div>
+                        <div class="step" id="step-processing">
+                            <div class="step-icon"><i class="fas fa-box-open"></i></div>
+                            <span>جاري التجهيز</span>
+                        </div>
+                        <div class="step" id="step-shipped">
+                            <div class="step-icon"><i class="fas fa-shipping-fast"></i></div>
+                            <span>تم الشحن</span>
+                        </div>
+                        <div class="step" id="step-delivered">
+                            <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                            <span>تم التوصيل</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: right;">
+                        <h4>تفاصيل الطلب:</h4>
+                        <div id="orderDetails" style="margin-top: 10px; color: var(--text-light);">
+                            <!-- Details -->
+                        </div>
+                        <div style="margin-top: 15px; font-weight: 700; font-size: 1.2rem;">
+                            الإجمالي: <span id="orderTotal" style="color: var(--primary);">0 ج.م</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="../Front-End/Interaction/track-order.js"></script>
+    <script type="module" src="../Front-End/Interaction/main.js"></script>
+</body>
+
+</html>

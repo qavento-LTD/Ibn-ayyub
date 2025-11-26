@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دخول الأدمن</title>
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            width: 320px;
+        }
+
+        .login-card h2 {
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray);
+            border-radius: var(--radius-md);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <h2>دخول الأدمن</h2>
+        <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="admin-password-input" placeholder="أدخل كلمة المرور" />
+        </div>
+        <button class="btn" id="login-btn">دخول</button>
+    </div>
+
+    <script type="module" src="../../js/admin/login.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات الشاملة - لوحة التحكم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: #f5f5f5;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            padding: 30px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            right: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            color: #333;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sidebar-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 40px;
+        }
+
+        .settings-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .settings-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            overflow-x: auto;
+            padding: 0 20px;
+        }
+
+        .settings-tab {
+            padding: 20px 30px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .settings-tab:hover {
+            background: rgba(230, 57, 70, 0.05);
+            color: var(--primary);
+        }
+
+        .settings-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+        }
+
+        .settings-content {
+            padding: 40px;
+        }
+
+        .settings-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+            color: #1D3557;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--primary), #C1121F);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+        }
+
+        .category-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-tabs {
+                padding: 0 10px;
+            }
+
+            .settings-tab {
+                padding: 15px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../../index.html" style="text-decoration: none;">
+                <img src="../../assets/images/logo.png" alt="هديتي" style="height: 50px;">
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-weight: 600; color: #666;">الإعدادات الشاملة</span>
+            <a href="../../index.html" class="btn" style="padding: 8px 16px;">
+                <i class="fas fa-home"></i> الموقع الرئيسي
+            </a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="admin.html" class="sidebar-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>الإحصائيات</span>
+                </a>
+                <a href="products.html" class="sidebar-item">
+                    <i class="fas fa-box"></i>
+                    <span>المنتجات</span>
+                </a>
+                <a href="orders.html" class="sidebar-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>الطلبات</span>
+                </a>
+                <a href="users.html" class="sidebar-item">
+                    <i class="fas fa-users"></i>
+                    <span>المستخدمين</span>
+                </a>
+                <div style="height: 1px; background: #e9ecef; margin: 16px 0;"></div>
+                <a href="settings.html" class="sidebar-item active">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 40px; color: #1D3557;">
+                <i class="fas fa-cog"></i> الإعدادات الشاملة
+            </h1>
+
+            <div class="settings-container">
+                <!-- Tabs -->
+                <div class="settings-tabs">
+                    <div class="settings-tab active" data-target="general">
+                        <i class="fas fa-info-circle"></i> عام
+                    </div>
+                    <div class="settings-tab" data-target="categories">
+                        <i class="fas fa-th-large"></i> الأقسام
+                    </div>
+                    <div class="settings-tab" data-target="products">
+                        <i class="fas fa-box"></i> المنتجات
+                    </div>
+                    <div class="settings-tab" data-target="videos">
+                        <i class="fas fa-video"></i> الفيديوهات
+                    </div>
+                    <div class="settings-tab" data-target="reviews">
+                        <i class="fas fa-star"></i> التقييمات
+                    </div>
+                    <div class="settings-tab" data-target="social">
+                        <i class="fas fa-share-alt"></i> التواصل
+                    </div>
+                    <div class="settings-tab" data-target="shipping">
+                        <i class="fas fa-truck"></i> الشحن
+                    </div>
+                    <div class="settings-tab" data-target="advanced">
+                        <i class="fas fa-tools"></i> متقدم
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="settings-content">
+                    <!-- General Settings -->
+                    <div id="general" class="settings-section active">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            الإعدادات العامة
+                        </h3>
+
+                        <div class="form-group">
+                            <label>اسم المتجر</label>
+                            <input type="text" id="store-name" placeholder="هديتي">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>البريد الإلكتروني</label>
+                                <input type="email" id="store-email" placeholder="info@hadyti.com">
+                            </div>
+                            <div class="form-group">
+                                <label>رقم الهاتف</label>
+                                <input type="tel" id="store-phone" placeholder="+966 50 123 4567">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>وصف المتجر</label>
+                            <textarea id="store-description" placeholder="وصف مختصر عن متجرك..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>رابط الشعار</label>
+                            <input type="url" id="store-logo" placeholder="https://example.com/logo.png">
+                        </div>
+
+                        <button class="save-btn" onclick="saveSettings('general')">
+                            <i class="fas fa-save"></i> حفظ الإعدادات العامة
+                        </button>
+                    </div>
+
+                    <!-- Categories Settings -->
+                    <div id="categories" class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-th-large"></i>
+                            إدارة الأقسام
+                        </h3>
+
+                        <div class="category-item">
+                            <div class="category-info">
+                                <div class="category-icon"><i class="fas fa-heart"></i></div>
+                                <div>
+                                    <h4 style="font-weight: 700;">هدايا الحب</h4>
+                                    <p style="color: #666; font-size: 14px;">love-gifts</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="cat-love-gifts" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <div class="category-info">
+                                <div class="category-icon"><i class="fas fa-birthday-cake"></i></div>
+                                <div>
+                                    <h4 style="font-weight: 700;">أعياد الميلاد</h4>
+                                    <p style="color: #666; font-size: 14px;">birthday-gifts</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="cat-birthday-gifts" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <div class="category-info">
+                                <div class="category-icon"><i class="fas fa-glass-cheers"></i></div>
+                                <div>
+                                    <h4 style="font-weight: 700;">هدايا الزفاف</h4>
+                                    <p style="color: #666; font-size: 14px;">wedding-gifts</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="cat-wedding-gifts" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <div class="category-info">
+                                <div class="category-icon"><i class="fas fa-graduation-cap"></i></div>
+                                <div>
+                                    <h4 style="font-weight: 700;">هدايا التخرج</h4>
+                                    <p style="color: #666; font-size: 14px;">graduation-gifts</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="cat-graduation-gifts" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <div class="category-info">
+                                <div class="category-icon"><i class="fas fa-home"></i></div>
+                                <div>
+                                    <h4 style="font-weight: 700;">هدايا المنزل</h4>
+                                    <p style="color: #666; font-size: 14px;">home-gifts</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="cat-home-gifts" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <div class="category-info">
+                                <div class="category-icon"><i class="fas fa-baby"></i></div>
+                                <div>
+                                    <h4 style="font-weight: 700;">هدايا الأطفال</h4>
+                                    <p style="color: #666; font-size: 14px;">kids-gifts</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="cat-kids-gifts" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <button class="save-btn" onclick="saveSettings('categories')">
+                            <i class="fas fa-save"></i> حفظ إعدادات الأقسام
+                        </button>
+                    </div>
+
+                    <!-- Products Settings -->
+                    <div id="products" class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-box"></i>
+                            إعدادات المنتجات
+                        </h3>
+
+                        <div class="form-group">
+                            <label>عدد المنتجات المميزة في الصفحة الرئيسية</label>
+                            <input type="number" id="featured-products-count" value="6" min="3" max="12">
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="show-stock" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>إظهار حالة المخزون للعملاء</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="allow-out-of-stock-orders">
+                                    <span class="slider"></span>
+                                </label>
+                                <span>السماح بالطلب عند نفاذ المخزون</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>رسالة نفاذ المخزون</label>
+                            <input type="text" id="out-of-stock-message" value="نفذت الكمية" placeholder="نفذت الكمية">
+                        </div>
+
+                        <button class="save-btn" onclick="saveSettings('products')">
+                            <i class="fas fa-save"></i> حفظ إعدادات المنتجات
+                        </button>
+                    </div>
+
+                    <!-- Videos Settings -->
+                    <div id="videos" class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-video"></i>
+                            إعدادات الفيديوهات
+                        </h3>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="enable-videos" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>تفعيل قسم الفيديوهات</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="autoplay-videos" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>تشغيل تلقائي للفيديوهات</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>الحد الأقصى لحجم الفيديو (MB)</label>
+                            <input type="number" id="max-video-size" value="100" min="10" max="500">
+                        </div>
+
+                        <button class="save-btn" onclick="saveSettings('videos')">
+                            <i class="fas fa-save"></i> حفظ إعدادات الفيديوهات
+                        </button>
+                    </div>
+
+                    <!-- Reviews Settings -->
+                    <div id="reviews" class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-star"></i>
+                            إعدادات التقييمات
+                        </h3>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="enable-reviews" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>السماح بالتقييمات</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="review-moderation">
+                                    <span class="slider"></span>
+                                </label>
+                                <span>مراجعة التقييمات قبل النشر</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>الحد الأدنى لطول التعليق (أحرف)</label>
+                            <input type="number" id="min-review-length" value="10" min="5" max="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label>عدد التقييمات المعروضة في الصفحة الرئيسية</label>
+                            <input type="number" id="home-reviews-count" value="6" min="3" max="12">
+                        </div>
+
+                        <button class="save-btn" onclick="saveSettings('reviews')">
+                            <i class="fas fa-save"></i> حفظ إعدادات التقييمات
+                        </button>
+                    </div>
+
+                    <!-- Social Media Settings -->
+                    <div id="social" class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-share-alt"></i>
+                            روابط التواصل الاجتماعي
+                        </h3>
+
+                        <div class="form-group">
+                            <label><i class="fab fa-facebook"></i> Facebook</label>
+                            <input type="url" id="social-facebook" placeholder="https://facebook.com/yourpage">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fab fa-instagram"></i> Instagram</label>
+                            <input type="url" id="social-instagram" placeholder="https://instagram.com/yourpage">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fab fa-twitter"></i> Twitter</label>
+                            <input type="url" id="social-twitter" placeholder="https://twitter.com/yourpage">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fab fa-whatsapp"></i> WhatsApp</label>
+                            <input type="tel" id="social-whatsapp" placeholder="+966501234567">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fab fa-tiktok"></i> TikTok</label>
+                            <input type="url" id="social-tiktok" placeholder="https://tiktok.com/@yourpage">
+                        </div>
+
+                        <button class="save-btn" onclick="saveSettings('social')">
+                            <i class="fas fa-save"></i> حفظ روابط التواصل
+                        </button>
+                    </div>
+
+                    <!-- Shipping Settings -->
+                    <div id="shipping" class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-truck"></i>
+                            إعدادات الشحن
+                        </h3>
+
+                        <div class="form-group">
+                            <label>رسوم الشحن الافتراضية (ر.س)</label>
+                            <input type="number" id="shipping-fee" value="25" min="0" step="0.01">
+                        </div>
+
+                        <div class="form-group">
+                            <label>الحد الأدنى للشحن المجاني (ر.س)</label>
+                            <input type="number" id="free-shipping-min" value="200" min="0" step="0.01">
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="enable-free-shipping" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>تفعيل الشحن المجاني</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>مدة التوصيل المتوقعة (أيام)</label>
+                            <input type="text" id="delivery-time" value="3-5" placeholder="3-5">
+                        </div>
+
+                        <button class="save-btn" onclick="saveSettings('shipping')">
+                            <i class="fas fa-save"></i> حفظ إعدادات الشحن
+                        </button>
+                    </div>
+
+                    <!-- Advanced Settings -->
+                    <div id="advanced" class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-tools"></i>
+                            الإعدادات المتقدمة
+                        </h3>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="maintenance-mode">
+                                    <span class="slider"></span>
+                                </label>
+                                <span>وضع الصيانة</span>
+                            </label>
+                            <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                                عند التفعيل، سيتم إخفاء الموقع عن الزوار وعرض صفحة صيانة
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>رسالة الصيانة</label>
+                            <textarea id="maintenance-message"
+                                placeholder="الموقع تحت الصيانة حالياً...">الموقع تحت الصيانة حالياً. سنعود قريباً!</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="enable-newsletter" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>تفعيل النشرة البريدية</span>
+                            </label>
+                        </div>
+
+                        <button class="save-btn" onclick="saveSettings('advanced')">
+                            <i class="fas fa-save"></i> حفظ الإعدادات المتقدمة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../../js/admin/settings.js"></script>
+</body>
+
+</html>
