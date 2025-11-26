@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الناشر - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        body {
+            background: var(--gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            right: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            color: var(--black);
+            transition: var(--transition-base);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .sidebar-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: var(--spacing-xl);
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--black);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .product-card {
+            background: var(--white);
+            border: 1px solid var(--gray);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .product-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+            background: #f8f9fa;
+        }
+
+        .product-details {
+            padding: var(--spacing-md);
+        }
+
+        .product-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-meta {
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .product-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #e67e22;
+            /* darker orange */
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            border: 2px dashed var(--gray);
+            border-radius: var(--radius-md);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-dark);
+            background: #f8f9fa;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .checkbox-wrapper input {
+            width: auto;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../../index.html" style="text-decoration: none;">
+                <img src="../../assets/images/logo.png" alt="هديتي" style="height: 50px;">
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-weight: 600; color: var(--gray-dark);">لوحة الناشر</span>
+            <a href="../../index.html" class="btn" style="padding: 8px 16px;">
+                <i class="fas fa-home"></i> الموقع الرئيسي
+            </a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="#" class="sidebar-item active">
+                    <i class="fas fa-box-open"></i>
+                    <span>إدارة المنتجات</span>
+                </a>
+                <a href="publisher-stats.html" class="sidebar-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>الإحصائيات</span>
+                </a>
+                <a href="publisher-videos.html" class="sidebar-item">
+                    <i class="fas fa-video"></i>
+                    <span>إدارة الفيديوهات</span>
+                </a>
+                <div style="height: 1px; background: var(--gray); margin: 16px 0;"></div>
+                <a href="#" class="sidebar-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 style="font-size: 2rem; font-weight: 900; margin-bottom: var(--spacing-xl); color: var(--black);">
+                إدارة المنتجات
+            </h1>
+
+            <!-- Product Form -->
+            <div class="content-card">
+                <h3 style="margin-bottom: 20px; color: var(--primary);">
+                    <i class="fas fa-plus-circle"></i> إضافة / تعديل منتج
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>عنوان المنتج</label>
+                        <input type="text" id="product-title" placeholder="اسم المنتج..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>الفئة</label>
+                        <input type="text" id="product-category" placeholder="مثال: هدايا، تحف..." required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>السعر (EGP)</label>
+                        <input type="number" id="product-price" placeholder="0.00" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الكمية (المخزون)</label>
+                        <input type="number" id="product-stock" placeholder="0" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>الوصف</label>
+                    <textarea id="product-description" rows="3" placeholder="وصف تفصيلي للمنتج..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>رابط الصورة</label>
+                        <input type="url" id="product-image" placeholder="https://example.com/image.jpg">
+                        <div id="image-preview" class="preview-image">
+                            <span>معاينة الصورة</span>
+                        </div>
+                    </div>
+                    <div class="form-group" style="display: flex; flex-direction: column; justify-content: center;">
+                        <label>خيارات إضافية</label>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="product-featured">
+                            <label for="product-featured" style="margin:0; cursor:pointer;">منتج مميز (يظهر في الصفحة
+                                الرئيسية)</label>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button class="btn" id="save-product" style="width: 100%;">
+                                <i class="fas fa-save"></i> حفظ المنتج
+                            </button>
+                            <button class="btn btn-secondary" id="cancel-edit"
+                                style="width: 100%; margin-top: 10px; display: none;">
+                                <i class="fas fa-times"></i> إلغاء التعديل
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products List -->
+            <h3 style="margin-bottom: 16px;">منتجاتي</h3>
+            <div id="products-grid" class="products-grid">
+                <!-- Products will be loaded here -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-dark);">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 10px;">جاري تحميل المنتجات...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../../js/admin/publisher.js"></script>
+</body>
+
+</html>

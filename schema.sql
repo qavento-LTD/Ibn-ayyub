@@ -10,6 +10,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Products Table
 -- =============================================
 CREATE TABLE IF NOT EXISTS products (
+    created_by UUID REFERENCES user_profiles(id) DEFAULT auth.uid(),
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
     description TEXT,
@@ -72,7 +73,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     email TEXT,
     phone TEXT,
     address TEXT,
-    role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
+    role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'admin', 'publisher')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -172,6 +173,24 @@ CREATE POLICY "Admins can delete products" ON products
         EXISTS (
             SELECT 1 FROM user_profiles
             WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
+
+-- Publishers can insert products they own
+CREATE POLICY "Publishers can insert own products" ON products
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'publisher'
+        )
+    );
+
+-- Publishers can update ANY product (Global Edit Access)
+CREATE POLICY "Publishers can update own products" ON products
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'publisher'
         )
     );
 
@@ -281,6 +300,7 @@ CREATE TABLE IF NOT EXISTS store_settings (
     social_links JSONB DEFAULT '{"facebook": "", "instagram": "", "twitter": ""}',
     maintenance_mode BOOLEAN DEFAULT FALSE,
     allow_registration BOOLEAN DEFAULT TRUE,
+    admin_password_hash TEXT DEFAULT ''
     features TEXT DEFAULT '',
     discount DECIMAL(10,2) DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -313,4 +333,50 @@ CREATE POLICY "Admins can insert settings" ON store_settings
 -- Trigger for updated_at
 CREATE TRIGGER update_store_settings_updated_at BEFORE UPDATE ON store_settings
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+
+-- =============================================
+-- Videos Table (TikTok Style)
+-- =============================================
+CREATE TABLE IF NOT EXISTS videos (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    url TEXT NOT NULL,
+    description TEXT,
+    likes INTEGER DEFAULT 0,
+    created_by UUID REFERENCES user_profiles(id) DEFAULT auth.uid(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS Policies for Videos
+
+-- Everyone can view videos
+CREATE POLICY "Videos are viewable by everyone" ON videos
+    FOR SELECT USING (true);
+
+-- Publishers and Admins can insert videos
+CREATE POLICY "Publishers/Admins can insert videos" ON videos
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'publisher')
+        )
+    );
+
+-- Publishers and Admins can update videos
+CREATE POLICY "Publishers/Admins can update videos" ON videos
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'publisher')
+        )
+    );
+
+-- Publishers and Admins can delete videos
+CREATE POLICY "Publishers/Admins can delete videos" ON videos
+    FOR DELETE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'publisher')
+        )
+    );
 

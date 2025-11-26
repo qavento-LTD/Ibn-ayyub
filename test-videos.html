@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الفيديوهات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        video {
+            width: 100%;
+            max-width: 600px;
+            margin: 10px 0;
+        }
+
+        .error {
+            color: red;
+            padding: 10px;
+            background: #fee;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: green;
+            padding: 10px;
+            background: #efe;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>اختبار صفحة الفيديوهات</h1>
+
+    <div class="test-section">
+        <h2>1. اختبار تحميل Supabase</h2>
+        <div id="supabase-test">جاري الاختبار...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. اختبار جلب الفيديوهات</h2>
+        <div id="videos-test">جاري الاختبار...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. معاينة الفيديوهات</h2>
+        <div id="videos-preview"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. اختبار فيديو تجريبي</h2>
+        <video controls>
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            المتصفح لا يدعم الفيديو
+        </video>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabase-client.js';
+
+        // Test 1: Supabase Connection
+        async function testSupabase() {
+            try {
+                const { data, error } = await supabase.from('videos').select('count');
+                if (error) throw error;
+                document.getElementById('supabase-test').innerHTML =
+                    '<div class="success">✓ اتصال Supabase يعمل بنجاح</div>';
+            } catch (error) {
+                document.getElementById('supabase-test').innerHTML =
+                    `<div class="error">✗ خطأ في الاتصال: ${error.message}</div>`;
+                console.error('Supabase error:', error);
+            }
+        }
+
+        // Test 2: Fetch Videos
+        async function testFetchVideos() {
+            try {
+                const { data: videos, error } = await supabase
+                    .from('videos')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                document.getElementById('videos-test').innerHTML =
+                    `<div class="success">✓ تم جلب ${videos.length} فيديو بنجاح</div>`;
+
+                // Test 3: Preview Videos
+                const preview = document.getElementById('videos-preview');
+                if (videos.length === 0) {
+                    preview.innerHTML = '<p>لا توجد فيديوهات في قاعدة البيانات</p>';
+                } else {
+                    preview.innerHTML = videos.map(video => `
+                        <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <h4>${video.description || 'بدون وصف'}</h4>
+                            <p><strong>الرابط:</strong> ${video.url}</p>
+                            <p><strong>الإعجابات:</strong> ${video.likes || 0}</p>
+                            <video controls style="max-width: 100%;">
+                                <source src="${video.url}" type="video/mp4">
+                                فشل تحميل الفيديو
+                            </video>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                document.getElementById('videos-test').innerHTML =
+                    `<div class="error">✗ خطأ في جلب الفيديوهات: ${error.message}</div>`;
+                console.error('Fetch error:', error);
+            }
+        }
+
+        // Run Tests
+        testSupabase();
+        testFetchVideos();
+    </script>
+</body>
+
+</html>
