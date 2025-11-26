@@ -198,6 +198,10 @@ async function updateCartCount() {
 
         const count = items ? items.reduce((sum, item) => sum + item.quantity, 0) : 0;
         cartCountEl.textContent = count;
+
+        // Refresh dropdown
+        loadCartDropdown();
+
     } catch (error) {
         console.error('Update cart count error:', error);
         cartCountEl.textContent = '0';

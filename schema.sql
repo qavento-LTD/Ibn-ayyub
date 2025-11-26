@@ -10,6 +10,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Products Table
 -- =============================================
 CREATE TABLE IF NOT EXISTS products (
+    created_by UUID REFERENCES user_profiles(id) DEFAULT auth.uid(),
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
     description TEXT,
@@ -28,10 +29,11 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    total DECIMAL(10, 2) NOT NULL CHECK (total >= 0),
-    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'cancelled')),
+    total_amount DECIMAL(10, 2) NOT NULL CHECK (total_amount >= 0),
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'shipped', 'delivered', 'cancelled')),
     shipping_address TEXT,
     phone TEXT,
+    payment_method TEXT,
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -68,9 +70,10 @@ CREATE TABLE IF NOT EXISTS cart_items (
 CREATE TABLE IF NOT EXISTS user_profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name TEXT,
+    email TEXT,
     phone TEXT,
     address TEXT,
-    role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
+    role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'admin', 'publisher')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -173,6 +176,24 @@ CREATE POLICY "Admins can delete products" ON products
         )
     );
 
+-- Publishers can insert products they own
+CREATE POLICY "Publishers can insert own products" ON products
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'publisher'
+        )
+    );
+
+-- Publishers can update ANY product (Global Edit Access)
+CREATE POLICY "Publishers can update own products" ON products
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'publisher'
+        )
+    );
+
 -- Orders: Users can view their own orders, admins can view all
 CREATE POLICY "Users can view their own orders" ON orders
     FOR SELECT USING (
@@ -263,4 +284,99 @@ INSERT INTO products (title, description, price, category, image_url, stock, fea
 ('مجموعة شاي فاخرة', 'مجموعة شاي فاخرة مع أكواب خزفية', 280.00, 'gifts', 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=500', 60, false),
 ('دفتر ملاحظات جلدي', 'دفتر ملاحظات بغلاف جلدي فاخر', 150.00, 'gifts', 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=500', 80, false);
 
--- Note: User profiles and orders will be created when users sign up and place orders
+
+-- =============================================
+-- Store Settings Table (Singleton)
+-- =============================================
+CREATE TABLE IF NOT EXISTS store_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    store_name TEXT DEFAULT 'هديتي',
+    store_email TEXT,
+    store_phone TEXT,
+    currency TEXT DEFAULT 'SAR',
+    tax_rate DECIMAL(5, 2) DEFAULT 15.00,
+    shipping_fee DECIMAL(10, 2) DEFAULT 20.00,
+    free_shipping_threshold DECIMAL(10, 2) DEFAULT 300.00,
+    social_links JSONB DEFAULT '{"facebook": "", "instagram": "", "twitter": ""}',
+    maintenance_mode BOOLEAN DEFAULT FALSE,
+    allow_registration BOOLEAN DEFAULT TRUE,
+    admin_password_hash TEXT DEFAULT ''
+    features TEXT DEFAULT '',
+    discount DECIMAL(10,2) DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE store_settings ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+CREATE POLICY "Settings viewable by everyone" ON store_settings
+    FOR SELECT USING (true);
+
+CREATE POLICY "Admins can update settings" ON store_settings
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
+
+CREATE POLICY "Admins can insert settings" ON store_settings
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
+
+-- Trigger for updated_at
+CREATE TRIGGER update_store_settings_updated_at BEFORE UPDATE ON store_settings
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+
+-- =============================================
+-- Videos Table (TikTok Style)
+-- =============================================
+CREATE TABLE IF NOT EXISTS videos (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    url TEXT NOT NULL,
+    description TEXT,
+    likes INTEGER DEFAULT 0,
+    created_by UUID REFERENCES user_profiles(id) DEFAULT auth.uid(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS Policies for Videos
+
+-- Everyone can view videos
+CREATE POLICY "Videos are viewable by everyone" ON videos
+    FOR SELECT USING (true);
+
+-- Publishers and Admins can insert videos
+CREATE POLICY "Publishers/Admins can insert videos" ON videos
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'publisher')
+        )
+    );
+
+-- Publishers and Admins can update videos
+CREATE POLICY "Publishers/Admins can update videos" ON videos
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'publisher')
+        )
+    );
+
+-- Publishers and Admins can delete videos
+CREATE POLICY "Publishers/Admins can delete videos" ON videos
+    FOR DELETE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'publisher')
+        )
+    );
+

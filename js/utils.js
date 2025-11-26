@@ -6,7 +6,7 @@
  * Format price in SAR
  */
 export function formatPrice(price) {
-    return `${parseFloat(price).toFixed(2)} ر.س`;
+    return `${parseFloat(price).toFixed(2)} EGP`;
 }
 
 /**
@@ -274,6 +274,25 @@ export async function isAdmin(supabase) {
         return profile?.role === 'admin';
     } catch (error) {
         console.error('Error checking admin status:', error);
+        return false;
+    }
+}
+
+/**
+ * Check if user is a publisher
+ */
+export async function isPublisher(supabase) {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+        const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+        return profile?.role === 'publisher';
+    } catch (error) {
+        console.error('Error checking publisher status:', error);
         return false;
     }
 }

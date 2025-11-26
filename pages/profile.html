@@ -320,15 +320,16 @@
                 // Load orders statistics
                 const { data: orders } = await supabase
                     .from('orders')
-                    .select('total')
+                    .select('total_amount')
                     .eq('user_id', user.id);
 
                 if (orders) {
                     document.getElementById('total-orders').textContent = orders.length;
 
-                    const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
+                    const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.total_amount), 0);
                     document.getElementById('total-spent').textContent = formatPrice(totalSpent);
                 }
+
 
             } catch (error) {
                 console.error('Load profile error:', error);

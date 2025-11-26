@@ -2,7 +2,7 @@
 // Checkout Page JavaScript
 // =============================================
 
-import { getCartItems, getCurrentUser, supabase } from '../../js/supabase-client.js';
+import { getCartItems, getCurrentUser, supabase, removeFromCart } from '../../js/supabase-client.js';
 import { showSuccess, showError, showLoading } from '../../js/toast.js';
 import { formatPrice } from '../../js/utils.js';
 
@@ -66,13 +66,40 @@ function renderOrderSummary(items) {
                     <div class="order-item-title">${product.title}</div>
                     <div class="order-item-qty">الكمية: ${item.quantity}</div>
                 </div>
-                <div class="order-item-price">${formatPrice(product.price * item.quantity)}</div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                    <div class="order-item-price">${formatPrice(product.price * item.quantity)}</div>
+                    <button onclick="removeItemFromCheckout(${item.id})" style="color: #dc3545; background: none; border: none; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-trash"></i> حذف
+                    </button>
+                </div>
             </div>`;
     }).join('');
 
     container.innerHTML = html;
     updateTotals(subtotal);
 }
+
+// =============================================
+// Remove Item
+// =============================================
+window.removeItemFromCheckout = async (itemId) => {
+    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+
+    const loadingToast = showLoading('جاري الحذف...');
+
+    try {
+        const { error } = await removeFromCart(itemId);
+        if (error) throw error;
+
+        loadingToast.remove();
+        showSuccess('تم حذف المنتج');
+        loadOrderSummary(); // Reload
+    } catch (error) {
+        loadingToast.remove();
+        console.error('Remove item error:', error);
+        showError('حدث خطأ أثناء الحذف');
+    }
+};
 
 // =============================================
 // Update Totals
@@ -143,6 +170,7 @@ async function placeOrder() {
                 total_amount: totalAmount,
                 status: 'pending',
                 shipping_address: `${address}, ${city}${postalCode ? ', ' + postalCode : ''}`,
+                phone: phone,
                 payment_method: paymentMethod,
                 notes: notes || null
             })
