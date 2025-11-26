@@ -380,3 +380,87 @@ CREATE POLICY "Publishers/Admins can delete videos" ON videos
         )
     );
 
+-- =============================================
+-- Reviews Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS reviews (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    user_name TEXT NOT NULL,
+    user_email TEXT,
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT NOT NULL,
+    verified_purchase BOOLEAN DEFAULT FALSE,
+    helpful_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create index for faster queries
+CREATE INDEX IF NOT EXISTS idx_reviews_product_id ON reviews(product_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_rating ON reviews(rating);
+CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON reviews(created_at DESC);
+
+-- Enable RLS
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for Reviews
+
+-- Everyone can view reviews
+CREATE POLICY "Reviews are viewable by everyone" ON reviews
+    FOR SELECT USING (true);
+
+-- Anyone can insert reviews (with valid data)
+CREATE POLICY "Anyone can insert reviews" ON reviews
+    FOR INSERT WITH CHECK (
+        rating >= 1 AND rating <= 5
+        AND LENGTH(comment) >= 10
+        AND LENGTH(user_name) >= 2
+    );
+
+-- Users can update their own reviews (based on email)
+CREATE POLICY "Users can update their own reviews" ON reviews
+    FOR UPDATE USING (
+        user_email = auth.jwt() ->> 'email'
+    );
+
+-- Admins can delete reviews
+CREATE POLICY "Admins can delete reviews" ON reviews
+    FOR DELETE USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
+
+-- =============================================
+-- Site Settings Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS site_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    setting_key TEXT UNIQUE NOT NULL,
+    setting_value JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_by UUID REFERENCES user_profiles(id)
+);
+
+-- Enable RLS
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for Site Settings
+
+-- Everyone can view settings
+CREATE POLICY "Settings are viewable by everyone" ON site_settings
+    FOR SELECT USING (true);
+
+-- Only admins can insert/update/delete settings
+CREATE POLICY "Admins can manage settings" ON site_settings
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
+
+-- Create index for faster queries
+CREATE INDEX IF NOT EXISTS idx_site_settings_key ON site_settings(setting_key);
+

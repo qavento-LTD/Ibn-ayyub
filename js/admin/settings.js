@@ -1,132 +1,180 @@
 import { supabase } from '../supabase-client.js';
 import { isAdmin } from '../utils.js';
-import { showError, showSuccess, showLoading } from '../toast.js';
 
-// Check Admin Access
-async function checkAccess() {
+// Check admin access
+async function checkAdmin() {
     const adminStatus = await isAdmin(supabase);
     if (!adminStatus) {
-        showError('ليس لديك صلاحية للوصول لهذه الصفحة');
-        setTimeout(() => {
-            window.location.href = '../../index.html';
-        }, 2000);
-        return false;
-    }
-    // Verify that the admin has logged in via the login page
-    const loggedIn = localStorage.getItem('adminAuthenticated') === 'true';
-    const role = localStorage.getItem('userRole');
-    if (!loggedIn || role !== 'admin') {
-        // Redirect to login page or home
-        window.location.href = './login.html';
+        alert('ليس لديك صلاحية للوصول لهذه الصفحة');
+        window.location.href = '../../index.html';
         return false;
     }
     return true;
 }
 
+// Tab navigation
+document.querySelectorAll('.settings-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active from all tabs and sections
+        document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
 
-// Load Settings
+        // Add active to clicked tab and corresponding section
+        tab.classList.add('active');
+        const target = tab.getAttribute('data-target');
+        document.getElementById(target).classList.add('active');
+    });
+});
+
+// Load settings
 async function loadSettings() {
-    const loadingToast = showLoading('جاري تحميل الإعدادات...');
     try {
         const { data: settings, error } = await supabase
-            .from('store_settings')
-            .select('*')
-            .single();
-        if (error && error.code !== 'PGRST116') throw error;
-        if (settings) {
-            // General
-            document.getElementById('store-name').value = settings.store_name || '';
-            document.getElementById('store-email').value = settings.store_email || '';
-            document.getElementById('store-phone').value = settings.store_phone || '';
-            document.getElementById('currency').value = settings.currency || 'SAR';
-            document.getElementById('tax-rate').value = settings.tax_rate || 15;
-            // Shipping
-            document.getElementById('shipping-fee').value = settings.shipping_fee || 0;
-            document.getElementById('free-shipping').value = settings.free_shipping_threshold || 0;
-            // Social
-            const social = settings.social_links || {};
-            document.getElementById('facebook').value = social.facebook || '';
-            document.getElementById('instagram').value = social.instagram || '';
-            document.getElementById('twitter').value = social.twitter || '';
-            // Features and Discount
-            document.getElementById('features').value = settings.features || '';
-            document.getElementById('discount').value = settings.discount || 0;
-            // Store Status
-            document.getElementById('maintenance-mode').checked = settings.maintenance_mode || false;
-            document.getElementById('allow-registration').checked = settings.allow_registration ?? true;
+            .from('site_settings')
+            .select('*');
+
+        if (error) throw error;
+
+        if (settings && settings.length > 0) {
+            settings.forEach(setting => {
+                applySettingToUI(setting.setting_key, setting.setting_value);
+            });
         }
-        loadingToast.remove();
     } catch (error) {
-        loadingToast.remove();
         console.error('Error loading settings:', error);
-        showError('حدث خطأ في تحميل الإعدادات');
     }
 }
 
-// Save Settings
-async function saveSettings() {
-    const loadingToast = showLoading('جاري حفظ الإعدادات...');
-    try {
-        const settingsData = {
-            store_name: document.getElementById('store-name').value,
-            store_email: document.getElementById('store-email').value,
-            store_phone: document.getElementById('store-phone').value,
-            currency: document.getElementById('currency').value,
-            tax_rate: parseFloat(document.getElementById('tax-rate').value),
-            shipping_fee: parseFloat(document.getElementById('shipping-fee').value),
-            free_shipping_threshold: parseFloat(document.getElementById('free-shipping').value),
-            social_links: {
-                facebook: document.getElementById('facebook').value,
-                instagram: document.getElementById('instagram').value,
-                twitter: document.getElementById('twitter').value
-            },
-            // New fields
-            features: document.getElementById('features').value,
-            discount: parseFloat(document.getElementById('discount').value) || 0,
-            // Do not modify admin password here
-            maintenance_mode: document.getElementById('maintenance-mode').checked,
-            allow_registration: document.getElementById('allow-registration').checked
-        };
-        const { data: existing } = await supabase
-            .from('store_settings')
-            .select('id')
-            .single();
-        let error;
-        if (existing) {
-            ({ error } = await supabase
-                .from('store_settings')
-                .update(settingsData)
-                .eq('id', existing.id));
-        } else {
-            ({ error } = await supabase
-                .from('store_settings')
-                .insert([settingsData]));
-        }
-        if (error) throw error;
-        loadingToast.remove();
-        showSuccess('تم حفظ الإعدادات بنجاح');
-    } catch (error) {
-        loadingToast.remove();
-        console.error('Error saving settings:', error);
-        showError('حدث خطأ في حفظ الإعدادات');
+// Apply setting to UI
+function applySettingToUI(key, value) {
+    const element = document.getElementById(key);
+    if (!element) return;
+
+    if (element.type === 'checkbox') {
+        element.checked = value;
+    } else {
+        element.value = value;
     }
+}
+
+// Save settings
+window.saveSettings = async function (section) {
+    const settingsData = {};
+
+    switch (section) {
+        case 'general':
+            settingsData['store-name'] = document.getElementById('store-name').value;
+            settingsData['store-email'] = document.getElementById('store-email').value;
+            settingsData['store-phone'] = document.getElementById('store-phone').value;
+            settingsData['store-description'] = document.getElementById('store-description').value;
+            settingsData['store-logo'] = document.getElementById('store-logo').value;
+            break;
+
+        case 'categories':
+            settingsData['cat-love-gifts'] = document.getElementById('cat-love-gifts').checked;
+            settingsData['cat-birthday-gifts'] = document.getElementById('cat-birthday-gifts').checked;
+            settingsData['cat-wedding-gifts'] = document.getElementById('cat-wedding-gifts').checked;
+            settingsData['cat-graduation-gifts'] = document.getElementById('cat-graduation-gifts').checked;
+            settingsData['cat-home-gifts'] = document.getElementById('cat-home-gifts').checked;
+            settingsData['cat-kids-gifts'] = document.getElementById('cat-kids-gifts').checked;
+            break;
+
+        case 'products':
+            settingsData['featured-products-count'] = parseInt(document.getElementById('featured-products-count').value);
+            settingsData['show-stock'] = document.getElementById('show-stock').checked;
+            settingsData['allow-out-of-stock-orders'] = document.getElementById('allow-out-of-stock-orders').checked;
+            settingsData['out-of-stock-message'] = document.getElementById('out-of-stock-message').value;
+            break;
+
+        case 'videos':
+            settingsData['enable-videos'] = document.getElementById('enable-videos').checked;
+            settingsData['autoplay-videos'] = document.getElementById('autoplay-videos').checked;
+            settingsData['max-video-size'] = parseInt(document.getElementById('max-video-size').value);
+            break;
+
+        case 'reviews':
+            settingsData['enable-reviews'] = document.getElementById('enable-reviews').checked;
+            settingsData['review-moderation'] = document.getElementById('review-moderation').checked;
+            settingsData['min-review-length'] = parseInt(document.getElementById('min-review-length').value);
+            settingsData['home-reviews-count'] = parseInt(document.getElementById('home-reviews-count').value);
+            break;
+
+        case 'social':
+            settingsData['social-facebook'] = document.getElementById('social-facebook').value;
+            settingsData['social-instagram'] = document.getElementById('social-instagram').value;
+            settingsData['social-twitter'] = document.getElementById('social-twitter').value;
+            settingsData['social-whatsapp'] = document.getElementById('social-whatsapp').value;
+            settingsData['social-tiktok'] = document.getElementById('social-tiktok').value;
+            break;
+
+        case 'shipping':
+            settingsData['shipping-fee'] = parseFloat(document.getElementById('shipping-fee').value);
+            settingsData['free-shipping-min'] = parseFloat(document.getElementById('free-shipping-min').value);
+            settingsData['enable-free-shipping'] = document.getElementById('enable-free-shipping').checked;
+            settingsData['delivery-time'] = document.getElementById('delivery-time').value;
+            break;
+
+        case 'advanced':
+            settingsData['maintenance-mode'] = document.getElementById('maintenance-mode').checked;
+            settingsData['maintenance-message'] = document.getElementById('maintenance-message').value;
+            settingsData['enable-newsletter'] = document.getElementById('enable-newsletter').checked;
+            break;
+    }
+
+    try {
+        // Save each setting
+        for (const [key, value] of Object.entries(settingsData)) {
+            const { error } = await supabase
+                .from('site_settings')
+                .upsert({
+                    setting_key: key,
+                    setting_value: value,
+                    updated_at: new Date().toISOString()
+                }, {
+                    onConflict: 'setting_key'
+                });
+
+            if (error) throw error;
+        }
+
+        showToast('تم حفظ الإعدادات بنجاح!', 'success');
+    } catch (error) {
+        console.error('Error saving settings:', error);
+        showToast('حدث خطأ في حفظ الإعدادات', 'error');
+    }
+};
+
+// Toast notification
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        color: white;
+        padding: 16px 32px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 10000;
+        font-weight: 700;
+        animation: slideDown 0.3s ease;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    const hasAccess = await checkAccess();
-    if (hasAccess) {
+    const isAdminUser = await checkAdmin();
+    if (isAdminUser) {
         loadSettings();
-        const tabs = document.querySelectorAll('.settings-tab');
-        const sections = document.querySelectorAll('.settings-section');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                sections.forEach(s => s.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.target).classList.add('active');
-            });
-        });
-        document.getElementById('save-settings').addEventListener('click', saveSettings);
     }
 });

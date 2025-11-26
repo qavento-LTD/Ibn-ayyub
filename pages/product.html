@@ -333,10 +333,83 @@
 				</div>
 			</div>
 		</section>
+
+		<!-- Reviews Section -->
+		<section style="max-width: 1200px; margin: 60px auto; padding: 0 20px;">
+			<h2 style="font-size: 2.5rem; font-weight: 900; text-align: center; margin-bottom: 40px; color: #1D3557;">
+				<i class="fas fa-star" style="color: #FFD700;"></i> آراء العملاء
+			</h2>
+
+			<!-- Reviews Stats -->
+			<div id="reviews-stats"
+				style="background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 40px; text-align: center;">
+				<!-- Stats will be loaded here -->
+			</div>
+
+			<!-- Add Review Form -->
+			<div
+				style="background: linear-gradient(135deg, #E63946 0%, #C1121F 100%); padding: 40px; border-radius: 20px; margin-bottom: 40px; box-shadow: 0 8px 30px rgba(230, 57, 70, 0.3);">
+				<h3 style="color: white; font-size: 1.8rem; font-weight: 700; margin-bottom: 25px; text-align: center;">
+					<i class="fas fa-pen"></i> اكتب تقييمك
+				</h3>
+				<form id="review-form" style="max-width: 600px; margin: 0 auto;">
+					<!-- Star Rating -->
+					<div style="margin-bottom: 25px; text-align: center;">
+						<label
+							style="display: block; color: white; font-weight: 600; margin-bottom: 15px; font-size: 1.1rem;">التقييم:</label>
+						<div class="star-rating"
+							style="font-size: 40px; cursor: pointer; display: inline-flex; gap: 10px;">
+							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
+							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
+							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
+							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
+							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
+						</div>
+					</div>
+
+					<!-- Name -->
+					<div style="margin-bottom: 20px;">
+						<label
+							style="display: block; color: white; font-weight: 600; margin-bottom: 8px;">الاسم:</label>
+						<input type="text" id="review-name" required
+							style="width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-family: 'Cairo', sans-serif;">
+					</div>
+
+					<!-- Email (Optional) -->
+					<div style="margin-bottom: 20px;">
+						<label style="display: block; color: white; font-weight: 600; margin-bottom: 8px;">البريد
+							الإلكتروني (اختياري):</label>
+						<input type="email" id="review-email"
+							style="width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-family: 'Cairo', sans-serif;">
+					</div>
+
+					<!-- Comment -->
+					<div style="margin-bottom: 25px;">
+						<label
+							style="display: block; color: white; font-weight: 600; margin-bottom: 8px;">التعليق:</label>
+						<textarea id="review-comment" required rows="4"
+							placeholder="شاركنا رأيك في المنتج... (10 أحرف على الأقل)"
+							style="width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; resize: vertical; font-family: 'Cairo', sans-serif;"></textarea>
+					</div>
+
+					<!-- Submit Button -->
+					<button type="submit"
+						style="width: 100%; padding: 18px; background: white; color: #E63946; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+						<i class="fas fa-paper-plane"></i> إرسال التقييم
+					</button>
+				</form>
+			</div>
+
+			<!-- Reviews List -->
+			<div id="reviews-list">
+				<!-- Reviews will be loaded here -->
+			</div>
+		</section>
 	</main>
 
 	<script type="module" src="../Front-End/Interaction/product.js"></script>
 	<script type="module" src="../Front-End/Interaction/main.js"></script>
+	<script type="module" src="../js/reviews.js"></script>
 	<script>
 		function updateQty(change) {
 			const input = document.getElementById('qtyInput');

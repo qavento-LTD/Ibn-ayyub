@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>القسم - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
+    <style>
+        /* Category Page Styles */
+        .category-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 80px 20px 60px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .category-icon-large {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .category-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .category-description {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .category-content {
+            max-width: 1400px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .category-header {
+                padding: 60px 20px 40px;
+            }
+
+            .category-title {
+                font-size: 2rem;
+            }
+
+            .category-icon-large {
+                font-size: 3rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../../index.html" style="text-decoration: none;">
+                <img src="../../assets/images/logo.png" alt="هديتي" style="height: 50px;">
+            </a>
+        </div>
+
+        <div class="icon-navs">
+            <div class="cart-icon-wrapper" id="cart-btn">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-count" id="cart-count">0</span>
+            </div>
+            <div class="login" id="auth-section">
+                <!-- Dynamic Auth Content -->
+            </div>
+            <div class="menu" id="menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Cart Dropdown -->
+        <section class="cart-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 class="section-title" style="margin: 0; font-size: 1.2rem;">سلة الشراء</h2>
+                <button id="closeCart" style="background:none; border:none; cursor:pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="cart-items-wrapper" style="max-height: 300px; overflow-y: auto;">
+                <!-- Cart items will be added here dynamically -->
+                <div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">
+                    سلة التسوق فارغة
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <!-- Navigation Sidebar -->
+    <nav class="nav" id="nav-menu">
+        <ul>
+            <li><a href="../../index.html">الرئيسية</a></li>
+            <li><a href="../products.html">المنتجات</a></li>
+            <li><a href="../cart.html">سلة الشراء</a></li>
+            <li><a href="#contact">تواصل معنا</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Category Header -->
+        <section class="category-header">
+            <i id="category-icon" class="category-icon-large"></i>
+            <h1 id="category-title" class="category-title">القسم</h1>
+            <p id="category-description" class="category-description">وصف القسم</p>
+        </section>
+
+        <!-- Products -->
+        <section class="category-content">
+            <div class="products-grid" id="products-grid">
+                <!-- Products will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="../../Front-End/Interaction/main.js"></script>
+    <script type="module" src="../../js/category.js"></script>
+</body>
+
+</html>

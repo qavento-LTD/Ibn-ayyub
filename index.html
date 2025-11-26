@@ -151,30 +151,36 @@
         <section class="categories" id="categories">
             <h2 class="section-title">أقسام الهدايا</h2>
             <div class="categories-grid">
-                <div class="category-card">
+                <a href="pages/categories/category.html?category=love-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
                     <div class="category-icon"><i class="fas fa-heart"></i></div>
                     <h3>هدايا الحب</h3>
-                </div>
-                <div class="category-card">
+                </a>
+                <a href="pages/categories/category.html?category=birthday-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
                     <div class="category-icon"><i class="fas fa-birthday-cake"></i></div>
                     <h3>أعياد الميلاد</h3>
-                </div>
-                <div class="category-card">
+                </a>
+                <a href="pages/categories/category.html?category=wedding-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
                     <div class="category-icon"><i class="fas fa-glass-cheers"></i></div>
                     <h3>هدايا الزفاف</h3>
-                </div>
-                <div class="category-card">
+                </a>
+                <a href="pages/categories/category.html?category=graduation-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
                     <div class="category-icon"><i class="fas fa-graduation-cap"></i></div>
                     <h3>هدايا التخرج</h3>
-                </div>
-                <div class="category-card">
+                </a>
+                <a href="pages/categories/category.html?category=home-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
                     <div class="category-icon"><i class="fas fa-home"></i></div>
                     <h3>هدايا المنزل</h3>
-                </div>
-                <div class="category-card">
+                </a>
+                <a href="pages/categories/category.html?category=kids-gifts" class="category-card"
+                    style="text-decoration: none; color: inherit;">
                     <div class="category-icon"><i class="fas fa-baby"></i></div>
                     <h3>هدايا الأطفال</h3>
-                </div>
+                </a>
             </div>
         </section>
 
@@ -189,42 +195,17 @@
             </div>
         </section>
 
-        <!-- Testimonials -->
+        <!-- Customer Reviews (Real) -->
         <section class="testimonials" id="testimonials">
             <h2 class="section-title">آراء عملائنا</h2>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <p class="testimonial-content">"تجربة تسوق رائعة! الهدايا وصلت في وقت قياسي والتغليف كان في غاية
-                        الروعة. شكراً لكم."</p>
-                    <div class="testimonial-author">
-                        <div class="author-img"><i class="fas fa-user"></i></div>
-                        <div class="author-info">
-                            <h4>سارة أحمد</h4>
-                            <p>الرياض</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-content">"أفضل متجر للهدايا تعاملت معه. جودة المنتجات عالية جداً والأسعار
-                        مناسبة."</p>
-                    <div class="testimonial-author">
-                        <div class="author-img"><i class="fas fa-user"></i></div>
-                        <div class="author-info">
-                            <h4>محمد علي</h4>
-                            <p>جدة</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-content">"خدمة العملاء متعاونين جداً، ساعدوني في اختيار الهدية المناسبة
-                        لزوجتي."</p>
-                    <div class="testimonial-author">
-                        <div class="author-img"><i class="fas fa-user"></i></div>
-                        <div class="author-info">
-                            <h4>فاطمة خالد</h4>
-                            <p>الدمام</p>
-                        </div>
-                    </div>
+            <p style="text-align: center; color: #666; max-width: 600px; margin: 0 auto 40px; font-size: 1.1rem;">
+                تقييمات حقيقية من عملائنا الكرام
+            </p>
+            <div class="testimonials-grid" id="home-reviews-grid">
+                <!-- Reviews will be loaded dynamically -->
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                    <p>جاري تحميل التقييمات...</p>
                 </div>
             </div>
         </section>
@@ -246,40 +227,45 @@
     <footer id="contact">
         <div class="footer-container">
             <div class="footer-section">
-                <h3><i class="fas fa-gift me-2"></i> هديتي</h3>
-                <p>نصنع الذكريات الجميلة من خلال هدايا مميزة تلامس القلوب. جودة عالية وخدمة راقية تليق بكم.</p>
+                <h3><i class="fas fa-gift me-2"></i> <span data-store-name>هديتي</span></h3>
+                <p data-store-description>نصنع الذكريات الجميلة من خلال هدايا مميزة تلامس القلوب. جودة عالية وخدمة راقية
+                    تليق بكم.</p>
                 <div class="social-links">
-                    <a href="#" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" data-social="facebook" aria-label="facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" data-social="instagram" aria-label="instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" data-social="twitter" aria-label="twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" data-social="whatsapp" aria-label="whatsapp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" data-social="tiktok" aria-label="tiktok"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
             <div class="footer-section">
                 <h3>روابط سريعة</h3>
                 <ul>
-                    <li><a href="#">الرئيسية</a></li>
-                    <li><a href="pages/products.html">المنتجات</a></li>
-                    <li><a href="pages/track-order.html">تتبع طلبك</a></li>
-                    <li><a href="#about">من نحن</a></li>
+                    <li><a href="#products">المنتجات</a></li>
+                    <li><a href="#categories">الأقسام</a></li>
                     <li><a href="#testimonials">آراء العملاء</a></li>
+                    <li><a href="pages/about.html">من نحن</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>تواصل معنا</h3>
                 <ul>
-                    <li><i class="fas fa-phone me-2"></i> +966 50 123 4567</li>
-                    <li><i class="fas fa-envelope me-2"></i> info@giftstore.com</li>
-                    <li><i class="fas fa-map-marker-alt me-2"></i> الرياض، المملكة العربية السعودية</li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:info@hadyti.com"
+                            data-store-email>info@hadyti.com</a></li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+966501234567" data-store-phone>+966 50 123 4567</a>
+                    </li>
+                    <li><i class="fas fa-map-marker-alt"></i> المملكة العربية السعودية</li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 <strong>هديتي</strong>. جميع الحقوق محفوظة.</p>
+            <p>&copy; 2024 <span data-store-name>هديتي</span>. جميع الحقوق محفوظة.</p>
         </div>
     </footer>
 
     <script type="module" src="Front-End/Interaction/main.js"></script>
+    <script type="module" src="js/home-reviews.js"></script>
+    <script type="module" src="js/site-settings.js"></script>
     <script type="module">
         import { supabase } from '/js/supabase-client.js';
         (async () => {

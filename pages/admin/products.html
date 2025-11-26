@@ -323,15 +323,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label>الفئة *</label>
+                    <label>القسم *</label>
                     <select id="product-category" required>
-                        <option value="">اختر الفئة</option>
-                        <option value="flowers">ورود</option>
-                        <option value="chocolate">شوكولاتة</option>
-                        <option value="perfumes">عطور</option>
-                        <option value="accessories">إكسسوارات</option>
-                        <option value="toys">ألعاب</option>
-                        <option value="other">أخرى</option>
+                        <option value="">اختر القسم</option>
+                        <option value="love-gifts">هدايا الحب</option>
+                        <option value="birthday-gifts">أعياد الميلاد</option>
+                        <option value="wedding-gifts">هدايا الزفاف</option>
+                        <option value="graduation-gifts">هدايا التخرج</option>
+                        <option value="home-gifts">هدايا المنزل</option>
+                        <option value="kids-gifts">هدايا الأطفال</option>
                     </select>
                 </div>
 
@@ -454,12 +454,12 @@
 
         function getCategoryName(category) {
             const categories = {
-                'flowers': 'ورود',
-                'chocolate': 'شوكولاتة',
-                'perfumes': 'عطور',
-                'accessories': 'إكسسوارات',
-                'toys': 'ألعاب',
-                'other': 'أخرى'
+                'love-gifts': 'هدايا الحب',
+                'birthday-gifts': 'أعياد الميلاد',
+                'wedding-gifts': 'هدايا الزفاف',
+                'graduation-gifts': 'هدايا التخرج',
+                'home-gifts': 'هدايا المنزل',
+                'kids-gifts': 'هدايا الأطفال'
             };
             return categories[category] || category;
         }
