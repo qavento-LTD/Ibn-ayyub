@@ -1,7 +1,7 @@
 import { supabase } from './supabase-client.js';
 
-// Load Top Reviews for Homepage
-export async function loadTopReviews(limit = 6) {
+// Load Top Reviews for Homepage Carousel
+export async function loadTopReviews(limit = 10) {
     try {
         const { data: reviews, error } = await supabase
             .from('reviews')
@@ -12,26 +12,26 @@ export async function loadTopReviews(limit = 6) {
 
         if (error) throw error;
 
-        const container = document.getElementById('home-reviews-grid');
-        if (!container) return;
+        const track = document.getElementById('testimonialTrack');
+        if (!track) return;
 
         if (!reviews || reviews.length === 0) {
-            container.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+            track.parentElement.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #666;">
                     <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
                     <p style="font-size: 1.1rem;">لا توجد تقييمات بعد</p>
-                    <p style="font-size: 0.9rem; margin-top: 10px;">كن أول من يقيّم منتجاتنا!</p>
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = reviews.map(review => `
-            <div class="testimonial-card" style="position: relative;">
+        // Create HTML for reviews
+        const reviewsHTML = reviews.map(review => `
+            <div class="testimonial-card" style="min-width: 350px; max-width: 350px;">
                 <div class="stars" style="color: #FFD700; margin-bottom: 15px; font-size: 1.2rem;">
                     ${generateStars(review.rating)}
                 </div>
-                <p class="testimonial-content">"${review.comment}"</p>
+                <p class="testimonial-content" style="font-size: 1rem;">"${review.comment}"</p>
                 <div class="testimonial-author">
                     <div class="author-img">
                         <i class="fas fa-user"></i>
@@ -45,17 +45,11 @@ export async function loadTopReviews(limit = 6) {
             </div>
         `).join('');
 
+        // Duplicate content for smooth infinite scroll
+        track.innerHTML = reviewsHTML + reviewsHTML;
+
     } catch (error) {
         console.error('Error loading reviews:', error);
-        const container = document.getElementById('home-reviews-grid');
-        if (container) {
-            container.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #f44336;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 15px;"></i>
-                    <p>حدث خطأ في تحميل التقييمات</p>
-                </div>
-            `;
-        }
     }
 }
 
@@ -95,7 +89,7 @@ function formatDate(dateString) {
 
 // Auto-load on homepage
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('home-reviews-grid')) {
-        loadTopReviews(6);
+    if (document.getElementById('testimonialTrack')) {
+        loadTopReviews(10);
     }
 });

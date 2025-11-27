@@ -165,12 +165,30 @@ async function openOrderModal(orderId) {
 
         // Populate Products
         const productsList = document.getElementById('modalProductsList');
+        const itemsTotal = order.order_items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shippingFee = order.shipping_fee || 0;
+
         productsList.innerHTML = order.order_items.map(item => `
             <div class="product-item">
                 <span>${item.products?.title || 'منتج محذوف'} (x${item.quantity})</span>
                 <span>${formatPrice(item.price * item.quantity)}</span>
             </div>
-        `).join('');
+        `).join('') + `
+            <div class="product-item" style="border-top: 2px solid #eee; margin-top: 10px; padding-top: 10px;">
+                <span style="font-weight: 600;">مجموع المنتجات:</span>
+                <span style="font-weight: 600;">${formatPrice(itemsTotal)}</span>
+            </div>
+            <div class="product-item">
+                <span style="font-weight: 600;">رسوم الشحن:</span>
+                <span style="font-weight: 600; color: ${shippingFee === 0 ? '#28a745' : '#333'};">
+                    ${shippingFee === 0 ? 'مجاني 🎉' : formatPrice(shippingFee)}
+                </span>
+            </div>
+            <div class="product-item" style="border-top: 2px solid var(--primary); margin-top: 5px; padding-top: 10px;">
+                <span style="font-weight: 700; font-size: 1.1rem;">الإجمالي:</span>
+                <span style="font-weight: 700; font-size: 1.1rem; color: var(--primary);">${formatPrice(order.total_amount)}</span>
+            </div>
+        `;
 
         loadingToast.remove();
         document.getElementById('orderModal').style.display = 'flex';

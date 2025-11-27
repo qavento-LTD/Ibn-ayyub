@@ -339,6 +339,10 @@
                     <i class="fas fa-users"></i>
                     <span>المستخدمين</span>
                 </a>
+                <a href="chat.html" class="sidebar-item">
+                    <i class="fas fa-comments"></i>
+                    <span>المحادثات</span>
+                </a>
                 <div style="height: 1px; background: #e9ecef; margin: 16px 0;"></div>
                 <a href="settings.html" class="sidebar-item active">
                     <i class="fas fa-cog"></i>
@@ -379,6 +383,9 @@
                     </div>
                     <div class="settings-tab" data-target="advanced">
                         <i class="fas fa-tools"></i> متقدم
+                    </div>
+                    <div class="settings-tab" data-target="chat">
+                        <i class="fas fa-comments"></i> المحادثات
                     </div>
                 </div>
 
@@ -753,12 +760,61 @@
                             <i class="fas fa-save"></i> حفظ الإعدادات المتقدمة
                         </button>
                     </div>
+
+                    <!-- Chat Settings / Interface -->
+                    <div id="chat" class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-comments"></i>
+                            المحادثات المباشرة
+                        </h3>
+
+                        <div class="chat-admin-container"
+                            style="display: flex; height: 600px; border: 1px solid #e9ecef; border-radius: 12px; overflow: hidden;">
+                            <!-- Conversations List -->
+                            <div class="conversations-list"
+                                style="width: 300px; border-left: 1px solid #e9ecef; background: #f8f9fa; display: flex; flex-direction: column;">
+                                <div style="padding: 15px; border-bottom: 1px solid #e9ecef; font-weight: bold;">
+                                    المحادثات النشطة
+                                </div>
+                                <div id="conversations-wrapper" style="flex: 1; overflow-y: auto;">
+                                    <!-- Dynamic List -->
+                                    <div style="padding: 20px; text-align: center; color: #999;">جاري التحميل...</div>
+                                </div>
+                            </div>
+
+                            <!-- Chat Area -->
+                            <div class="admin-chat-area"
+                                style="flex: 1; display: flex; flex-direction: column; background: white;">
+                                <div id="active-chat-header"
+                                    style="padding: 15px; border-bottom: 1px solid #e9ecef; font-weight: bold; background: #fff;">
+                                    اختر محادثة للبدء
+                                </div>
+
+                                <div id="admin-chat-messages"
+                                    style="flex: 1; padding: 20px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px;">
+                                    <!-- Messages -->
+                                </div>
+
+                                <div class="admin-chat-input"
+                                    style="padding: 15px; border-top: 1px solid #e9ecef; display: flex; gap: 10px;">
+                                    <input type="text" id="admin-message-input" placeholder="اكتب ردك هنا..."
+                                        style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px;"
+                                        disabled>
+                                    <button id="admin-send-btn" class="save-btn"
+                                        style="padding: 10px 20px; font-size: 0.9rem;" disabled>
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
     <script type="module" src="../../js/admin/settings.js"></script>
+    <script type="module" src="../../js/admin/chat-manager.js"></script>
 </body>
 
 </html>

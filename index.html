@@ -4,23 +4,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="متجر الهدايا - وجهتك الأولى للهدايا المميزة والراقية لكل المناسبات. تسوق الآن واحصل على أفضل العروض.">
+    <meta name="description"
+        content="متجر الهدايا - وجهتك الأولى للهدايا المميزة والراقية لكل المناسبات. تسوق الآن واحصل على أفضل العروض.">
     <meta name="keywords" content="هدايا, متجر هدايا, هدايا زفاف, هدايا تخرج, هدايا عيد ميلاد, تسوق اونلاين">
     <meta name="author" content="Ibn Ayyub">
     <meta property="og:title" content="متجر الهدايا | هدايا مميزة لكل مناسبة">
     <meta property="og:description" content="اكتشف تشكيلة واسعة من الهدايا الفريدة والراقية.">
     <meta property="og:image" content="assets/images/og-image.jpg">
-    
+
     <title>متجر الهدايا | هدايا مميزة لكل مناسبة</title>
-    
+
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    
+
     <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Main CSS -->
     <link rel="stylesheet" href="Front-End/Appearance/index.css">
+
+    <!-- Custom Styles for Home Page Enhancements -->
+    <style>
+        /* Parallax Hero */
+        .hero-parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* Deal of the Day */
+        .deal-section {
+            background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .countdown-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            display: block;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        /* Testimonial Carousel */
+        .testimonial-carousel-container {
+            overflow: hidden;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .testimonial-track {
+            display: flex;
+            gap: 30px;
+            animation: scroll 40s linear infinite;
+            width: max-content;
+        }
+
+        .testimonial-track:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(50%);
+            }
+
+            /* Adjust based on content width */
+        }
+
+        /* Newsletter Popup */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            transform: scale(0.8);
+            transition: all 0.3s;
+        }
+
+        .popup-overlay.active .popup-content {
+            transform: scale(1);
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #666;
+        }
+    </style>
 </head>
 
 <body>
@@ -29,7 +155,7 @@
         <div class="logo">
             <img src="assets/images/logo.png" alt="هديتي" style="height: 50px;">
         </div>
-        
+
         <!-- Main Navigation -->
         <nav class="nav">
             <a href="index.html" class="nav-link active">
@@ -40,7 +166,7 @@
                 <i class="fas fa-gifts"></i>
                 <span>المنتجات</span>
             </a>
-            <a href="pages/videos.html" class="nav-link">
+            <a href="pages/video.html" class="nav-link">
                 <i class="fas fa-video"></i>
                 <span>الفيديوهات</span>
             </a>
@@ -52,8 +178,12 @@
                 <i class="fas fa-envelope"></i>
                 <span>اتصل بنا</span>
             </a>
+            <a href="pages/support-chat.html" class="nav-link" style="color: var(--primary);">
+                <i class="fas fa-headset"></i>
+                <span>المساعد الذكي</span>
+            </a>
         </nav>
-        
+
         <div class="icon-navs">
             <div class="cart-icon-wrapper" id="cart-btn">
                 <i class="fa-solid fa-bag-shopping"></i>
@@ -68,7 +198,7 @@
                 <span></span>
             </div>
         </div>
-        
+
         <!-- Cart Dropdown -->
         <section class="cart-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -77,7 +207,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <div class="cart-items-wrapper" style="max-height: 300px; overflow-y: auto;">
                 <!-- Cart items will be added here dynamically -->
                 <div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">
@@ -86,91 +216,118 @@
             </div>
         </section>
     </header>
+
+    <!-- Mobile Nav Sidebar -->
     <nav class="nav" id="navMenu">
         <ul id="nav-list">
             <li><a href="#"><i class="fas fa-home me-2"></i> الرئيسية</a></li>
-            <li><a href="#products"><i class="fas fa-gift me-2"></i> المنتجات</a></li>
-            <li><a href="#categories"><i class="fas fa-th-large me-2"></i> الأقسام</a></li>
-            <li><a href="#testimonials"><i class="fas fa-comments me-2"></i> آراء العملاء</a></li>
-            <li><a href="#contact"><i class="fas fa-envelope me-2"></i> تواصل معنا</a></li>
+            <li><a href="pages/products.html"><i class="fas fa-gift me-2"></i> المنتجات</a></li>
+            <li><a href="pages/video.html"><i class="fas fa-video me-2"></i> الفيديوهات</a></li>
+            <li><a href="pages/track-order.html"><i class="fas fa-search me-2"></i> تتبع طلبك</a></li>
+            <li><a href="pages/contact.html"><i class="fas fa-envelope me-2"></i> تواصل معنا</a></li>
         </ul>
-        <div class="login">
-            <a href="#"><i class="fas fa-user"></i> تسجيل الدخول</a>
-        </div>
     </nav>
-    </header>
-    
+
     <main>
-        <!-- Hero Section -->
-        <section class="hero">
+        <!-- Hero Section (Parallax) -->
+        <section class="hero hero-parallax">
             <div class="hero-content fade-in-up">
                 <h1>هدايا مميزة لكل مناسبة</h1>
                 <p>اختر أجمل الهدايا المخصصة لأحبائك من تشكيلتنا المتنوعة من الهدايا الفريدة والراقية التي تلامس القلوب.
                 </p>
                 <div class="hero-buttons">
-                    <a href="#products" class="btn">تسوق الآن <i class="fas fa-arrow-left" style="margin-right: 8px;"></i></a>
-                    <a href="pages/videos.html" class="btn">مشاهدة الفيديوهات <i class="fas fa-video"></i></a>
+                    <a href="pages/products.html" class="btn">تسوق الآن <i class="fas fa-arrow-left"
+                            style="margin-right: 8px;"></i></a>
+                    <a href="pages/video.html" class="btn btn-outline">مشاهدة الفيديوهات <i
+                            class="fas fa-video"></i></a>
                 </div>
             </div>
         </section>
-        
+
         <!-- Features Icons -->
         <section class="icons-container">
             <div class="icons-grid">
                 <div class="icon-card">
                     <i class="fas fa-truck"></i>
                     <h3>توصيل سريع</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 5px;">شحن لجميع المناطق</p>
+                    <p>شحن لجميع المناطق</p>
                 </div>
                 <div class="icon-card">
                     <i class="fas fa-undo"></i>
                     <h3>استرجاع مجاني</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 5px;">خلال 14 يوم</p>
+                    <p>خلال 14 يوم</p>
                 </div>
                 <div class="icon-card">
                     <i class="fas fa-shield-alt"></i>
                     <h3>ضمان الجودة</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 5px;">منتجات أصلية 100%</p>
+                    <p>منتجات أصلية 100%</p>
                 </div>
                 <div class="icon-card">
                     <i class="fas fa-headset"></i>
-                    <h3>دعم 24</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 5px;">خدمة عملاء متميزة</p>
+                    <h3>دعم 24/7</h3>
+                    <p>خدمة عملاء متميزة</p>
                 </div>
             </div>
         </section>
-        
+
         <!-- Categories -->
         <section class="categories" id="categories">
             <h2 class="section-title">أقسام الهدايا</h2>
             <div class="categories-grid">
-                <a href="pages/categories/category.html?category=love-gifts" class="category-card" style="text-decoration: none; color: inherit;">
+                <a href="pages/categories/category.html?category=love-gifts" class="category-card">
                     <div class="category-icon"><i class="fas fa-heart"></i></div>
                     <h3>هدايا الحب</h3>
                 </a>
-                <a href="pages/categories/category.html?category=birthday-gifts" class="category-card" style="text-decoration: none; color: inherit;">
+                <a href="pages/categories/category.html?category=birthday-gifts" class="category-card">
                     <div class="category-icon"><i class="fas fa-birthday-cake"></i></div>
                     <h3>أعياد الميلاد</h3>
                 </a>
-                <a href="pages/categories/category.html?category=wedding-gifts" class="category-card" style="text-decoration: none; color: inherit;">
+                <a href="pages/categories/category.html?category=wedding-gifts" class="category-card">
                     <div class="category-icon"><i class="fas fa-glass-cheers"></i></div>
                     <h3>هدايا الزفاف</h3>
                 </a>
-                <a href="pages/categories/category.html?category=graduation-gifts" class="category-card" style="text-decoration: none; color: inherit;">
+                <a href="pages/categories/category.html?category=graduation-gifts" class="category-card">
                     <div class="category-icon"><i class="fas fa-graduation-cap"></i></div>
                     <h3>هدايا التخرج</h3>
                 </a>
-                <a href="pages/categories/category.html?category=home-gifts" class="category-card" style="text-decoration: none; color: inherit;">
+                <a href="pages/categories/category.html?category=home-gifts" class="category-card">
                     <div class="category-icon"><i class="fas fa-home"></i></div>
                     <h3>هدايا المنزل</h3>
                 </a>
-                <a href="pages/categories/category.html?category=kids-gifts" class="category-card" style="text-decoration: none; color: inherit;">
+                <a href="pages/categories/category.html?category=kids-gifts" class="category-card">
                     <div class="category-icon"><i class="fas fa-baby"></i></div>
                     <h3>هدايا الأطفال</h3>
                 </a>
             </div>
         </section>
-        
+
+        <!-- Deal of the Day (New Feature) -->
+        <section class="deal-section">
+            <div class="container" style="max-width: 800px; margin: 0 auto;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 10px;">عروض اليوم المميزة</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 30px;">خصم يصل إلى 50% على باقات الهدايا المختارة. العرض
+                    ينتهي قريباً!</p>
+
+                <div class="countdown-container" id="countdown">
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="hours">00</span>
+                        <span class="countdown-label">ساعة</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="minutes">00</span>
+                        <span class="countdown-label">دقيقة</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="seconds">00</span>
+                        <span class="countdown-label">ثانية</span>
+                    </div>
+                </div>
+
+                <a href="pages/products.html" class="btn btn-primary"
+                    style="margin-top: 40px; background: white; color: var(--primary);">تسوق العروض الآن</a>
+            </div>
+        </section>
+
         <!-- Products -->
         <section class="products" id="products">
             <h2 class="section-title">المنتجات المميزة</h2>
@@ -181,22 +338,41 @@
                 <a href="pages/products.html" class="btn">عرض كل المنتجات</a>
             </div>
         </section>
-        
-        <!-- Customer Reviews (Real) -->
-        <section class="testimonials" id="testimonials">
-            <h2 class="section-title">آراء عملائنا</h2>
-            <p style="text-align: center; color: #666; max-width: 600px; margin: 0 auto 40px; font-size: 1.1rem;">
-                تقييمات حقيقية من عملائنا الكرام
-            </p>
-            <div class="testimonials-grid" id="home-reviews-grid">
-                <!-- Reviews will be loaded dynamically -->
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px;"></i>
-                    <p>جاري تحميل التقييمات...</p>
+
+        <!-- Featured Videos Section -->
+        <section class="videos-section" id="videos-section" style="padding: 60px 20px; background: #f9f9f9;">
+            <div class="container" style="max-width: 1200px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2 class="section-title">فيديوهاتنا المميزة</h2>
+                    <p style="color: var(--text-light); margin-top: 10px;">اكتشف أحدث العروض والشروحات</p>
+                </div>
+
+                <div class="videos-grid" id="homeVideosGrid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                    <!-- Videos will be loaded here -->
+                    <div class="loading" style="text-align: center; grid-column: 1/-1;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px; display: flex; justify-content: center; gap: 20px;">
+                    <a href="pages/video.html" class="btn">
+                        <i class="fas fa-th-large"></i> معرض الفيديوهات
+                    </a>
                 </div>
             </div>
         </section>
-        
+
+        <!-- Testimonials Carousel (Enhanced) -->
+        <section class="testimonials">
+            <h2 class="section-title">آراء عملائنا</h2>
+            <div class="testimonial-carousel-container">
+                <div class="testimonial-track" id="testimonialTrack">
+                    <!-- Testimonials will be injected here by JS -->
+                </div>
+            </div>
+        </section>
+
         <!-- Newsletter -->
         <section class="newsletter">
             <div class="newsletter-content">
@@ -209,7 +385,7 @@
             </div>
         </section>
     </main>
-    
+
     <!-- Footer -->
     <footer id="contact">
         <div class="footer-container">
@@ -228,16 +404,18 @@
             <div class="footer-section">
                 <h3>روابط سريعة</h3>
                 <ul>
-                    <li><a href="#products">المنتجات</a></li>
+                    <li><a href="pages/products.html">المنتجات</a></li>
                     <li><a href="#categories">الأقسام</a></li>
-                    <li><a href="#testimonials">آراء العملاء</a></li>
+                    <li><a href="pages/video.html">الفيديوهات</a></li>
                     <li><a href="pages/about.html">من نحن</a></li>
+                    <li><a href="pages/contact.html">اتصل بنا</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>تواصل معنا</h3>
                 <ul>
-                    <li><i class="fas fa-envelope"></i> <a href="mailto:info@hadyti.com" data-store-email>info@hadyti.com</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:info@hadyti.com"
+                            data-store-email>info@hadyti.com</a></li>
                     <li><i class="fas fa-phone"></i> <a href="tel:+966501234567" data-store-phone>+966 50 123 4567</a>
                     </li>
                     <li><i class="fas fa-map-marker-alt"></i> المملكة العربية السعودية</li>
@@ -248,7 +426,23 @@
             <p>&copy; 2024 <span data-store-name>هديتي</span>. جميع الحقوق محفوظة.</p>
         </div>
     </footer>
-    
+
+    <!-- Newsletter Popup -->
+    <div class="popup-overlay" id="newsletterPopup">
+        <div class="popup-content">
+            <button class="close-popup" id="closePopup"><i class="fas fa-times"></i></button>
+            <i class="fas fa-envelope-open-text"
+                style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2>لا تفوت العروض!</h2>
+            <p style="color: #666; margin-bottom: 20px;">اشترك الآن واحصل على خصم 10% على طلبك الأول.</p>
+            <form class="newsletter-form" style="flex-direction: column;">
+                <input type="email" placeholder="بريدك الإلكتروني" required style="width: 100%;">
+                <button type="submit" style="width: 100%;">احصل على الخصم</button>
+            </form>
+            <p style="font-size: 0.8rem; color: #999; margin-top: 10px;">لا تقلق، لا نرسل رسائل مزعجة.</p>
+        </div>
+    </div>
+
     <script type="module" src="Front-End/Interaction/main.js"></script>
     <script type="module" src="js/home-reviews.js"></script>
     <script type="module" src="js/site-settings.js"></script>
@@ -271,6 +465,35 @@
                 }
             }
         })();
+
+        // Countdown Logic
+        const countdownDate = new Date().setHours(24, 0, 0, 0); // Next midnight
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+        };
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Popup Logic
+        setTimeout(() => {
+            if (!localStorage.getItem('popupShown')) {
+                document.getElementById('newsletterPopup').classList.add('active');
+                localStorage.setItem('popupShown', 'true');
+            }
+        }, 5000);
+
+        document.getElementById('closePopup').onclick = () => {
+            document.getElementById('newsletterPopup').classList.remove('active');
+        };
     </script>
 </body>
 

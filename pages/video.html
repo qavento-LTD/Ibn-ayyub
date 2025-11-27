@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سينما الهدايا - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../Front-End/Appearance/index.css">
+    <style>
+        :root {
+            --primary: #E63946;
+            --dark-bg: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        /* Ambient Background */
+        .ambient-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(230, 57, 70, 0.15), transparent 70%);
+            z-index: -1;
+            transition: background 1s ease;
+            pointer-events: none;
+        }
+
+        /* Glass Header (Overrides Standard Header) */
+        header {
+            position: fixed !important;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent) !important;
+            box-shadow: none !important;
+            padding: 15px 50px !important;
+            transition: background 0.3s;
+            border-bottom: none !important;
+        }
+
+        header.scrolled {
+            background: rgba(0, 0, 0, 0.95) !important;
+            backdrop-filter: blur(10px);
+            padding: 10px 50px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white !important;
+        }
+
+        .cart-icon-wrapper i,
+        .menu span {
+            color: white !important;
+        }
+
+        /* Cinematic Hero */
+        .hero-section {
+            height: 85vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            overflow: hidden;
+            margin-top: 0;
+        }
+
+        .hero-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.6;
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 10;
+            animation: slideUp 1s ease-out;
+            padding-top: 60px;
+        }
+
+        .badge {
+            background: var(--primary);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin: 20px 0;
+            line-height: 1.1;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: white;
+            color: black;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(109, 109, 110, 0.7);
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(109, 109, 110, 0.9);
+        }
+
+        /* Rails */
+        .content-wrapper {
+            margin-top: -100px;
+            position: relative;
+            z-index: 20;
+            padding-bottom: 50px;
+        }
+
+        .video-rail {
+            padding: 20px 0 20px 50px;
+            margin-bottom: 20px;
+        }
+
+        .rail-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rail-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .rail-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .rail-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .rail-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .rail-container::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* 3D Tilt Card */
+        .video-card-3d {
+            min-width: 300px;
+            height: 170px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            background: #222;
+        }
+
+        .video-card-3d:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .video-card-3d:hover .card-image {
+            transform: scale(1.1);
+        }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 15px;
+        }
+
+        .video-card-3d:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card-meta {
+            font-size: 0.8rem;
+            color: #ccc;
+            display: flex;
+            gap: 10px;
+        }
+
+        .play-btn-mini {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 40px;
+            height: 40px;
+            background: rgba(230, 57, 70, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .video-card-3d:hover .play-btn-mini {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px !important;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-section {
+                padding: 0 20px;
+                height: 60vh;
+            }
+
+            .video-rail {
+                padding-left: 20px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            /* Mobile menu handled by main.js */
+        }
+
+        /* Reels Overlay Styles */
+        .reels-overlay {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .reels-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .close-reels-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2001;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            backdrop-filter: blur(5px);
+            transition: 0.3s;
+        }
+
+        .close-reels-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: rotate(90deg);
+        }
+
+        .video-container {
+            height: 100vh;
+            width: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .video-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .video-wrapper {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            max-width: 500px;
+        }
+
+        @media (min-width: 769px) {
+            .video-wrapper video {
+                object-fit: contain;
+            }
+        }
+
+        .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            color: white;
+            z-index: 10;
+            pointer-events: none;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .overlay * {
+            pointer-events: auto;
+        }
+
+        .actions {
+            position: absolute;
+            left: 20px;
+            bottom: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        @media (min-width: 769px) {
+            .actions {
+                left: calc(50% + 270px);
+            }
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .action-btn.liked {
+            background: rgba(230, 57, 70, 0.9);
+            border-color: #E63946;
+        }
+
+        .action-btn.liked i {
+            animation: heartBeat 0.3s ease;
+        }
+
+        @keyframes heartBeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-background" id="ambientBg"></div>
+
+    <!-- Header (Standard Structure for Compatibility) -->
+    <header>
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none;">
+                <img src="../assets/images/logo.png" alt="هديتي" style="height: 50px;">
+            </a>
+        </div>
+
+        <nav class="nav">
+            <a href="../index.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="products.html" class="nav-link">
+                <i class="fas fa-gifts"></i>
+                <span>المنتجات</span>
+            </a>
+            <a href="video.html" class="nav-link active">
+                <i class="fas fa-video"></i>
+                <span>الفيديوهات</span>
+            </a>
+            <a href="track-order.html" class="nav-link">
+                <i class="fas fa-search-location"></i>
+                <span>تتبع طلبك</span>
+            </a>
+            <a href="contact.html" class="nav-link">
+                <i class="fas fa-envelope"></i>
+                <span>اتصل بنا</span>
+            </a>
+            <a href="support-chat.html" class="nav-link" style="color: var(--primary);">
+                <i class="fas fa-headset"></i>
+                <span>المساعد الذكي</span>
+            </a>
+        </nav>
+
+        <div class="icon-navs">
+            <div class="cart-icon-wrapper" id="cart-btn">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-count" id="cart-count">0</span>
+            </div>
+            <div class="login" id="auth-section">
+                <!-- Dynamic Auth Content -->
+            </div>
+            <div class="menu" id="menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Cart Dropdown -->
+        <section class="cart-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 class="section-title" style="margin: 0; font-size: 1.2rem; color: #333;">سلة الشراء</h2>
+                <button id="closeCart" style="background:none; border:none; cursor:pointer;">
+                    <i class="fas fa-times" style="color: #333;"></i>
+                </button>
+            </div>
+
+            <div class="cart-items-wrapper" style="max-height: 300px; overflow-y: auto;">
+                <div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">
+                    سلة التسوق فارغة
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <!-- Cinematic Hero -->
+    <header class="hero-section" id="heroSection">
+        <div class="hero-content">
+            <span class="badge">فيديو مميز</span>
+            <h1 id="heroTitle">اكتشف عالم الهدايا</h1>
+            <p id="heroDesc">تجربة تسوق تفاعلية تأخذك في رحلة بصرية مذهلة. شاهد، استمتع، وتسوق بلمسة واحدة.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" id="heroPlayBtn"><i class="fas fa-play"></i> مشاهدة الآن</button>
+                <button class="btn-secondary" id="heroInfoBtn"><i class="fas fa-info-circle"></i> المزيد</button>
+            </div>
+        </div>
+        <div class="hero-overlay"></div>
+        <video id="heroVideo" autoplay muted loop playsinline class="hero-video-bg"></video>
+    </header>
+
+    <!-- Main Content (Rails) -->
+    <main class="content-wrapper">
+
+        <!-- Trending Rail -->
+        <section class="video-rail" id="trending">
+            <h2 class="rail-title">الأكثر رواجاً <i class="fas fa-fire" style="color: #e25555;"></i></h2>
+            <div class="rail-container" id="trendingRail">
+                <!-- Cards injected by JS -->
+            </div>
+        </section>
+
+        <!-- Tutorials Rail -->
+        <section class="video-rail" id="tutorials">
+            <h2 class="rail-title">شروحات تعليمية <i class="fas fa-graduation-cap" style="color: #457B9D;"></i></h2>
+            <div class="rail-container" id="tutorialsRail">
+                <!-- Cards injected by JS -->
+            </div>
+        </section>
+
+        <!-- Reviews Rail -->
+        <section class="video-rail" id="reviews">
+            <h2 class="rail-title">مراجعات المنتجات <i class="fas fa-star" style="color: #FFD700;"></i></h2>
+            <div class="rail-container" id="reviewsRail">
+                <!-- Cards injected by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Reels Overlay Mode -->
+    <div id="reelsOverlay" class="reels-overlay">
+        <button class="close-reels-btn" id="closeReelsBtn"><i class="fas fa-times"></i></button>
+        <div class="video-container" id="reelsFeed">
+            <!-- Reels will be injected here -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: white; padding: 40px 0; margin-top: 60px; border-top: 1px solid #eee; color: #333;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; text-align: center;">
+            <p>&copy; 2024 هديتي. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="../Front-End/Interaction/videos.js"></script>
+    <script type="module" src="../Front-End/Interaction/main.js"></script>
+    <script>
+        // Header Scroll Effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+
+</html>

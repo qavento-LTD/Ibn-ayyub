@@ -356,7 +356,7 @@ header.scrolled {
     position: relative;
     overflow: hidden;
     padding: var(--spacing-xl);
-    margin-top: -80px;
+    margin-top: -0px;
 }
 
 .hero::before {
@@ -371,12 +371,19 @@ header.scrolled {
     opacity: 0.3;
 }
 
+.hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 .hero-content {
     position: relative;
     z-index: 1;
     text-align: center;
     max-width: 800px;
     animation: fadeInUp 1s ease-out;
+
 }
 
 .hero h1 {

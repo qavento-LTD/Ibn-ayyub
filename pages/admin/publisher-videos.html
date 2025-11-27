@@ -183,7 +183,7 @@
                     <i class="fas fa-video"></i>
                     <span>إدارة الفيديوهات</span>
                 </a>
-                <a href="../videos.html" class="sidebar-item" target="_blank">
+                <a href="../video.html" class="sidebar-item" target="_blank">
                     <i class="fas fa-play-circle"></i>
                     <span>مشاهدة الفيديوهات</span>
                 </a>
@@ -238,6 +238,55 @@
                         </div>
                         <span id="progress-text"
                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 700; color: #333;">0%</span>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> عنوان الفيديو</label>
+                    <input type="text" id="video-title" placeholder="أدخل عنواناً جذاباً للفيديو" required>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label><i class="fas fa-tags"></i> التصنيف</label>
+                    <select id="video-category"
+                        style="width: 100%; padding: 12px; border: 1px solid var(--gray); border-radius: var(--radius-md);">
+                        <option value="general">عام</option>
+                        <option value="tutorials">شروحات</option>
+                        <option value="reviews">مراجعات</option>
+                        <option value="unboxing">فتح صندوق</option>
+                        <option value="events">فعاليات</option>
+                    </select>
+                </div>
+
+                <!-- Thumbnail -->
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> صورة مصغرة (اختياري)</label>
+                    <input type="file" id="video-thumbnail" accept="image/*"
+                        style="padding: 12px; border: 1px solid var(--gray); border-radius: var(--radius-md); background: white;">
+                    <small style="color: #666; display: block; margin-top: 5px;">إذا لم تختر صورة، سيتم استخدام شعار
+                        المتجر.</small>
+                </div>
+
+                <!-- Linked Products -->
+                <div class="form-group"
+                    style="background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
+                    <label style="margin-bottom: 15px;"><i class="fas fa-link"></i> ربط منتجات (Shop the Look)</label>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <input type="text" id="product-search" placeholder="ابحث عن منتج لربطه..." style="flex: 1;">
+                        <button class="btn" id="search-btn" type="button"><i class="fas fa-search"></i></button>
+                    </div>
+
+                    <div id="search-results"
+                        style="max-height: 200px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #eee; border-radius: 8px; display: none;">
+                        <!-- Search results will appear here -->
+                    </div>
+
+                    <div id="selected-products" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <!-- Selected products pills will appear here -->
+                        <p style="color: #999; font-size: 14px; width: 100%;">لم يتم اختيار منتجات بعد.</p>
                     </div>
                 </div>
 

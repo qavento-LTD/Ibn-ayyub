@@ -268,6 +268,73 @@ async function loadFeaturedProducts() {
     }
 }
 
+
+// =============================================
+// Load Home Videos
+// =============================================
+async function loadHomeVideos() {
+    const grid = document.getElementById('homeVideosGrid');
+    if (!grid) return;
+
+    try {
+        const { getVideos } = await import('../../js/supabase-client.js');
+        const { data: videos, error } = await getVideos();
+
+        if (error) throw error;
+
+        if (!videos || videos.length === 0) {
+            grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;"><p>لا توجد فيديوهات حالياً</p></div>';
+            return;
+        }
+
+        // Show top 3 videos
+        const displayVideos = videos.slice(0, 3);
+
+        grid.innerHTML = displayVideos.map(video => `
+            <div class="video-card" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s; cursor: pointer;">
+                <div style="position: relative; height: 200px;">
+                    <img src="${video.thumbnail_url || 'assets/images/logo.png'}" alt="${video.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <a href="pages/video.html" class="play-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; text-decoration: none;">
+                        <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </a>
+                </div>
+                <div style="padding: 20px;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: var(--text-main);">${video.title}</h3>
+                    <div style="display: flex; justify-content: space-between; color: var(--text-light); font-size: 0.9rem;">
+                        <span><i class="far fa-eye"></i> ${video.views_count || 0}</span>
+                        <span><i class="far fa-clock"></i> ${formatVideoDuration(video.duration || 0)}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Add hover effect
+        const cards = grid.querySelectorAll('.video-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px)';
+                card.querySelector('.play-overlay').style.opacity = '1';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.querySelector('.play-overlay').style.opacity = '0';
+            });
+        });
+
+    } catch (error) {
+        console.error('Load home videos error:', error);
+        grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;"><p>حدث خطأ في تحميل الفيديوهات</p></div>';
+    }
+}
+
+function formatVideoDuration(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
 // =============================================
 // Scroll Animations
 // =============================================
@@ -341,20 +408,20 @@ async function initAuthState() {
                         </div>
                         
                         <div class="dropdown-menu">
-                            <a href="/Ibn-ayyub-main/pages/profile.html" class="dropdown-item">
+                            <a href="/../pages/profile.html" class="dropdown-item">
                                 <i class="fas fa-user"></i>
                                 <span>الملف الشخصي</span>
                             </a>
-                            <a href="/Ibn-ayyub-main/pages/orders.html" class="dropdown-item">
+                            <a href="/../pages/orders.html" class="dropdown-item">
                                 <i class="fas fa-shopping-bag"></i>
                                 <span>طلباتي</span>
                             </a>
-                            <a href="/Ibn-ayyub-main/pages/settings.html" class="dropdown-item">
+                            <a href="/../pages/settings.html" class="dropdown-item">
                                 <i class="fas fa-cog"></i>
                                 <span>الإعدادات</span>
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a href="/Ibn-ayyub-main/pages/admin/" class="dropdown-item admin-only" id="admin-link" style="display: none;">
+                            <a href="/../pages/admin/" class="dropdown-item admin-only" id="admin-link" style="display: none;">
                                 <i class="fas fa-shield-alt"></i>
                                 <span>لوحة التحكم</span>
                             </a>
@@ -472,6 +539,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initAuthState();
     initNewsletter();
     loadFeaturedProducts();
+    loadHomeVideos();
     updateCartCount();
     loadCartDropdown();
 

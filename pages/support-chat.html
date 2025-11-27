@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدعم الذكي - هديتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../Front-End/Appearance/index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #e5ddd5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Chat Container - Mobile First */
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 100%;
+            margin: 0 auto;
+            background: #fff;
+        }
+
+        /* Header */
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.8;
+        }
+
+        .chat-header-info {
+            flex: 1;
+        }
+
+        .chat-header-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .chat-header-info p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            font-size: 1.2rem;
+        }
+
+        .header-actions i {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .header-actions i:hover {
+            opacity: 0.8;
+        }
+
+        /* Messages Area */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="1" fill="%23000" opacity="0.03"/></svg>');
+            background-size: 30px 30px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 12px;
+            animation: slideIn 0.2s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            to {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.sent .message-bubble {
+            background: #dcf8c6;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message.received .message-bubble {
+            background: white;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-content {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #303030;
+        }
+
+        .message-image {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: flex-end;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            color: #667781;
+        }
+
+        .message-status {
+            font-size: 0.9rem;
+        }
+
+        .message-status.read {
+            color: #53bdeb;
+        }
+
+        .message-actions {
+            position: absolute;
+            top: 5px;
+            left: -35px;
+            opacity: 1;
+            /* Always visible */
+            transition: 0.2s;
+        }
+
+        @media (min-width: 768px) {
+            .message-actions {
+                opacity: 0;
+                /* Hidden on desktop until hover */
+            }
+
+            .message:hover .message-actions {
+                opacity: 1;
+            }
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #cc0000;
+            transform: scale(1.1);
+        }
+
+        .delete-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 18px;
+            width: fit-content;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #90949c;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Input Area */
+        .input-container {
+            background: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-icon {
+            font-size: 1.3rem;
+            color: #54656f;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .action-icon:hover {
+            color: var(--primary);
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Image Upload Modal */
+        .image-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-preview-modal.active {
+            display: flex;
+        }
+
+        .preview-content {
+            max-width: 90%;
+            max-height: 90%;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 60vh;
+            border-radius: 8px;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        /* Product Card in Chat */
+        .product-card-message {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 250px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .product-card-info {
+            padding: 10px;
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .chat-wrapper {
+                max-width: 900px;
+                border-radius: 12px;
+                overflow: hidden;
+                margin: 20px auto;
+                height: calc(100vh - 40px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            }
+
+            body {
+                background: #ddd;
+            }
+        }
+
+        /* Hidden File Input */
+        #imageInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-wrapper">
+        <!-- Header -->
+        <div class="chat-header">
+            <i class="fas fa-arrow-right back-btn" onclick="window.location.href='../index.html'"></i>
+            <div class="chat-header-info">
+                <h2>المساعد الذكي</h2>
+                <p id="statusText">متصل</p>
+            </div>
+            <div class="header-actions">
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages-container" id="messagesContainer">
+            <!-- Messages will be added here -->
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="input-actions">
+                <i class="fas fa-smile action-icon" title="إيموجي"></i>
+                <label for="imageInput">
+                    <i class="fas fa-image action-icon" title="صورة"></i>
+                </label>
+                <input type="file" id="imageInput" accept="image/*">
+                <i class="fas fa-gift action-icon" id="shareProductBtn" title="مشاركة منتج"></i>
+            </div>
+            <input type="text" class="message-input" id="messageInput" placeholder="اكتب رسالة...">
+            <button class="send-btn" id="sendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="image-preview-modal" id="imagePreviewModal">
+        <div class="preview-content">
+            <img src="" id="previewImage" class="preview-image">
+            <div class="preview-actions">
+                <button class="btn" onclick="sendImageMessage()">إرسال</button>
+                <button class="btn btn-outline" onclick="closeImagePreview()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000;">
+        <div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;">
+            <div
+                style="background:white; width:90%; max-width:600px; border-radius:12px; padding:20px; max-height:80vh; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                    <h3>اختر منتجاً</h3>
+                    <button id="closeModal" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="modalProductsGrid"
+                    style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:15px;">
+                    <div style="text-align:center;">جاري التحميل...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/chat-enhanced.js"></script>
+</body>
+
+</html>

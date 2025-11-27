@@ -8,265 +8,305 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<link rel="stylesheet" href="../Front-End/Appearance/index.css">
 	<style>
-		/* Page specific styles */
-		header {
-			position: sticky;
+		:root {
+			--primary-color: #b71c1c;
+			--primary-hover: #a50000;
+			--bg-color: #f8f9fa;
+			--card-bg: #ffffff;
+			--text-main: #2d3436;
+			--text-light: #636e72;
+			--border-color: #dfe6e9;
 		}
 
-		.product-detail-page {
-			padding: 60px 20px;
+		body {
+			background-color: var(--bg-color);
+			color: var(--text-main);
+			font-family: 'Cairo', sans-serif;
+		}
+
+		.product-page {
 			max-width: 1200px;
-			margin: 0 auto;
-			min-height: 70vh;
+			margin: 40px auto;
+			padding: 0 20px;
 		}
 
-		.product-detail-container {
+		/* Product Container */
+		.product-container {
+			background: var(--card-bg);
+			border-radius: 24px;
+			padding: 40px;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
 			display: grid;
 			grid-template-columns: 1fr 1fr;
-			gap: 60px;
-			background: white;
-			padding: 50px;
-			border-radius: 24px;
-			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-			animation: fadeInUp 0.6s ease;
+			gap: 50px;
+			margin-bottom: 60px;
 		}
 
-		@keyframes fadeInUp {
-			from {
-				opacity: 0;
-				transform: translateY(30px);
-			}
-
-			to {
-				opacity: 1;
-				transform: translateY(0);
+		@media (max-width: 992px) {
+			.product-container {
+				grid-template-columns: 1fr;
+				padding: 30px;
+				gap: 30px;
 			}
 		}
 
-		.product-image-container {
-			width: 100%;
-			height: 500px;
+		/* Image Section */
+		.product-image-wrapper {
+			position: relative;
 			border-radius: 20px;
 			overflow: hidden;
-			background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+			background: #f1f2f6;
+			height: 500px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			position: relative;
-			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+			border: 1px solid var(--border-color);
 		}
 
-		.product-image-container img {
+		.product-image-wrapper img {
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
 			transition: transform 0.5s ease;
 		}
 
-		.product-image-container:hover img {
+		.product-image-wrapper:hover img {
 			transform: scale(1.05);
 		}
 
-		.product-image-container i {
-			font-size: 6rem;
-			color: #dee2e6;
-		}
-
-		.product-info-container {
+		/* Info Section */
+		.product-info {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
-			gap: 20px;
 		}
 
 		.product-category {
-			color: var(--primary);
-			font-weight: 700;
-			font-size: 0.95rem;
-			text-transform: uppercase;
-			letter-spacing: 1.5px;
 			display: inline-block;
-			padding: 6px 16px;
 			background: rgba(183, 28, 28, 0.1);
+			color: var(--primary-color);
+			padding: 6px 15px;
 			border-radius: 50px;
+			font-size: 0.9rem;
+			font-weight: 700;
+			margin-bottom: 15px;
 			width: fit-content;
 		}
 
-		.product-title-large {
-			font-size: 2.8rem;
-			margin: 10px 0 20px;
-			color: var(--text-main);
-			line-height: 1.2;
+		.product-title {
+			font-size: 2.5rem;
 			font-weight: 800;
+			margin-bottom: 20px;
+			line-height: 1.3;
+			color: var(--text-main);
 		}
 
-		.product-price-large {
-			font-size: 2.4rem;
-			color: var(--primary);
+		.product-price {
+			font-size: 2.2rem;
 			font-weight: 800;
-			margin-bottom: 25px;
+			color: var(--primary-color);
+			margin-bottom: 30px;
 			display: flex;
 			align-items: center;
-			gap: 10px;
+			gap: 15px;
 		}
 
-		.product-price-large::before {
-			content: '';
-			display: inline-block;
-			width: 4px;
-			height: 40px;
-			background: var(--primary);
-			border-radius: 2px;
-		}
-
-		.product-description-large {
+		.product-description {
+			font-size: 1.1rem;
+			line-height: 1.8;
 			color: var(--text-light);
-			line-height: 1.9;
-			font-size: 1.15rem;
-			margin-bottom: 30px;
+			margin-bottom: 40px;
 			padding: 20px;
 			background: #f8f9fa;
 			border-radius: 12px;
-			border-right: 4px solid var(--primary);
+			border-right: 4px solid var(--primary-color);
 		}
 
-		.actions {
+		/* Actions */
+		.actions-wrapper {
 			display: flex;
-			gap: 15px;
+			gap: 20px;
 			align-items: center;
 			flex-wrap: wrap;
 		}
 
-		.quantity-selector {
+		.qty-selector {
 			display: flex;
 			align-items: center;
-			border: 2px solid #e9ecef;
+			background: #f1f2f6;
 			border-radius: 50px;
-			padding: 8px;
-			background: white;
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+			padding: 5px;
+			border: 1px solid var(--border-color);
 		}
 
 		.qty-btn {
-			width: 45px;
-			height: 45px;
+			width: 40px;
+			height: 40px;
 			border-radius: 50%;
 			border: none;
-			background: var(--primary);
-			color: white;
+			background: white;
+			color: var(--text-main);
+			font-size: 1.2rem;
 			cursor: pointer;
-			font-size: 1.3rem;
-			transition: all 0.3s ease;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			transition: all 0.2s;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 		}
 
 		.qty-btn:hover {
-			background: #7F0000;
-			transform: scale(1.1);
-		}
-
-		.qty-btn:active {
-			transform: scale(0.95);
+			background: var(--primary-color);
+			color: white;
 		}
 
 		.qty-input {
-			width: 60px;
+			width: 50px;
 			text-align: center;
 			border: none;
-			font-size: 1.3rem;
+			background: transparent;
+			font-size: 1.2rem;
 			font-weight: 700;
-			outline: none;
 			color: var(--text-main);
 		}
 
-		.add-to-cart-large {
+		.add-to-cart-btn {
 			flex: 1;
-			padding: 18px 40px;
-			background: linear-gradient(135deg, var(--primary) 0%, #7F0000 100%);
+			padding: 15px 40px;
+			background: var(--primary-color);
 			color: white;
 			border: none;
 			border-radius: 50px;
-			font-size: 1.2rem;
+			font-size: 1.1rem;
 			font-weight: 700;
 			cursor: pointer;
-			transition: all 0.3s ease;
-			box-shadow: 0 10px 30px rgba(183, 28, 28, 0.3);
+			transition: all 0.3s;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			gap: 10px;
+			box-shadow: 0 5px 20px rgba(183, 28, 28, 0.3);
+			min-width: 200px;
 		}
 
-		.add-to-cart-large:hover {
-			transform: translateY(-3px);
-			box-shadow: 0 15px 40px rgba(183, 28, 28, 0.4);
+		.add-to-cart-btn:hover {
+			background: var(--primary-hover);
+			transform: translateY(-2px);
+			box-shadow: 0 8px 25px rgba(183, 28, 28, 0.4);
 		}
 
-		.add-to-cart-large:active {
-			transform: translateY(0);
+		.add-to-cart-btn:disabled {
+			background: #ccc;
+			cursor: not-allowed;
+			transform: none;
+			box-shadow: none;
 		}
 
-		.add-to-cart-large i {
-			font-size: 1.3rem;
+		/* Reviews Section */
+		.reviews-section {
+			max-width: 900px;
+			margin: 0 auto;
 		}
 
-		.loading-skeleton {
+		.section-header {
+			text-align: center;
+			margin-bottom: 40px;
+		}
+
+		.section-header h2 {
+			font-size: 2rem;
+			font-weight: 800;
+			margin-bottom: 10px;
+		}
+
+		.review-form-card {
+			background: white;
+			padding: 40px;
+			border-radius: 20px;
+			box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+			margin-bottom: 40px;
+		}
+
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		.form-label {
+			display: block;
+			margin-bottom: 8px;
+			font-weight: 700;
+			color: var(--text-main);
+		}
+
+		.form-input,
+		.form-textarea {
+			width: 100%;
+			padding: 12px 15px;
+			border: 2px solid var(--border-color);
+			border-radius: 12px;
+			font-family: inherit;
+			font-size: 1rem;
+			transition: border-color 0.3s;
+		}
+
+		.form-input:focus,
+		.form-textarea:focus {
+			border-color: var(--primary-color);
+			outline: none;
+		}
+
+		.star-rating {
+			display: flex;
+			gap: 10px;
+			font-size: 1.5rem;
+			color: #ddd;
+			cursor: pointer;
+			margin-bottom: 10px;
+		}
+
+		.star-rating i.active {
+			color: #f1c40f;
+		}
+
+		.submit-review-btn {
+			width: 100%;
+			padding: 15px;
+			background: var(--text-main);
+			color: white;
+			border: none;
+			border-radius: 12px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: all 0.3s;
+		}
+
+		.submit-review-btn:hover {
+			background: var(--primary-color);
+		}
+
+		/* Loading State */
+		.loading-state {
 			text-align: center;
 			padding: 100px 20px;
-			color: var(--text-light);
 		}
 
-		.loading-skeleton i {
-			font-size: 3rem;
-			margin-bottom: 20px;
-			animation: pulse 1.5s ease-in-out infinite;
+		.spinner {
+			width: 50px;
+			height: 50px;
+			border: 5px solid #f3f3f3;
+			border-top: 5px solid var(--primary-color);
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+			margin: 0 auto 20px;
 		}
 
-		@keyframes pulse {
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
 
-			0%,
 			100% {
-				opacity: 1;
-			}
-
-			50% {
-				opacity: 0.5;
-			}
-		}
-
-		@media (max-width: 768px) {
-			.product-detail-container {
-				grid-template-columns: 1fr;
-				padding: 30px 20px;
-				gap: 30px;
-			}
-
-			.product-image-container {
-				height: 350px;
-			}
-
-			.product-title-large {
-				font-size: 2rem;
-			}
-
-			.product-price-large {
-				font-size: 1.8rem;
-			}
-
-			.actions {
-				flex-direction: column;
-				width: 100%;
-			}
-
-			.quantity-selector {
-				width: 100%;
-				justify-content: center;
-			}
-
-			.add-to-cart-large {
-				width: 100%;
+				transform: rotate(360deg);
 			}
 		}
 	</style>
@@ -280,6 +320,35 @@
 				<img src="../assets/images/logo.png" alt="هديتي" style="height: 50px;">
 			</a>
 		</div>
+
+		<!-- Main Navigation -->
+		<nav class="nav">
+			<a href="../index.html" class="nav-link">
+				<i class="fas fa-home"></i>
+				<span>الرئيسية</span>
+			</a>
+			<a href="products.html" class="nav-link active">
+				<i class="fas fa-gifts"></i>
+				<span>المنتجات</span>
+			</a>
+			<a href="videos.html" class="nav-link">
+				<i class="fas fa-video"></i>
+				<span>الفيديوهات</span>
+			</a>
+			<a href="track-order.html" class="nav-link">
+				<i class="fas fa-search-location"></i>
+				<span>تتبع طلبك</span>
+			</a>
+			<a href="contact.html" class="nav-link">
+				<i class="fas fa-envelope"></i>
+				<span>اتصل بنا</span>
+			</a>
+			<a href="support-chat.html" class="nav-link" style="color: var(--primary-color);">
+				<i class="fas fa-headset"></i>
+				<span>المساعد الذكي</span>
+			</a>
+		</nav>
+
 		<div class="icon-navs">
 			<div class="cart-icon-wrapper" id="cart-btn">
 				<i class="fa-solid fa-bag-shopping"></i>
@@ -313,88 +382,50 @@
 		</section>
 	</header>
 
-	<!-- Navigation Sidebar -->
-	<nav class="nav" id="nav-menu">
-		<ul>
-			<li><a href="../index.html">الرئيسية</a></li>
-			<li><a href="products.html">المنتجات</a></li>
-			<li><a href="cart.html">سلة الشراء</a></li>
-			<li><a href="#contact">تواصل معنا</a></li>
-		</ul>
-	</nav>
-
-	<main>
-		<!-- Product Details Section -->
-		<section class="product-detail-page" style="margin-top: 100px;">
-			<div id="product-content">
-				<div class="loading-skeleton">
-					<i class="fas fa-spinner fa-spin"></i>
-					<p>جاري تحميل تفاصيل المنتج...</p>
-				</div>
+	<main class="product-page">
+		<!-- Product Details -->
+		<div id="product-content">
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>جاري تحميل تفاصيل المنتج...</p>
 			</div>
-		</section>
+		</div>
 
 		<!-- Reviews Section -->
-		<section style="max-width: 1200px; margin: 60px auto; padding: 0 20px;">
-			<h2 style="font-size: 2.5rem; font-weight: 900; text-align: center; margin-bottom: 40px; color: #1D3557;">
-				<i class="fas fa-star" style="color: #FFD700;"></i> آراء العملاء
-			</h2>
-
-			<!-- Reviews Stats -->
-			<div id="reviews-stats"
-				style="background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 40px; text-align: center;">
-				<!-- Stats will be loaded here -->
+		<section class="reviews-section">
+			<div class="section-header">
+				<h2><i class="fas fa-star" style="color: #f1c40f;"></i> آراء العملاء</h2>
+				<p style="color: var(--text-light);">شاركنا تجربتك مع هذا المنتج</p>
 			</div>
 
 			<!-- Add Review Form -->
-			<div
-				style="background: linear-gradient(135deg, #E63946 0%, #C1121F 100%); padding: 40px; border-radius: 20px; margin-bottom: 40px; box-shadow: 0 8px 30px rgba(230, 57, 70, 0.3);">
-				<h3 style="color: white; font-size: 1.8rem; font-weight: 700; margin-bottom: 25px; text-align: center;">
-					<i class="fas fa-pen"></i> اكتب تقييمك
-				</h3>
-				<form id="review-form" style="max-width: 600px; margin: 0 auto;">
-					<!-- Star Rating -->
-					<div style="margin-bottom: 25px; text-align: center;">
-						<label
-							style="display: block; color: white; font-weight: 600; margin-bottom: 15px; font-size: 1.1rem;">التقييم:</label>
-						<div class="star-rating"
-							style="font-size: 40px; cursor: pointer; display: inline-flex; gap: 10px;">
-							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
-							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
-							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
-							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
-							<i class="far fa-star" style="color: #ddd; transition: all 0.2s;"></i>
+			<div class="review-form-card">
+				<h3 style="margin-bottom: 25px; font-weight: 700;">أضف تقييمك</h3>
+				<form id="review-form">
+					<div class="form-group" style="text-align: center;">
+						<label class="form-label">التقييم</label>
+						<div class="star-rating" id="starRating">
+							<i class="far fa-star" data-value="1"></i>
+							<i class="far fa-star" data-value="2"></i>
+							<i class="far fa-star" data-value="3"></i>
+							<i class="far fa-star" data-value="4"></i>
+							<i class="far fa-star" data-value="5"></i>
 						</div>
+						<input type="hidden" id="ratingValue" required>
 					</div>
 
-					<!-- Name -->
-					<div style="margin-bottom: 20px;">
-						<label
-							style="display: block; color: white; font-weight: 600; margin-bottom: 8px;">الاسم:</label>
-						<input type="text" id="review-name" required
-							style="width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-family: 'Cairo', sans-serif;">
+					<div class="form-group">
+						<label class="form-label">الاسم</label>
+						<input type="text" id="review-name" class="form-input" required placeholder="اسمك الكريم">
 					</div>
 
-					<!-- Email (Optional) -->
-					<div style="margin-bottom: 20px;">
-						<label style="display: block; color: white; font-weight: 600; margin-bottom: 8px;">البريد
-							الإلكتروني (اختياري):</label>
-						<input type="email" id="review-email"
-							style="width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-family: 'Cairo', sans-serif;">
+					<div class="form-group">
+						<label class="form-label">التعليق</label>
+						<textarea id="review-comment" class="form-textarea" rows="4" required
+							placeholder="اكتب رأيك هنا..."></textarea>
 					</div>
 
-					<!-- Comment -->
-					<div style="margin-bottom: 25px;">
-						<label
-							style="display: block; color: white; font-weight: 600; margin-bottom: 8px;">التعليق:</label>
-						<textarea id="review-comment" required rows="4"
-							placeholder="شاركنا رأيك في المنتج... (10 أحرف على الأقل)"
-							style="width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; resize: vertical; font-family: 'Cairo', sans-serif;"></textarea>
-					</div>
-
-					<!-- Submit Button -->
-					<button type="submit"
-						style="width: 100%; padding: 18px; background: white; color: #E63946; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+					<button type="submit" class="submit-review-btn">
 						<i class="fas fa-paper-plane"></i> إرسال التقييم
 					</button>
 				</form>
@@ -407,18 +438,16 @@
 		</section>
 	</main>
 
+	<!-- Footer -->
+	<footer style="background: white; padding: 40px 0; margin-top: 60px; border-top: 1px solid #eee;">
+		<div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; text-align: center;">
+			<p>&copy; 2024 هديتي. جميع الحقوق محفوظة.</p>
+		</div>
+	</footer>
+
 	<script type="module" src="../Front-End/Interaction/product.js"></script>
 	<script type="module" src="../Front-End/Interaction/main.js"></script>
 	<script type="module" src="../js/reviews.js"></script>
-	<script>
-		function updateQty(change) {
-			const input = document.getElementById('qtyInput');
-			if (!input) return;
-			let val = parseInt(input.value) || 1;
-			val = Math.max(1, val + change);
-			input.value = val;
-		}
-	</script>
 </body>
 
 </html>

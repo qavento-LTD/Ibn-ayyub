@@ -104,3 +104,81 @@ export async function updateCartQuantity(itemId, quantity) {
         .eq('id', itemId);
     return { error };
 }
+
+// --- Video Functions ---
+export async function getVideos(category = 'all') {
+    let query = supabase.from('videos').select('*').order('created_at', { ascending: false });
+    if (category !== 'all') {
+        query = query.eq('category', category);
+    }
+    return await query;
+}
+
+export async function getVideoById(id) {
+    return await supabase.from('videos').select('*').eq('id', id).single();
+}
+
+export async function getVideoProducts(videoId) {
+    return await supabase
+        .from('video_products')
+        .select(`
+            display_time,
+            product:products (*)
+        `)
+        .eq('video_id', videoId)
+        .order('display_time', { ascending: true });
+}
+
+export async function getVideoComments(videoId) {
+    return await supabase
+        .from('video_comments')
+        .select('*')
+        .eq('video_id', videoId)
+        .order('created_at', { ascending: false });
+}
+
+export async function addVideoComment(videoId, commentData) {
+    const user = await getCurrentUser();
+    const payload = {
+        video_id: videoId,
+        text: commentData.text,
+        rating: commentData.rating,
+        name: commentData.name,
+        email: commentData.email
+    };
+    if (user) payload.user_id = user.id;
+
+    return await supabase.from('video_comments').insert([payload]);
+}
+
+export async function addVideoRating(videoId, rating) {
+    // This might be redundant if rating is part of comment, but keeping for compatibility
+    return { error: null };
+}
+
+export async function toggleVideoLike(videoId) {
+    const user = await getCurrentUser();
+    if (!user) return { error: { message: 'User not logged in' } };
+
+    // Check if liked
+    const { data: existing } = await supabase
+        .from('video_likes')
+        .select('*')
+        .eq('video_id', videoId)
+        .eq('user_id', user.id)
+        .single();
+
+    if (existing) {
+        // Unlike
+        await supabase.from('video_likes').delete().eq('user_id', user.id).eq('video_id', videoId);
+        // Decrement count
+        await supabase.rpc('decrement_video_likes', { video_id: videoId });
+        return { liked: false };
+    } else {
+        // Like
+        await supabase.from('video_likes').insert([{ video_id: videoId, user_id: user.id }]);
+        // Increment count
+        await supabase.rpc('increment_video_likes', { video_id: videoId });
+        return { liked: true };
+    }
+}

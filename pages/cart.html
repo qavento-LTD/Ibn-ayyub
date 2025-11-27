@@ -8,163 +8,287 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../Front-End/Appearance/index.css">
     <style>
-        header {
-            position: sticky;
+        :root {
+            --primary-color: #b71c1c;
+            --primary-hover: #a50000;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-light: #636e72;
+            --border-color: #dfe6e9;
+            --success-color: #00b894;
         }
-        
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Cairo', sans-serif;
+        }
+
         .cart-page {
-            padding: 60px 20px;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 40px auto;
+            padding: 0 20px;
+            min-height: 60vh;
         }
-        
-        .cart-layout {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 30px;
-        }
-        
-        .cart-items-container {
-            background: white;
-            padding: 20px;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
-        }
-        
-        .cart-summary {
-            background: white;
-            padding: 20px;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
-            height: fit-content;
-            position: sticky;
-            top: 100px;
-        }
-        
-        .cart-item {
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            padding: 20px 0;
-            border-bottom: 1px solid #eee;
+            gap: 12px;
         }
-        
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cart Items List */
+        .cart-items-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+        }
+
         .cart-item:last-child {
             border-bottom: none;
         }
-        
-        .cart-item-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+
+        .cart-item:hover {
+            background-color: #fffbfb;
         }
-        
+
+        .cart-item-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+        }
+
         .cart-item-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
-        .cart-item-details {
+
+        .cart-item-info {
             flex: 1;
-        }
-        
-        .cart-item-title {
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--text-main);
-        }
-        
-        .cart-item-price {
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .cart-item-actions {
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .item-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .item-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .qty-control {
             display: flex;
             align-items: center;
-            border: 1px solid #eee;
+            background: #f1f2f6;
             border-radius: 8px;
+            padding: 2px;
         }
-        
-        .qty-control button {
-            width: 30px;
-            height: 30px;
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
             border: none;
             background: white;
+            border-radius: 6px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--text-main);
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-        
-        .qty-control input {
+
+        .qty-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .qty-input {
             width: 40px;
             text-align: center;
             border: none;
+            background: transparent;
             font-weight: 600;
+            font-size: 1rem;
         }
-        
+
         .remove-btn {
-            color: #dc3545;
             background: none;
             border: none;
+            color: #ff4757;
             cursor: pointer;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
         }
-        
+
+        .remove-btn:hover {
+            background: #ffe0e3;
+        }
+
+        /* Order Summary */
+        .cart-summary {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-header {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
         .summary-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 15px;
             color: var(--text-light);
+            font-size: 0.95rem;
         }
-        
-        .summary-total {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-            font-weight: 800;
-            font-size: 1.2rem;
+
+        .summary-row.total {
             color: var(--text-main);
+            font-weight: 800;
+            font-size: 1.4rem;
+            border-top: 2px solid var(--border-color);
+            padding-top: 20px;
+            margin-top: 20px;
         }
-        
+
         .checkout-btn {
             width: 100%;
-            padding: 15px;
-            background: var(--primary);
+            background: var(--primary-color);
             color: white;
             border: none;
+            padding: 16px;
             border-radius: 12px;
             font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
+            margin-top: 25px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(183, 28, 28, 0.3);
         }
-        
+
         .checkout-btn:hover {
-            background: #7F0000;
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
         }
-        
-        @media (max-width: 768px) {
-            .cart-layout {
-                grid-template-columns: 1fr;
-            }
+
+        .checkout-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #dfe6e9;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .empty-state p {
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .btn-outline {
+            display: inline-block;
+            padding: 12px 30px;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
         }
     </style>
 </head>
@@ -173,24 +297,54 @@
     <!-- Header -->
     <header>
         <div class="logo">
-            <a href="/Ibn-ayyub-main/index.html" style="text-decoration: none;">
+            <a href="../index.html" style="text-decoration: none;">
                 <img src="../assets/images/logo.png" alt="هديتي" style="height: 50px;">
             </a>
         </div>
-        
+
+        <!-- Main Navigation -->
+        <nav class="nav">
+            <a href="../index.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="products.html" class="nav-link">
+                <i class="fas fa-gifts"></i>
+                <span>المنتجات</span>
+            </a>
+            <a href="videos.html" class="nav-link">
+                <i class="fas fa-video"></i>
+                <span>الفيديوهات</span>
+            </a>
+            <a href="track-order.html" class="nav-link">
+                <i class="fas fa-search-location"></i>
+                <span>تتبع طلبك</span>
+            </a>
+            <a href="contact.html" class="nav-link">
+                <i class="fas fa-envelope"></i>
+                <span>اتصل بنا</span>
+            </a>
+            <a href="support-chat.html" class="nav-link" style="color: var(--primary-color);">
+                <i class="fas fa-headset"></i>
+                <span>المساعد الذكي</span>
+            </a>
+        </nav>
+
         <div class="icon-navs">
             <div class="cart-icon-wrapper" id="cart-btn">
                 <i class="fa-solid fa-bag-shopping"></i>
                 <span class="cart-count" id="cart-count">0</span>
             </div>
-            
+            <div class="login" id="auth-section">
+                <!-- Dynamic Auth Content -->
+            </div>
             <div class="menu" id="menu-btn">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
         </div>
-        
+
         <!-- Cart Dropdown -->
         <section class="cart-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -199,7 +353,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <div class="cart-items-wrapper" style="max-height: 300px; overflow-y: auto;">
                 <!-- Cart items will be added here dynamically -->
                 <div class="empty-cart-msg" style="text-align: center; padding: 20px; color: var(--text-light);">
@@ -208,114 +362,63 @@
             </div>
         </section>
     </header>
-    
-    <!-- Navigation Sidebar -->
-    <nav class="nav" id="nav-menu">
-        <ul>
-            <li><a href="../../index.html">الرئيسية</a></li>
-            <li><a href="../products.html">المنتجات</a></li>
-            <li><a href="../cart.html">سلة الشراء</a></li>
-            <li><a href="#contact">تواصل معنا</a></li>
-            <div class="login" id="auth-section">
-                <!-- Dynamic Auth Content -->
+
+    <main class="cart-page">
+        <h1 class="section-title">
+            <i class="fas fa-shopping-cart"></i>
+            سلة الشراء
+        </h1>
+
+        <div class="cart-layout">
+            <!-- Cart Items -->
+            <div class="cart-items-container" id="cart-items-wrapper">
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
+                    <p style="margin-top: 15px; color: var(--text-light);">جاري تحميل السلة...</p>
+                </div>
             </div>
-        </ul>
-    </nav>
-    
-    <!-- Cart Page Section -->
-    <section class="cart-page" style="margin-top: 150px; padding: 0 40px; max-width: 1200px; margin-left: auto; margin-right: auto;">
-        <h2 class="section-title">سلة الشراء</h2>
-        
-        <div class="cart-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
-            <!-- Cart Items List -->
-            <div class="cart-list" id="full-cart-items" style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                <div class="loading">جاري تحميل السلة...</div>
-            </div>
-            
+
             <!-- Order Summary -->
-            <div class="order-summary" style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: fit-content;">
-                <h3 style="margin-bottom: 20px; font-size: 1.4rem;">ملخص الطلب</h3>
-                <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 15px; color: #666;">
+            <div class="cart-summary">
+                <div class="summary-header">ملخص الطلب</div>
+
+                <div class="summary-row">
                     <span>المجموع الفرعي</span>
-                    <span id="subtotal">0 ج.م</span>
+                    <span id="subtotal-display">0.00 ر.س</span>
                 </div>
-                <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 15px; color: #666;">
+
+                <div class="summary-row">
                     <span>الشحن</span>
-                    <span>مجاني</span>
+                    <span id="shipping-display">--</span>
                 </div>
-                <div class="divider" style="height: 1px; background: #eee; margin: 20px 0;"></div>
-                <div class="summary-total" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.4rem; margin-bottom: 30px; color: var(--black);">
+
+                <div class="summary-row total">
                     <span>الإجمالي</span>
-                    <span id="total-price">0 ج.م</span>
+                    <span id="total-display" style="color: var(--primary-color);">0.00 ر.س</span>
                 </div>
-                <button class="checkout-btn" onclick="alert('سيتم تفعيل الدفع قريباً!')">إتمام الدفع</button>
+
+                <button id="checkout-btn" class="checkout-btn" disabled>
+                    <span>متابعة للدفع</span>
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+
+                <div
+                    style="margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--text-light); font-size: 0.85rem;">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>دفع آمن 100%</span>
+                </div>
             </div>
         </div>
-    </section>
-    
+    </main>
+
     <!-- Footer -->
-    <footer id="contact">
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3><i class="fas fa-gift me-2"></i> <span data-store-name>هديتي</span></h3>
-                <p data-store-description>نصنع الذكريات الجميلة من خلال هدايا مميزة تلامس القلوب. جودة عالية وخدمة راقية
-                    تليق بكم.</p>
-                <div class="social-links">
-                    <a href="#" data-social="facebook" aria-label="facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="#" data-social="instagram" aria-label="instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" data-social="twitter" aria-label="twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" data-social="whatsapp" aria-label="whatsapp"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" data-social="tiktok" aria-label="tiktok"><i class="fab fa-tiktok"></i></a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h3>روابط سريعة</h3>
-                <ul>
-                    <li><a href="#products">المنتجات</a></li>
-                    <li><a href="#categories">الأقسام</a></li>
-                    <li><a href="#testimonials">آراء العملاء</a></li>
-                    <li><a href="pages/about.html">من نحن</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>تواصل معنا</h3>
-                <ul>
-                    <li><i class="fas fa-envelope"></i> <a href="mailto:info@hadyti.com" data-store-email>info@hadyti.com</a></li>
-                    <li><i class="fas fa-phone"></i> <a href="tel:+966501234567" data-store-phone>+966 50 123 4567</a>
-                    </li>
-                    <li><i class="fas fa-map-marker-alt"></i> المملكة العربية السعودية</li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 <span data-store-name>هديتي</span>. جميع الحقوق محفوظة.</p>
+    <footer style="background: white; padding: 40px 0; margin-top: 60px; border-top: 1px solid #eee;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; text-align: center;">
+            <p>&copy; 2024 هديتي. جميع الحقوق محفوظة.</p>
         </div>
     </footer>
-    
+
     <script type="module" src="../Front-End/Interaction/cart.js"></script>
-    <script type="midule" src="../Front-End/Interaction/main.js"></script>
-    <script type="module" src="js/home-reviews.js"></script>
-    <script type="module" src="../js/site-settings.js"></script>
-    <script type="module">
-        import { supabase } from '../js/supabase-client.js';
-        (async () => {
-            const { data: settings, error } = await supabase.from('store_settings').select('maintenance_mode, social_links').single();
-            if (!error && settings) {
-                if (settings.maintenance_mode) {
-                    window.location.href = 'pages/maintenance.html';
-                } else {
-                    const links = settings.social_links || {};
-                    const footerLinks = document.querySelectorAll('.footer-section .social-links a');
-                    footerLinks.forEach(a => {
-                        const label = a.getAttribute('aria-label')?.toLowerCase();
-                        if (label && links[label]) {
-                            a.href = links[label];
-                        }
-                    });
-                }
-            }
-        })();
-    </script>
 </body>
 
 </html>

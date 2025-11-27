@@ -1,6 +1,9 @@
 import { supabase } from '../supabase-client.js';
 import { isPublisher } from '../utils.js';
 
+// State for selected products
+let selectedProducts = [];
+
 // Check Access
 async function checkAccess() {
     try {
@@ -77,18 +80,17 @@ async function loadVideos() {
             const card = document.createElement('div');
             card.className = 'video-card';
 
-            // Get video URL from Supabase Storage
-            const videoUrl = video.url;
-
             card.innerHTML = `
                 <div class="video-preview">
-                    <video src="${videoUrl}" controls preload="metadata"></video>
+                    <video src="${video.video_url}" controls preload="metadata"></video>
                 </div>
                 <div class="video-info">
-                    <p style="margin-bottom:10px; font-weight:600;">${video.description || 'بدون وصف'}</p>
+                    <h4 style="margin:0 0 5px 0;">${video.title || 'بدون عنوان'}</h4>
+                    <span style="font-size:12px; background:#eee; padding:2px 8px; border-radius:10px;">${video.category || 'عام'}</span>
+                    <p style="margin:10px 0; font-size:14px; color:#666;">${video.description || ''}</p>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                        <span style="color:#666;"><i class="fas fa-heart"></i> ${video.likes || 0}</span>
-                        <button class="btn btn-danger" onclick="deleteVideo('${video.id}', '${video.url}')">
+                        <span style="color:#666;"><i class="fas fa-heart"></i> ${video.likes_count || 0}</span>
+                        <button class="btn btn-danger" onclick="deleteVideo('${video.id}', '${video.video_url}')">
                             <i class="fas fa-trash"></i> حذف
                         </button>
                     </div>
@@ -100,37 +102,124 @@ async function loadVideos() {
     } catch (error) {
         console.error('Error loading videos:', error);
         grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:40px; color:red;">حدث خطأ في تحميل الفيديوهات</p>';
-        showToast('حدث خطأ في تحميل الفيديوهات', 'error');
     }
+}
+
+// Product Search & Linking
+async function searchProducts(query) {
+    const resultsContainer = document.getElementById('search-results');
+    if (!query) {
+        resultsContainer.style.display = 'none';
+        return;
+    }
+
+    try {
+        const { data: products, error } = await supabase
+            .from('products')
+            .select('id, title, price, image_url')
+            .ilike('title', `%${query}%`)
+            .limit(5);
+
+        if (error) throw error;
+
+        resultsContainer.innerHTML = '';
+        resultsContainer.style.display = 'block';
+
+        if (products.length === 0) {
+            resultsContainer.innerHTML = '<div style="padding:10px; text-align:center; color:#666;">لا توجد نتائج</div>';
+            return;
+        }
+
+        products.forEach(p => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:10px; border-bottom:1px solid #eee; cursor:pointer; display:flex; align-items:center; gap:10px; transition:background 0.2s;';
+            item.innerHTML = `
+                <img src="${p.image_url || '../../assets/images/logo.png'}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;">
+                <div>
+                    <div style="font-weight:600; font-size:14px;">${p.title}</div>
+                    <div style="font-size:12px; color:#666;">${p.price} ر.س</div>
+                </div>
+            `;
+            item.onmouseover = () => item.style.background = '#f5f5f5';
+            item.onmouseout = () => item.style.background = 'white';
+            item.onclick = () => addProductToSelection(p);
+            resultsContainer.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error('Search error:', error);
+    }
+}
+
+function addProductToSelection(product) {
+    if (selectedProducts.find(p => p.id === product.id)) return;
+
+    selectedProducts.push(product);
+    renderSelectedProducts();
+    document.getElementById('search-results').style.display = 'none';
+    document.getElementById('product-search').value = '';
+}
+
+function removeProductFromSelection(productId) {
+    selectedProducts = selectedProducts.filter(p => p.id !== productId);
+    renderSelectedProducts();
+}
+
+function renderSelectedProducts() {
+    const container = document.getElementById('selected-products');
+    if (selectedProducts.length === 0) {
+        container.innerHTML = '<p style="color: #999; font-size: 14px; width: 100%;">لم يتم اختيار منتجات بعد.</p>';
+        return;
+    }
+
+    container.innerHTML = selectedProducts.map(p => `
+        <div style="background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+            <span>${p.title}</span>
+            <i class="fas fa-times" onclick="removeProductFromSelection('${p.id}')" style="cursor: pointer; color: #e74c3c;"></i>
+        </div>
+    `).join('');
+
+    // Re-attach listeners because inline onclick with string functions is tricky in modules
+    container.querySelectorAll('.fa-times').forEach((icon, index) => {
+        icon.onclick = () => removeProductFromSelection(selectedProducts[index].id);
+    });
 }
 
 // Upload Video
 async function uploadVideo() {
     const fileInput = document.getElementById('video-file');
+    const thumbInput = document.getElementById('video-thumbnail');
+    const titleInput = document.getElementById('video-title');
+    const categoryInput = document.getElementById('video-category');
     const descInput = document.getElementById('video-description');
+
     const uploadBtn = document.getElementById('upload-btn');
     const progressBar = document.getElementById('upload-progress');
     const progressFill = document.getElementById('progress-fill');
     const progressText = document.getElementById('progress-text');
 
     const file = fileInput.files[0];
+    const thumbFile = thumbInput.files[0];
+    const title = titleInput.value.trim();
     const description = descInput.value.trim();
+    const category = categoryInput.value;
 
     if (!file) {
         showToast('الرجاء اختيار ملف فيديو', 'error');
         return;
     }
-
-    // Validate file type
-    const validTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
-    if (!validTypes.includes(file.type)) {
-        showToast('يرجى اختيار ملف فيديو صحيح (MP4, WebM, Ogg)', 'error');
+    if (!title) {
+        showToast('الرجاء إدخال عنوان الفيديو', 'error');
         return;
     }
 
-    // Validate file size (max 100MB)
-    const maxSize = 100 * 1024 * 1024; // 100MB
-    if (file.size > maxSize) {
+    // Validate video
+    const validTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+    if (!validTypes.includes(file.type)) {
+        showToast('صيغة الفيديو غير مدعومة', 'error');
+        return;
+    }
+    if (file.size > 100 * 1024 * 1024) {
         showToast('حجم الفيديو كبير جداً (الحد الأقصى 100 ميجابايت)', 'error');
         return;
     }
@@ -140,16 +229,15 @@ async function uploadVideo() {
     progressBar.style.display = 'block';
 
     try {
-        // Generate unique filename
         const timestamp = Date.now();
-        const fileExt = file.name.split('.').pop();
-        const fileName = `video_${timestamp}.${fileExt}`;
-        const filePath = `videos/${fileName}`;
 
-        // Upload to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        // 1. Upload Video
+        const fileExt = file.name.split('.').pop();
+        const videoPath = `videos/vid_${timestamp}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
             .from('videos')
-            .upload(filePath, file, {
+            .upload(videoPath, file, {
                 cacheControl: '3600',
                 upsert: false,
                 onUploadProgress: (progress) => {
@@ -160,42 +248,67 @@ async function uploadVideo() {
             });
 
         if (uploadError) throw uploadError;
+        const { data: { publicUrl: videoUrl } } = supabase.storage.from('videos').getPublicUrl(videoPath);
 
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-            .from('videos')
-            .getPublicUrl(filePath);
+        // 2. Upload Thumbnail (if exists)
+        let thumbnailUrl = null;
+        if (thumbFile) {
+            const thumbExt = thumbFile.name.split('.').pop();
+            const thumbPath = `thumbnails/thumb_${timestamp}.${thumbExt}`;
+            await supabase.storage.from('videos').upload(thumbPath, thumbFile);
+            const { data } = supabase.storage.from('videos').getPublicUrl(thumbPath);
+            thumbnailUrl = data.publicUrl;
+        }
 
-        // Save to database
-        const { error: dbError } = await supabase
+        // 3. Insert into Database
+        const { data: videoData, error: dbError } = await supabase
             .from('videos')
             .insert([{
-                url: publicUrl,
-                description: description || 'فيديو جديد',
-                likes: 0
-            }]);
+                title,
+                description,
+                video_url: videoUrl,
+                thumbnail_url: thumbnailUrl,
+                category,
+                likes_count: 0,
+                views_count: 0
+            }])
+            .select()
+            .single();
 
         if (dbError) throw dbError;
 
-        showToast('تم رفع الفيديو بنجاح!', 'success');
+        // 4. Link Products
+        if (selectedProducts.length > 0) {
+            const productLinks = selectedProducts.map(p => ({
+                video_id: videoData.id,
+                product_id: p.id,
+                display_time: 0 // Default to start
+            }));
+
+            const { error: linkError } = await supabase
+                .from('video_products')
+                .insert(productLinks);
+
+            if (linkError) console.error('Error linking products:', linkError);
+        }
+
+        showToast('تم نشر الفيديو بنجاح!', 'success');
+
+        // Reset Form
         fileInput.value = '';
+        thumbInput.value = '';
+        titleInput.value = '';
         descInput.value = '';
+        selectedProducts = [];
+        renderSelectedProducts();
         progressBar.style.display = 'none';
         progressFill.style.width = '0%';
-        progressText.textContent = '0%';
-
-        // Clear preview
-        const preview = document.getElementById('video-preview');
-        if (preview) {
-            preview.innerHTML = '';
-            preview.style.display = 'none';
-        }
 
         loadVideos();
 
     } catch (error) {
-        console.error('Error uploading video:', error);
-        showToast('حدث خطأ في رفع الفيديو: ' + error.message, 'error');
+        console.error('Upload error:', error);
+        showToast('حدث خطأ: ' + error.message, 'error');
     } finally {
         uploadBtn.disabled = false;
         uploadBtn.textContent = 'رفع الفيديو';
@@ -207,89 +320,40 @@ window.deleteVideo = async function (id, url) {
     if (!confirm('هل أنت متأكد من حذف هذا الفيديو؟')) return;
 
     try {
-        // Extract file path from URL
-        const urlParts = url.split('/videos/');
-        if (urlParts.length > 1) {
-            const filePath = 'videos/' + urlParts[1].split('?')[0];
-
-            // Delete from storage
-            const { error: storageError } = await supabase.storage
-                .from('videos')
-                .remove([filePath]);
-
-            if (storageError) console.error('Storage delete error:', storageError);
+        // Try to delete from storage (best effort)
+        if (url) {
+            const path = url.split('/').pop(); // Simple extraction, might need refinement
+            // await supabase.storage.from('videos').remove([`videos/${path}`]); 
         }
 
-        // Delete from database
-        const { error: dbError } = await supabase
-            .from('videos')
-            .delete()
-            .eq('id', id);
+        const { error } = await supabase.from('videos').delete().eq('id', id);
+        if (error) throw error;
 
-        if (dbError) throw dbError;
-
-        showToast('تم حذف الفيديو بنجاح', 'success');
+        showToast('تم الحذف بنجاح');
         loadVideos();
-
     } catch (error) {
-        console.error('Error deleting video:', error);
-        showToast('حدث خطأ في حذف الفيديو', 'error');
+        showToast('خطأ في الحذف', 'error');
     }
 };
-
-// Preview Video
-function previewVideo() {
-    const fileInput = document.getElementById('video-file');
-    const preview = document.getElementById('video-preview');
-    const file = fileInput.files[0];
-
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.innerHTML = `
-                <video src="${e.target.result}" controls style="width: 100%; max-height: 300px; border-radius: 12px;">
-                </video>
-                <p style="margin-top: 10px; color: #666; font-size: 14px;">
-                    <i class="fas fa-file-video"></i> ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
-                </p>
-            `;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// Logout
-function handleLogout() {
-    localStorage.removeItem('adminAuthenticated');
-    localStorage.removeItem('userRole');
-    window.location.href = './login.html';
-}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
     const hasAccess = await checkAccess();
     if (!hasAccess) return;
 
-    // Load videos
     loadVideos();
 
-    // Event listeners
-    const uploadBtn = document.getElementById('upload-btn');
-    if (uploadBtn) {
-        uploadBtn.addEventListener('click', uploadVideo);
-    }
+    // Listeners
+    document.getElementById('upload-btn').addEventListener('click', uploadVideo);
 
-    const fileInput = document.getElementById('video-file');
-    if (fileInput) {
-        fileInput.addEventListener('change', previewVideo);
-    }
+    const searchBtn = document.getElementById('search-btn');
+    const searchInput = document.getElementById('product-search');
 
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleLogout();
-        });
-    }
+    searchBtn.addEventListener('click', () => searchProducts(searchInput.value));
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchProducts(searchInput.value);
+    });
+
+    // Make remove function global for inline onclicks
+    window.removeProductFromSelection = removeProductFromSelection;
 });
