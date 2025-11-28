@@ -1,455 +1,820 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl" lang="ar">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - هديتي</title>
+    <title>نقطة البيع | هديتي</title>
+    <!-- CSS is injected by layout.js, but we include it here for faster initial paint -->
+    <link rel="stylesheet" href="../../css/admin-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../Front-End/Appearance/index.css">
     <style>
-        body {
-            background: var(--gray);
+        /* POS Specific Overrides */
+        .pos-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+            height: calc(100vh - 140px);
+            /* Adjust based on header */
         }
 
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-            padding-top: 80px;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: var(--white);
-            padding: var(--spacing-xl);
-            box-shadow: var(--shadow-md);
-            position: fixed;
-            right: 0;
-            top: 80px;
-            bottom: 0;
-            overflow-y: auto;
-        }
-
-        .sidebar-menu {
+        .products-section {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-sm);
+            gap: 20px;
+            overflow: hidden;
         }
 
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            padding: var(--spacing-md);
+        .search-bar {
+            background: white;
+            padding: 16px;
             border-radius: var(--radius-lg);
-            color: var(--black);
-            transition: var(--transition-base);
-            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
 
-        .sidebar-item:hover,
-        .sidebar-item.active {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        .sidebar-item i {
-            width: 24px;
-            text-align: center;
-        }
-
-        .main-content {
+        .search-bar input {
             flex: 1;
-            margin-right: 280px;
-            padding: var(--spacing-xl);
+            border: none;
+            background: #f1f5f9;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
+        .search-bar input:focus {
+            background: white;
+            box-shadow: 0 0 0 2px var(--primary);
         }
 
-        .stat-card {
-            background: var(--white);
-            padding: var(--spacing-xl);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition-base);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-lg);
+        .categories-scroll {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: var(--spacing-md);
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
         }
 
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--black);
-            margin-bottom: var(--spacing-xs);
+        .category-pill {
+            padding: 8px 20px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+            font-weight: 600;
+            color: var(--text-secondary);
         }
 
-        .stat-label {
-            color: var(--gray-dark);
-            font-size: 0.9rem;
+        .category-pill:hover,
+        .category-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        .dashboard-card {
-            background: var(--white);
-            padding: var(--spacing-xl);
-            border-radius: var(--radius-xl);
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
             box-shadow: var(--shadow-sm);
-            margin-bottom: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 140px;
         }
 
-        .card-header {
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        .product-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .product-stock {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Cart Section */
+        .cart-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .cart-header {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-lg);
-            padding-bottom: var(--spacing-md);
-            border-bottom: 2px solid var(--gray);
         }
 
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--black);
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
         }
 
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px dashed var(--border-color);
+            animation: slideIn 0.2s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .item-price {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 4px;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 0.8rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .qty-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .qty-btn.remove:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            background: #fff;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px dashed var(--border-color);
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--text-main);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 16px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+        }
+
+        /* Invoice Tabs */
+        .invoice-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            align-items: center;
+        }
+
+        .invoice-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 0.9rem;
             font-weight: 600;
         }
 
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
+        .invoice-tab:hover {
+            border-color: var(--primary-light);
+            background: var(--primary-fade);
         }
 
-        .status-processing {
-            background: #cce5ff;
-            color: #004085;
+        .invoice-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
-        .status-shipped {
-            background: #d4edda;
-            color: #155724;
+        .invoice-tab .close-invoice {
+            margin-left: 8px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            opacity: 0.7;
+            transition: 0.2s;
         }
 
-        .status-delivered {
-            background: #d1e7dd;
-            color: #0f5132;
+        .invoice-tab .close-invoice:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.2);
         }
 
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
+        .new-invoice-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: var(--success);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            white-space: nowrap;
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                position: static;
+        .new-invoice-btn:hover {
+            background: var(--success-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Shift Badge */
+        .shift-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .shift-status-badge.open {
+            background: #e3f9f5;
+            color: #00b894;
+        }
+
+        .shift-status-badge.closed {
+            background: #ffe5e5;
+            color: #ff4757;
+        }
+
+        @media (max-width: 992px) {
+            .pos-grid {
+                grid-template-columns: 1fr;
+                height: auto;
             }
 
-            .main-content {
-                margin-right: 0;
-            }
-
-            .dashboard-container {
-                flex-direction: column;
+            .cart-section {
+                height: 500px;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <a href="../../index.html" style="text-decoration: none;">
-                <img src="../../assets/images/logo.png" alt="هديتي" style="height: 50px;">
-            </a>
-        </div>
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="font-weight: 600; color: var(--gray-dark);">لوحة التحكم</span>
-            <a href="../../index.html" class="btn" style="padding: 8px 16px;">
-                <i class="fas fa-home"></i> الموقع الرئيسي
-            </a>
-        </div>
-    </header>
 
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-menu">
-                <a href="admin.html" class="sidebar-item active">
-                    <i class="fas fa-chart-line"></i>
-                    <span>الإحصائيات</span>
-                </a>
-                <a href="products.html" class="sidebar-item">
-                    <i class="fas fa-box"></i>
-                    <span>المنتجات</span>
-                </a>
-                <a href="orders.html" class="sidebar-item">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>الطلبات</span>
-                </a>
-                <a href="users.html" class="sidebar-item">
-                    <i class="fas fa-users"></i>
-                    <span>المستخدمين</span>
-                </a>
-                <div style="height: 1px; background: var(--gray); margin: 16px 0;"></div>
-                <a href="settings.html" class="sidebar-item">
-                    <i class="fas fa-cog"></i>
-                    <span>الإعدادات</span>
-                </a>
-            </div>
-        </aside>
-
+    <div class="admin-container">
         <!-- Main Content -->
         <main class="main-content">
-            <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: var(--spacing-xl); color: var(--black);">
-                مرحباً بك في لوحة التحكم
-            </h1>
+            <!-- Header is injected by layout.js -->
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(230, 57, 70, 0.1); color: var(--primary);">
-                        <i class="fas fa-dollar-sign"></i>
+            <div class="pos-grid">
+                <!-- Left: Products -->
+                <div class="products-section">
+                    <!-- Search & Filter -->
+                    <div class="search-bar">
+                        <i class="fas fa-search" style="color: var(--text-secondary);"></i>
+                        <input type="text" id="product-search" placeholder="بحث باسم المنتج أو الباركود (F2)..."
+                            autocomplete="off">
+                        <button class="btn btn-secondary"
+                            onclick="document.getElementById('product-search').value=''; renderSearchResults([]);">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
-                    <div class="stat-value" id="total-sales">0 ر.س</div>
-                    <div class="stat-label">إجمالي المبيعات</div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(69, 123, 157, 0.1); color: var(--secondary);">
-                        <i class="fas fa-shopping-cart"></i>
+                    <!-- Categories -->
+                    <div class="categories-scroll" id="categories-container">
+                        <div class="category-pill active" onclick="filterByCategory('all')">الكل</div>
+                        <!-- Categories injected here -->
                     </div>
-                    <div class="stat-value" id="total-orders">0</div>
-                    <div class="stat-label">إجمالي الطلبات</div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <div class="stat-value" id="total-products">0</div>
-                    <div class="stat-label">إجمالي المنتجات</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(255, 159, 67, 0.1); color: #ff9f43;">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-value" id="total-users">0</div>
-                    <div class="stat-label">إجمالي المستخدمين</div>
-                </div>
-            </div>
-
-            <!-- Recent Orders -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2 class="card-title">آخر الطلبات</h2>
-                    <a href="orders.html" class="btn-outline"
-                        style="padding: 8px 16px; color: var(--black); border-color: var(--gray);">عرض الكل</a>
-                </div>
-                <div id="recent-orders">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>جاري تحميل الطلبات...</p>
+                    <!-- Products Grid -->
+                    <div id="search-results" class="products-grid">
+                        <!-- Products injected here -->
                     </div>
                 </div>
-            </div>
 
-            <!-- Low Stock Products -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2 class="card-title">منتجات قاربت على النفاذ</h2>
-                    <a href="products.html" class="btn-outline"
-                        style="padding: 8px 16px; color: var(--black); border-color: var(--gray);">إدارة المنتجات</a>
-                </div>
-                <div id="low-stock">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>جاري تحميل المنتجات...</p>
+                <!-- Right: Cart -->
+                <div class="cart-section">
+                    <!-- Invoice Tabs -->
+                    <div class="invoice-tabs" id="invoice-tabs">
+                        <div class="invoice-tab active" data-invoice-id="1" onclick="switchInvoice(1)">
+                            <i class="fas fa-receipt"></i>
+                            <span>فاتورة 1</span>
+                            <span class="close-invoice" onclick="event.stopPropagation(); closeInvoice(1)">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </div>
+                        <button class="new-invoice-btn" onclick="createNewInvoice()">
+                            <i class="fas fa-plus"></i>
+                            فاتورة جديدة
+                        </button>
+                    </div>
+
+                    <div class="cart-header">
+                        <h3 style="margin: 0;"><i class="fas fa-shopping-basket"></i> سلة المشتريات</h3>
+                        <button class="btn btn-sm btn-danger" onclick="window.pos.clearCart()"
+                            style="padding: 6px 12px; font-size: 0.8rem;">
+                            <i class="fas fa-trash"></i> تفريغ
+                        </button>
+                    </div>
+
+                    <div id="cart-items" class="cart-items">
+                        <!-- Cart Items injected here -->
+                        <div style="text-align: center; margin-top: 50px; color: var(--text-secondary);">
+                            <i class="fas fa-shopping-cart"
+                                style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                            <p>السلة فارغة</p>
+                        </div>
+                    </div>
+
+                    <div class="cart-footer">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <input type="text" id="customer-name" class="form-input" placeholder="اسم العميل (اختياري)">
+                        </div>
+
+                        <div class="summary-row">
+                            <span>عدد العناصر</span>
+                            <span id="cart-count">0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>الضريبة (0%)</span>
+                            <span>0.00 ر.س</span>
+                        </div>
+                        <div class="total-row">
+                            <span>الإجمالي</span>
+                            <span id="cart-total" style="color: var(--primary);">0.00 ر.س</span>
+                        </div>
+
+                        <button class="btn btn-primary checkout-btn" onclick="handleCheckout()">
+                            <i class="fas fa-money-bill-wave"></i> إتمام الدفع (F9)
+                        </button>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Modals -->
+
+    <!-- Shift Modal -->
+    <div id="shift-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">إدارة الوردية</h3>
+                <button class="close-modal" onclick="closeModal('shift-modal')">&times;</button>
+            </div>
+            <div id="shift-modal-body">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Options Modal -->
+    <div id="print-options-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div style="margin-bottom: 20px; color: var(--success); font-size: 4rem;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="modal-title">تم الدفع بنجاح!</h3>
+            <p style="margin-bottom: 30px; color: var(--text-secondary);">كيف تريد طباعة الفاتورة؟</p>
+
+            <div style="display: grid; gap: 12px;">
+                <button class="btn btn-primary" onclick="printCurrentInvoice('thermal')"
+                    style="justify-content: center;">
+                    <i class="fas fa-receipt"></i> إيصال حراري (صغير)
+                </button>
+                <button class="btn btn-secondary" onclick="printCurrentInvoice('standard')"
+                    style="justify-content: center;">
+                    <i class="fas fa-file-invoice"></i> فاتورة A4 (قياسي)
+                </button>
+                <button class="btn" onclick="closeModal('print-options-modal')"
+                    style="margin-top: 10px; color: var(--text-secondary);">
+                    إغلاق بدون طباعة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Help -->
+    <div id="shortcuts-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">اختصارات لوحة المفاتيح</h3>
+                <button class="close-modal" onclick="closeModal('shortcuts-modal')">&times;</button>
+            </div>
+            <div class="grid-2">
+                <div style="padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <strong>F2</strong> <span style="float: left;">بحث عن منتج</span>
+                </div>
+                <div style="padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <strong>F9</strong> <span style="float: left;">إتمام الدفع</span>
+                </div>
+                <div style="padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Esc</strong> <span style="float: left;">إغلاق النوافذ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../../js/admin/layout.js"></script>
     <script type="module">
-        import { supabase } from '../../js/supabase-client.js';
-        import { isAdmin, formatPrice } from '../../js/utils.js';
-        import { showError } from '../../js/toast.js';
+        import { POSSystem } from '../../js/pos.js';
+        import { ShiftManager } from '../../js/shifts.js';
+        import { formatPrice, showToast } from '../../js/utils.js';
 
-        // Check if user is admin
-        async function checkAdmin() {
-            const adminStatus = await isAdmin(supabase);
-            if (!adminStatus) {
-                showError('ليس لديك صلاحية للوصول لهذه الصفحة');
-                setTimeout(() => {
-                    window.location.href = '../../index.html';
-                }, 2000);
-                return false;
+        // Initialize Systems
+        window.pos = new POSSystem();
+        window.shiftManager = new ShiftManager();
+
+        // Global Helpers
+        window.formatPrice = formatPrice;
+        window.showToast = showToast;
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        window.showShiftModal = () => window.shiftManager.showShiftModal();
+
+        // --- Multi-Invoice System ---
+        let invoices = {
+            1: { id: 1, cart: [], name: 'فاتورة 1' }
+        };
+        let currentInvoiceId = 1;
+        let nextInvoiceId = 2;
+
+        // Create New Invoice
+        window.createNewInvoice = () => {
+            const newId = nextInvoiceId++;
+            invoices[newId] = {
+                id: newId,
+                cart: [],
+                name: `فاتورة ${newId}`
+            };
+
+            // Add tab
+            const tabsContainer = document.getElementById('invoice-tabs');
+            const newInvoiceBtn = tabsContainer.querySelector('.new-invoice-btn');
+
+            const tab = document.createElement('div');
+            tab.className = 'invoice-tab';
+            tab.setAttribute('data-invoice-id', newId);
+            tab.onclick = () => switchInvoice(newId);
+            tab.innerHTML = `
+                <i class="fas fa-receipt"></i>
+                <span>فاتورة ${newId}</span>
+                <span class="close-invoice" onclick="event.stopPropagation(); closeInvoice(${newId})">
+                    <i class="fas fa-times"></i>
+                </span>
+            `;
+
+            tabsContainer.insertBefore(tab, newInvoiceBtn);
+            switchInvoice(newId);
+            showToast(`تم إنشاء ${invoices[newId].name}`, 'success');
+        };
+
+        // Switch Invoice
+        window.switchInvoice = (invoiceId) => {
+            if (!invoices[invoiceId]) return;
+
+            // Save current cart
+            if (invoices[currentInvoiceId]) {
+                invoices[currentInvoiceId].cart = [...window.pos.cart];
             }
-            return true;
-        }
 
-        // Load dashboard stats
-        async function loadStats() {
-            try {
-                // Get total sales
-                const { data: orders } = await supabase
-                    .from('orders')
-                    .select('total_amount')
-                    .neq('status', 'cancelled');
+            // Switch to new invoice
+            currentInvoiceId = invoiceId;
+            window.pos.cart = [...(invoices[invoiceId].cart || [])];
 
-                const totalSales = orders?.reduce((sum, order) => sum + parseFloat(order.total_amount || 0), 0) || 0;
-                document.getElementById('total-sales').textContent = formatPrice(totalSales);
+            // Update UI
+            document.querySelectorAll('.invoice-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-invoice-id') == invoiceId);
+            });
 
-                // Get total orders
-                const { count: ordersCount } = await supabase
-                    .from('orders')
-                    .select('*', { count: 'exact', head: true });
+            window.pos.renderCart();
+        };
 
-                document.getElementById('total-orders').textContent = ordersCount || 0;
+        // Close Invoice
+        window.closeInvoice = (invoiceId) => {
+            const invoiceCount = Object.keys(invoices).length;
 
-                // Get total products
-                const { count: productsCount } = await supabase
-                    .from('products')
-                    .select('*', { count: 'exact', head: true });
-
-                document.getElementById('total-products').textContent = productsCount || 0;
-
-                // Get total users
-                const { count: usersCount } = await supabase
-                    .from('user_profiles')
-                    .select('*', { count: 'exact', head: true });
-
-                document.getElementById('total-users').textContent = usersCount || 0;
-
-            } catch (error) {
-                console.error('Load stats error:', error);
+            if (invoiceCount === 1) {
+                showToast('لا يمكن إغلاق آخر فاتورة', 'error');
+                return;
             }
-        }
 
-        // Load recent orders
-        async function loadRecentOrders() {
-            const container = document.getElementById('recent-orders');
-
-            try {
-                const { data: orders, error } = await supabase
-                    .from('orders')
-                    .select('*, user_profiles(full_name)')
-                    .order('created_at', { ascending: false })
-                    .limit(5);
-
-                if (error) throw error;
-
-                if (!orders || orders.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: var(--gray-dark); padding: 24px;">لا توجد طلبات حالياً</p>';
+            if (invoices[invoiceId] && invoices[invoiceId].cart.length > 0) {
+                if (!confirm(`هل أنت متأكد من إغلاق ${invoices[invoiceId].name}؟ سيتم فقد جميع العناصر.`)) {
                     return;
                 }
-
-                container.innerHTML = orders.map(order => {
-                    const statusText = {
-                        'pending': 'قيد الانتظار',
-                        'processing': 'قيد التنفيذ',
-                        'shipped': 'تم الشحن',
-                        'delivered': 'تم التوصيل',
-                        'cancelled': 'ملغي'
-                    }[order.status] || order.status;
-
-                    const statusClass = `status-${order.status}`;
-
-                    return `
-                    <div style="padding: 16px; border-bottom: 1px solid var(--gray); display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 700; margin-bottom: 4px;">${order.user_profiles?.full_name || 'مستخدم'}</div>
-                            <div style="font-size: 0.85rem; color: var(--gray-dark);">#${order.id.slice(0, 8)} - ${new Date(order.created_at).toLocaleDateString('ar-SA')}</div>
-                        </div>
-                        <div style="text-align: left;">
-                            <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">${formatPrice(order.total_amount)}</div>
-                            <span class="status-badge ${statusClass}">
-                                ${statusText}
-                            </span>
-                        </div>
-                    </div>
-                `}).join('');
-
-            } catch (error) {
-                console.error('Load orders error:', error);
-                container.innerHTML = '<p style="text-align: center; color: var(--primary); padding: 24px;">حدث خطأ في تحميل الطلبات</p>';
             }
-        }
 
-        // Load low stock products
-        async function loadLowStock() {
-            const container = document.getElementById('low-stock');
+            // Remove tab
+            const tab = document.querySelector(`.invoice-tab[data-invoice-id="${invoiceId}"]`);
+            if (tab) tab.remove();
 
-            try {
-                const { data: products, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .lte('stock', 10)
-                    .order('stock', { ascending: true })
-                    .limit(5);
+            // Delete invoice
+            delete invoices[invoiceId];
 
-                if (error) throw error;
-
-                if (!products || products.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: var(--gray-dark); padding: 24px;">جميع المنتجات متوفرة بكميات كافية</p>';
-                    return;
+            // Switch to another invoice if this was active
+            if (currentInvoiceId === invoiceId) {
+                const remainingIds = Object.keys(invoices);
+                if (remainingIds.length > 0) {
+                    switchInvoice(parseInt(remainingIds[0]));
                 }
-
-                container.innerHTML = products.map(product => `
-                    <div style="padding: 16px; border-bottom: 1px solid var(--gray); display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 700; margin-bottom: 4px;">${product.title}</div>
-                            <div style="font-size: 0.85rem; color: var(--gray-dark);">${formatPrice(product.price)}</div>
-                        </div>
-                        <div style="text-align: left;">
-                            <span style="padding: 6px 16px; border-radius: 12px; font-weight: 700; background: ${product.stock === 0 ? '#e74c3c' : product.stock <= 5 ? '#f39c12' : '#ffa502'}; color: white;">
-                                ${product.stock} متبقي
-                            </span>
-                        </div>
-                    </div>
-                `).join('');
-
-            } catch (error) {
-                console.error('Load low stock error:', error);
-                container.innerHTML = '<p style="text-align: center; color: var(--primary); padding: 24px;">حدث خطأ في تحميل المنتجات</p>';
             }
-        }
 
-        // Initialize
+            showToast('تم إغلاق الفاتورة', 'info');
+        };
+
+        // Clear current invoice after checkout
+        const originalCheckout = window.pos.checkout.bind(window.pos);
+        window.pos.checkout = async function (...args) {
+            const result = await originalCheckout(...args);
+            if (result) {
+                // Clear current invoice cart
+                if (invoices[currentInvoiceId]) {
+                    invoices[currentInvoiceId].cart = [];
+                }
+            }
+            return result;
+        };
+
+        // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', async () => {
-            const isAdminUser = await checkAdmin();
-            if (isAdminUser) {
-                loadStats();
-                loadRecentOrders();
-                loadLowStock();
+            // Check Shift
+            await updateShiftStatus();
+
+            // Load Initial Products (Top 20 or similar)
+            loadInitialProducts();
+
+            // Setup Keyboard Shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'F2') {
+                    e.preventDefault();
+                    document.getElementById('product-search').focus();
+                }
+                if (e.key === 'F9') {
+                    e.preventDefault();
+                    handleCheckout();
+                }
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+                }
+            });
+        });
+
+        // --- Search Logic ---
+        const searchInput = document.getElementById('product-search');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+
+            if (query.length < 1) {
+                loadInitialProducts(); // Show default if empty
+                return;
+            }
+
+            searchTimeout = setTimeout(async () => {
+                const results = await window.pos.searchProduct(query);
+                renderSearchResults(results);
+            }, 300);
+        });
+
+        searchInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const query = e.target.value.trim();
+                if (!query) return;
+
+                const results = await window.pos.searchProduct(query);
+
+                if (results.length > 0) {
+                    const exactMatch = results.find(p => p.barcode === query);
+                    const productToAdd = exactMatch || results[0];
+                    window.pos.addToCart(productToAdd);
+                    searchInput.value = '';
+                    searchInput.focus();
+                    showToast(`تم إضافة ${productToAdd.title}`, 'success');
+                } else {
+                    showToast('المنتج غير موجود', 'error');
+                }
             }
         });
+
+        // --- Render Functions ---
+        async function loadInitialProducts() {
+            // Mock loading initial products or fetch from Supabase
+            // For now, let's just search for empty string or fetch recent
+            const results = await window.pos.searchProduct('');
+            renderSearchResults(results);
+        }
+
+        function renderSearchResults(products) {
+            const container = document.getElementById('search-results');
+
+            if (!products || products.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>لا توجد منتجات مطابقة</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = products.map(product => `
+                <div class="product-card" onclick="window.pos.addToCart({
+                    id: '${product.id}', 
+                    title: '${product.title}', 
+                    price: ${product.price}, 
+                    cost_price: ${product.cost_price || 0}, 
+                    barcode: '${product.barcode || ''}'
+                })">
+                    <div class="product-title">${product.title}</div>
+                    <div>
+                        <div class="product-price">${formatPrice(product.price)}</div>
+                        <div class="product-stock">
+                            <i class="fas fa-cube"></i> ${product.stock}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- Checkout Logic ---
+        let lastInvoiceData = null;
+
+        window.handleCheckout = async () => {
+            const customerName = document.getElementById('customer-name').value;
+            const result = await window.pos.checkout(customerName);
+
+            if (result) {
+                lastInvoiceData = result;
+                document.getElementById('customer-name').value = '';
+                document.getElementById('print-options-modal').classList.add('active');
+            }
+        };
+
+        window.printCurrentInvoice = (type) => {
+            if (lastInvoiceData) {
+                window.pos.printInvoice(lastInvoiceData.invoice, lastInvoiceData.items, type);
+                // closeModal('print-options-modal'); // Optional
+            }
+        };
+
+        // --- Shift Logic ---
+        async function updateShiftStatus() {
+            const shift = await window.shiftManager.checkOpenShift();
+
+            // Try to find header actions to inject status
+            const headerActions = document.getElementById('header-actions');
+            let statusEl = document.getElementById('shift-status-badge');
+
+            if (!statusEl && headerActions) {
+                statusEl = document.createElement('div');
+                statusEl.id = 'shift-status-badge';
+                // Insert before user profile
+                headerActions.insertBefore(statusEl, headerActions.firstChild);
+            } else if (!statusEl) {
+                // Fallback if header not ready yet
+                return;
+            }
+
+            if (shift) {
+                statusEl.className = 'shift-status-badge open';
+                statusEl.innerHTML = `
+                    <i class="fas fa-circle" style="font-size: 0.6rem;"></i>
+                    وردية مفتوحة (#${shift.id.slice(0, 4)})
+                `;
+                statusEl.onclick = showShiftModal;
+                window.pos.currentShift = shift;
+            } else {
+                statusEl.className = 'shift-status-badge closed';
+                statusEl.innerHTML = `
+                    <i class="fas fa-lock"></i> الوردية مغلقة
+                `;
+                statusEl.onclick = showShiftModal;
+                window.pos.currentShift = null;
+            }
+        }
     </script>
 </body>
 

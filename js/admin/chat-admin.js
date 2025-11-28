@@ -1,13 +1,14 @@
 import { supabase } from '../supabase-client.js';
+import { showError, showSuccess } from '../toast.js';
 
 // DOM Elements
-const conversationsList = document.getElementById('conversationsList');
-const emptyState = document.getElementById('emptyState');
-const activeChatContainer = document.getElementById('activeChatContainer');
-const chatTitle = document.getElementById('chatTitle');
-const messagesArea = document.getElementById('messagesArea');
-const adminInput = document.getElementById('adminInput');
-const adminSendBtn = document.getElementById('adminSendBtn');
+const conversationsWrapper = document.getElementById('conversations-wrapper');
+const activeChatHeader = document.getElementById('active-chat-header');
+const chatUserName = document.getElementById('chat-user-name');
+const messagesArea = document.getElementById('admin-chat-messages');
+const adminInput = document.getElementById('admin-message-input');
+const adminSendBtn = document.getElementById('admin-send-btn');
+const chatInputArea = document.getElementById('chat-input-area');
 
 // State
 let conversations = new Map();
@@ -34,7 +35,8 @@ async function loadConversations() {
         .limit(200);
 
     if (error) {
-        conversationsList.innerHTML = '<div style="padding:20px; text-align:center;">خطأ في التحميل</div>';
+        conversationsWrapper.innerHTML = '<div style="padding:20px; text-align:center; color: var(--text-secondary);">خطأ في التحميل</div>';
+        showError('حدث خطأ في تحميل المحادثات');
         return;
     }
 
@@ -53,10 +55,10 @@ async function loadConversations() {
 
 // Render Conversations
 function renderConversations() {
-    conversationsList.innerHTML = '';
+    conversationsWrapper.innerHTML = '';
 
     if (conversations.size === 0) {
-        conversationsList.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">لا توجد محادثات</div>';
+        conversationsWrapper.innerHTML = '<div style="padding:40px; text-align:center; color: var(--text-secondary);">لا توجد محادثات</div>';
         return;
     }
 
@@ -68,20 +70,18 @@ function renderConversations() {
         const preview = data.lastMessage.content.substring(0, 40);
 
         div.innerHTML = `
-            <div class="conversation-avatar">
+            <div class="user-avatar">
                 <i class="fas fa-user"></i>
             </div>
-            <div class="conversation-info">
-                <div class="conversation-name">${sessionId.substring(0, 15)}...</div>
-                <div class="conversation-preview">${preview}</div>
+            <div class="user-info">
+                <div class="user-name">${sessionId.substring(0, 15)}...</div>
+                <div class="last-message">${preview}</div>
             </div>
-            <div class="conversation-meta">
-                <div>${time}</div>
-            </div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">${time}</div>
         `;
 
         div.onclick = () => openConversation(sessionId);
-        conversationsList.appendChild(div);
+        conversationsWrapper.appendChild(div);
     });
 }
 
@@ -90,9 +90,16 @@ async function openConversation(sessionId) {
     activeSessionId = sessionId;
     renderConversations();
 
-    emptyState.style.display = 'none';
-    activeChatContainer.style.display = 'flex';
-    chatTitle.textContent = `محادثة: ${sessionId.substring(0, 20)}...`;
+    // Show chat interface
+    activeChatHeader.style.display = 'flex';
+    chatInputArea.style.display = 'flex';
+    chatUserName.textContent = `محادثة: ${sessionId.substring(0, 20)}...`;
+
+    // Clear empty state if exists
+    const emptyState = messagesArea.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
 
     const { data, error } = await supabase
         .from('chat_messages')
@@ -102,7 +109,8 @@ async function openConversation(sessionId) {
         .order('created_at', { ascending: true });
 
     if (error) {
-        messagesArea.innerHTML = 'خطأ في التحميل';
+        messagesArea.innerHTML = '<div style="text-align:center; padding:20px; color: var(--danger);">خطأ في التحميل</div>';
+        showError('حدث خطأ في تحميل الرسائل');
         return;
     }
 
@@ -118,11 +126,8 @@ function appendMessage(msg) {
     if (existing) return;
 
     const div = document.createElement('div');
-    div.className = `admin-message ${msg.sender_type === 'admin' ? 'sent' : 'received'}`;
+    div.className = `message ${msg.sender_type === 'admin' ? 'sent' : 'received'}`;
     div.setAttribute('data-msg-id', msg.id);
-
-    const bubble = document.createElement('div');
-    bubble.className = 'message-bubble';
 
     let content = msg.content;
     if (msg.message_type === 'product') {
@@ -135,15 +140,12 @@ function appendMessage(msg) {
     }
 
     const time = new Date(msg.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-    const sender = msg.sender_type === 'user' ? 'عميل' : (msg.sender_type === 'bot' ? 'بوت' : 'أنت');
 
-    bubble.innerHTML = `
-        <div style="font-size:0.75rem; opacity:0.7; margin-bottom:3px;">${sender}</div>
-        <div class="message-text">${content}</div>
+    div.innerHTML = `
+        ${content}
         <div class="message-time">${time}</div>
     `;
 
-    div.appendChild(bubble);
     messagesArea.appendChild(div);
 }
 
@@ -174,7 +176,7 @@ async function sendAdminReply() {
     }).select().single();
 
     if (error) {
-        alert('فشل الإرسال');
+        showError('فشل إرسال الرسالة');
         const tempEl = document.querySelector(`[data-msg-id="${tempId}"]`);
         if (tempEl) tempEl.remove();
     } else {

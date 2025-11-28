@@ -1,5 +1,6 @@
 import { supabase } from '../supabase-client.js';
 import { isPublisher } from '../utils.js';
+import { showError, showSuccess, showLoading } from '../toast.js';
 
 // State for selected products
 let selectedProducts = [];
@@ -26,34 +27,6 @@ async function checkAccess() {
         console.error('Access check error:', error);
         return false;
     }
-}
-
-// Toast Notification
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
-        color: white;
-        padding: 16px 32px;
-        border-radius: 50px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        z-index: 10000;
-        font-size: 16px;
-        font-weight: 700;
-        animation: slideDown 0.3s ease;
-    `;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
 }
 
 // Load Videos
@@ -205,22 +178,22 @@ async function uploadVideo() {
     const category = categoryInput.value;
 
     if (!file) {
-        showToast('الرجاء اختيار ملف فيديو', 'error');
+        showError('الرجاء اختيار ملف فيديو');
         return;
     }
     if (!title) {
-        showToast('الرجاء إدخال عنوان الفيديو', 'error');
+        showError('الرجاء إدخال عنوان الفيديو');
         return;
     }
 
     // Validate video
     const validTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
     if (!validTypes.includes(file.type)) {
-        showToast('صيغة الفيديو غير مدعومة', 'error');
+        showError('صيغة الفيديو غير مدعومة');
         return;
     }
     if (file.size > 100 * 1024 * 1024) {
-        showToast('حجم الفيديو كبير جداً (الحد الأقصى 100 ميجابايت)', 'error');
+        showError('حجم الفيديو كبير جداً (الحد الأقصى 100 ميجابايت)');
         return;
     }
 
@@ -292,7 +265,7 @@ async function uploadVideo() {
             if (linkError) console.error('Error linking products:', linkError);
         }
 
-        showToast('تم نشر الفيديو بنجاح!', 'success');
+        showSuccess('تم نشر الفيديو بنجاح!');
 
         // Reset Form
         fileInput.value = '';
@@ -308,7 +281,7 @@ async function uploadVideo() {
 
     } catch (error) {
         console.error('Upload error:', error);
-        showToast('حدث خطأ: ' + error.message, 'error');
+        showError('حدث خطأ: ' + error.message);
     } finally {
         uploadBtn.disabled = false;
         uploadBtn.textContent = 'رفع الفيديو';
@@ -329,10 +302,10 @@ window.deleteVideo = async function (id, url) {
         const { error } = await supabase.from('videos').delete().eq('id', id);
         if (error) throw error;
 
-        showToast('تم الحذف بنجاح');
+        showSuccess('تم الحذف بنجاح');
         loadVideos();
     } catch (error) {
-        showToast('خطأ في الحذف', 'error');
+        showError('خطأ في الحذف');
     }
 };
 

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الواردات (المشتريات) - لوحة التحكم</title>
+    <!-- CSS is injected by layout.js, but we include it here for faster initial paint -->
+    <link rel="stylesheet" href="../../css/admin-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Page Specific Overrides */
+        .purchases-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .product-search {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .items-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: right;
+            color: var(--text-main);
+        }
+
+        .items-table th {
+            background: var(--bg-main);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header is injected by layout.js -->
+
+            <div
+                style="display: flex; justify-content: flex-end; margin-bottom: 20px; margin-top: -60px; position: relative; z-index: 901; pointer-events: none;">
+                <!-- Hack to place button in header area -->
+                <button class="btn btn-primary" onclick="openModal()" style="pointer-events: auto;">
+                    <i class="fas fa-plus"></i> إضافة فاتورة شراء
+                </button>
+            </div>
+
+            <div class="purchases-card">
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>رقم الفاتورة</th>
+                                <th>المورد</th>
+                                <th>التكلفة الإجمالية</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="purchases-table">
+                            <!-- Purchases loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Purchase Modal -->
+    <div id="purchase-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">فاتورة شراء جديدة</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">اسم المورد</label>
+                <input type="text" id="supplier-name" class="form-input" placeholder="مثال: شركة التوريدات...">
+            </div>
+
+            <div class="product-search">
+                <label class="form-label">بحث عن منتج لإضافته</label>
+                <input type="text" id="product-search" class="form-input" placeholder="ابحث بالاسم أو الباركود...">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>الكمية</th>
+                        <th>سعر التكلفة (للقطعة)</th>
+                        <th>الإجمالي</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="purchase-items">
+                    <!-- Items added here -->
+                </tbody>
+            </table>
+
+            <div
+                style="margin-top: 20px; font-weight: 700; font-size: 1.2rem; text-align: left; color: var(--text-main);">
+                الإجمالي الكلي: <span id="total-cost">0.00</span> ر.س
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 30px;">
+                <button onclick="savePurchase()" class="btn btn-primary" style="flex: 1;">حفظ الفاتورة</button>
+                <button onclick="closeModal()" class="btn btn-secondary" style="flex: 1;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initAdminLayout } from '../../js/admin/layout.js';
+        import { supabase } from '../../js/supabase-client.js';
+        import { formatPrice } from '../../js/utils.js';
+        import { showSuccess, showError } from '../../js/toast.js';
+
+        initAdminLayout('purchases.html');
+
+        let cart = []; // { product, quantity, cost }
+
+        // Load Purchases History
+        async function loadPurchases() {
+            // Note: We need to create the 'purchases' table first if it doesn't exist, 
+            // but assuming the user will run the schema update or we handle it gracefully.
+            // For now, we'll try to fetch.
+            const { data, error } = await supabase
+                .from('purchases')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('purchases-table');
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<tr><td colspan="4" style="text-align:center">لا توجد سجلات</td></tr>';
+                return;
+            }
+
+            container.innerHTML = data.map(p => `
+                <tr>
+                    <td>#${p.id}</td>
+                    <td>${p.supplier_name}</td>
+                    <td style="font-weight: 700;">${formatPrice(p.total_cost)}</td>
+                    <td>${new Date(p.created_at).toLocaleString('ar-SA')}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Product Search
+        const searchInput = document.getElementById('product-search');
+        const resultsBox = document.getElementById('search-results');
+
+        searchInput.addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            if (query.length < 2) {
+                resultsBox.style.display = 'none';
+                return;
+            }
+
+            const { data } = await supabase
+                .from('products')
+                .select('*')
+                .or(`title.ilike.%${query}%,barcode.eq.${query}`)
+                .limit(5);
+
+            if (data && data.length > 0) {
+                resultsBox.innerHTML = data.map(p => `
+                    <div class="search-result-item" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
+                        ${p.title} (${p.stock})
+                    </div>
+                `).join('');
+                resultsBox.style.display = 'block';
+            } else {
+                resultsBox.style.display = 'none';
+            }
+        });
+
+        window.addToCart = (product) => {
+            cart.push({
+                product: product,
+                quantity: 1,
+                cost: product.cost_price || 0
+            });
+            renderCart();
+            searchInput.value = '';
+            resultsBox.style.display = 'none';
+        };
+
+        function renderCart() {
+            const container = document.getElementById('purchase-items');
+            let total = 0;
+
+            container.innerHTML = cart.map((item, index) => {
+                const itemTotal = item.quantity * item.cost;
+                total += itemTotal;
+                return `
+                    <tr>
+                        <td>${item.product.title}</td>
+                        <td><input type="number" value="${item.quantity}" min="1" style="width: 60px; padding: 4px;" onchange="updateItem(${index}, 'quantity', this.value)"></td>
+                        <td><input type="number" value="${item.cost}" step="0.01" style="width: 80px; padding: 4px;" onchange="updateItem(${index}, 'cost', this.value)"></td>
+                        <td>${formatPrice(itemTotal)}</td>
+                        <td><button onclick="removeItem(${index})" style="color: red; border: none; background: none; cursor: pointer;"><i class="fas fa-trash"></i></button></td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('total-cost').textContent = formatPrice(total);
+        }
+
+        window.updateItem = (index, field, value) => {
+            cart[index][field] = parseFloat(value);
+            renderCart();
+        };
+
+        window.removeItem = (index) => {
+            cart.splice(index, 1);
+            renderCart();
+        };
+
+        window.savePurchase = async () => {
+            if (cart.length === 0) {
+                showError('أضف منتجات أولاً');
+                return;
+            }
+
+            const supplier = document.getElementById('supplier-name').value || 'مورد عام';
+            const totalCost = cart.reduce((sum, item) => sum + (item.quantity * item.cost), 0);
+
+            try {
+                // 1. Create Purchase Record
+                // Note: Assuming 'purchases' table exists. If not, this will fail until schema is updated.
+                // We will create the schema in the next step if needed, but here is the logic.
+                const { data: purchase, error: pError } = await supabase
+                    .from('purchases')
+                    .insert({
+                        supplier_name: supplier,
+                        total_cost: totalCost
+                    })
+                    .select()
+                    .single();
+
+                if (pError) throw pError;
+
+                // 2. Add Items
+                const itemsData = cart.map(item => ({
+                    purchase_id: purchase.id,
+                    product_id: item.product.id,
+                    quantity: item.quantity,
+                    cost_price: item.cost
+                }));
+
+                const { error: iError } = await supabase.from('purchase_items').insert(itemsData);
+                if (iError) throw iError;
+
+                // 3. Update Product Stock & Cost
+                for (const item of cart) {
+                    const newStock = item.product.stock + item.quantity;
+                    // Optional: Calculate weighted average cost
+                    // New Cost = ((Old Stock * Old Cost) + (New Qty * New Cost)) / Total Stock
+                    // For simplicity, we just update stock and maybe set cost to latest cost
+                    await supabase
+                        .from('products')
+                        .update({
+                            stock: newStock,
+                            cost_price: item.cost
+                        })
+                        .eq('id', item.product.id);
+                }
+
+                showSuccess('تم حفظ فاتورة الشراء');
+                closeModal();
+                cart = [];
+                renderCart();
+                loadPurchases();
+
+            } catch (error) {
+                console.error(error);
+                showError('حدث خطأ. تأكد من تحديث قاعدة البيانات.');
+            }
+        };
+
+        window.openModal = () => document.getElementById('purchase-modal').classList.add('active');
+        window.closeModal = () => document.getElementById('purchase-modal').classList.remove('active');
+
+        loadPurchases();
+    </script>
+</body>
+
+</html>

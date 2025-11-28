@@ -1,12 +1,15 @@
 import { supabase } from '../supabase-client.js';
 import { isAdmin } from '../utils.js';
+import { showSuccess, showError } from '../toast.js';
 
 // Check admin access
 async function checkAdmin() {
     const adminStatus = await isAdmin(supabase);
     if (!adminStatus) {
-        alert('ليس لديك صلاحية للوصول لهذه الصفحة');
-        window.location.href = '../../index.html';
+        showError('ليس لديك صلاحية للوصول لهذه الصفحة');
+        setTimeout(() => {
+            window.location.href = '../../index.html';
+        }, 2000);
         return false;
     }
     return true;
@@ -42,6 +45,7 @@ async function loadSettings() {
         }
     } catch (error) {
         console.error('Error loading settings:', error);
+        showError('حدث خطأ في تحميل الإعدادات');
     }
 }
 
@@ -137,39 +141,12 @@ window.saveSettings = async function (section) {
             if (error) throw error;
         }
 
-        showToast('تم حفظ الإعدادات بنجاح!', 'success');
+        showSuccess('تم حفظ الإعدادات بنجاح!');
     } catch (error) {
         console.error('Error saving settings:', error);
-        showToast('حدث خطأ في حفظ الإعدادات', 'error');
+        showError('حدث خطأ في حفظ الإعدادات');
     }
 };
-
-// Toast notification
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-        position: fixed;
-        top: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-        color: white;
-        padding: 16px 32px;
-        border-radius: 50px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        z-index: 10000;
-        font-weight: 700;
-        animation: slideDown 0.3s ease;
-    `;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {

@@ -1,4 +1,5 @@
 import { supabase } from './supabase-client.js';
+import { showSuccess, showError } from './toast.js';
 
 // Get product ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -62,6 +63,7 @@ export async function loadReviews(productId) {
 
     } catch (error) {
         console.error('Error loading reviews:', error);
+        showError('حدث خطأ في تحميل التقييمات');
     }
 }
 
@@ -172,12 +174,12 @@ export function initializeReviewForm(productId) {
         const comment = document.getElementById('review-comment').value.trim();
 
         if (!name || !comment || selectedRating === 0) {
-            showToast('الرجاء ملء جميع الحقول واختيار التقييم', 'error');
+            showError('الرجاء ملء جميع الحقول واختيار التقييم');
             return;
         }
 
         if (comment.length < 10) {
-            showToast('التعليق يجب أن يكون 10 أحرف على الأقل', 'error');
+            showError('التعليق يجب أن يكون 10 أحرف على الأقل');
             return;
         }
 
@@ -193,45 +195,18 @@ export function initializeReviewForm(productId) {
         });
 
         if (result.success) {
-            showToast('تم إضافة تقييمك بنجاح!', 'success');
+            showSuccess('تم إضافة تقييمك بنجاح!');
             form.reset();
             selectedRating = 0;
             updateStars(0);
             loadReviews(productId);
         } else {
-            showToast('حدث خطأ: ' + result.error, 'error');
+            showError('حدث خطأ: ' + result.error);
         }
 
         submitBtn.disabled = false;
         submitBtn.textContent = 'إرسال التقييم';
     });
-}
-
-// Toast Notification
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-        color: white;
-        padding: 16px 32px;
-        border-radius: 50px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        z-index: 10000;
-        font-weight: 700;
-        animation: slideDown 0.3s ease;
-    `;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
 }
 
 // Auto-load reviews if product ID exists

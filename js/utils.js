@@ -296,3 +296,21 @@ export async function isPublisher(supabase) {
         return false;
     }
 }
+
+
+
+
+
+const showError = (message) => { console.error(message); }
+export { showError };
+
+
+
+const showSuccess = (message) => { console.log(message); }
+export { showSuccess };
+
+
+
+
+const showToast = (message) => { console.log(message); }
+export { showToast };

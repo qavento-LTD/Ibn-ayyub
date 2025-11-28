@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المصروفات - لوحة التحكم</title>
+    <!-- CSS is injected by layout.js, but we include it here for faster initial paint -->
+    <link rel="stylesheet" href="../../css/admin-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Page Specific Overrides */
+        .expenses-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header is injected by layout.js -->
+
+            <div
+                style="display: flex; justify-content: flex-end; margin-bottom: 20px; margin-top: -60px; position: relative; z-index: 901; pointer-events: none;">
+                <!-- Hack to place button in header area -->
+                <button class="btn btn-primary" onclick="openModal()" style="pointer-events: auto;">
+                    <i class="fas fa-plus"></i> إضافة مصروف
+                </button>
+            </div>
+
+            <div class="expenses-card">
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>المبلغ</th>
+                                <th>الوصف</th>
+                                <th>التاريخ</th>
+                                <th>الوردية</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-table">
+                            <!-- Expenses loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Expense Modal -->
+    <div id="expense-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">إضافة مصروف جديد</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form id="expense-form">
+                <div class="form-group">
+                    <label class="form-label">المبلغ</label>
+                    <input type="number" id="expense-amount" class="form-input" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الوصف</label>
+                    <input type="text" id="expense-desc" class="form-input"
+                        placeholder="مثال: فاتورة كهرباء، شراء أدوات..." required>
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">حفظ</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()"
+                        style="flex: 1;">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initAdminLayout } from '../../js/admin/layout.js';
+        import { supabase } from '../../js/supabase-client.js';
+        import { formatPrice } from '../../js/utils.js';
+        import { showSuccess, showError } from '../../js/toast.js';
+        import { ShiftManager } from '../../js/shifts.js';
+
+        initAdminLayout('expenses.html');
+        const shiftManager = new ShiftManager();
+
+        async function loadExpenses() {
+            const { data: expenses, error } = await supabase
+                .from('expenses')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            const container = document.getElementById('expenses-table');
+            container.innerHTML = expenses.map(exp => `
+                <tr>
+                    <td style="font-weight: 700; color: var(--danger);">${formatPrice(exp.amount)}</td>
+                    <td>${exp.description}</td>
+                    <td>${new Date(exp.created_at).toLocaleString('ar-SA')}</td>
+                    <td>${exp.shift_id ? '#' + exp.shift_id : '-'}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-secondary);">لا توجد مصروفات</td></tr>';
+        }
+
+        window.openModal = () => document.getElementById('expense-modal').classList.add('active');
+        window.closeModal = () => document.getElementById('expense-modal').classList.remove('active');
+
+        document.getElementById('expense-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const desc = document.getElementById('expense-desc').value;
+
+            try {
+                // Try to link to current shift
+                const currentShift = await shiftManager.checkOpenShift();
+
+                await shiftManager.addExpense(amount, desc);
+
+                showSuccess('تم إضافة المصروف');
+                closeModal();
+                document.getElementById('expense-form').reset();
+                loadExpenses();
+            } catch (error) {
+                console.error(error);
+                showError('حدث خطأ');
+            }
+        });
+
+        loadExpenses();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المرتجعات - لوحة التحكم</title>
+    <!-- CSS is injected by layout.js, but we include it here for faster initial paint -->
+    <link rel="stylesheet" href="../../css/admin-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Page Specific Overrides */
+        .search-section {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            background: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 0 30px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .invoice-details {
+            display: none;
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .invoice-details.active {
+            display: block;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--bg-main);
+            cursor: pointer;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .return-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 12px 30px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .return-btn:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header is injected by layout.js -->
+
+            <div class="search-section">
+                <input type="text" id="invoice-id" class="search-input" placeholder="أدخل رقم الفاتورة (UUID)">
+                <button class="search-btn" onclick="searchInvoice()">بحث</button>
+            </div>
+
+            <div id="invoice-details" class="invoice-details">
+                <h3 style="margin-bottom: 20px; color: var(--text-main);">تفاصيل الفاتورة</h3>
+                <div id="items-container">
+                    <!-- Items loaded here -->
+                </div>
+                <div style="margin-top: 20px; font-weight: 700; font-size: 1.2rem; color: var(--text-main);">
+                    إجمالي الاسترداد: <span id="refund-total">0.00</span> ر.س
+                </div>
+                <button class="return-btn" onclick="processReturn()">إتمام الاسترجاع</button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initAdminLayout } from '../../js/admin/layout.js';
+        import { supabase } from '../../js/supabase-client.js';
+        import { formatPrice } from '../../js/utils.js';
+        import { showSuccess, showError, confirm } from '../../js/toast.js';
+        import { POSSystem } from '../../js/pos.js';
+
+        initAdminLayout('returns.html');
+        const pos = new POSSystem();
+
+        let currentInvoice = null;
+        let returnItems = {}; // { productId: quantityToReturn }
+
+        window.searchInvoice = async () => {
+            const id = document.getElementById('invoice-id').value.trim();
+            if (!id) return;
+
+            const { data, error } = await supabase
+                .from('invoices')
+                .select('*, invoice_items(*, products(title))')
+                .eq('id', id)
+                .single();
+
+            if (error || !data) {
+                showError('الفاتورة غير موجودة');
+                return;
+            }
+
+            if (data.type === 'return') {
+                showError('لا يمكن استرجاع فاتورة مرتجعة');
+                return;
+            }
+
+            currentInvoice = data;
+            renderItems();
+            document.getElementById('invoice-details').classList.add('active');
+        };
+
+        function renderItems() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = currentInvoice.invoice_items.map(item => `
+                <div class="item-row">
+                    <div>
+                        <div style="font-weight: 700;">${item.products?.title || 'منتج'}</div>
+                        <div style="color: var(--gray-dark);">${formatPrice(item.price)}</div>
+                    </div>
+                    <div class="qty-control">
+                        <span>الكمية المشتراة: ${item.quantity}</span>
+                        <span style="margin: 0 10px;">|</span>
+                        <span>استرجاع: </span>
+                        <button class="qty-btn" onclick="updateReturnQty('${item.product_id}', -1, ${item.price})">-</button>
+                        <span id="qty-${item.product_id}">0</span>
+                        <button class="qty-btn" onclick="updateReturnQty('${item.product_id}', 1, ${item.price}, ${item.quantity})">+</button>
+                    </div>
+                </div>
+            `).join('');
+            returnItems = {};
+            updateTotal();
+        }
+
+        window.updateReturnQty = (productId, change, price, max) => {
+            const current = returnItems[productId] || 0;
+            let newQty = current + change;
+
+            if (newQty < 0) newQty = 0;
+            if (max && newQty > max) newQty = max;
+
+            returnItems[productId] = newQty;
+            document.getElementById(`qty-${productId}`).textContent = newQty;
+            updateTotal();
+        };
+
+        function updateTotal() {
+            let total = 0;
+            currentInvoice.invoice_items.forEach(item => {
+                const qty = returnItems[item.product_id] || 0;
+                total += qty * item.price;
+            });
+            document.getElementById('refund-total').textContent = total.toFixed(2);
+        }
+
+        window.processReturn = async () => {
+            const itemsToReturn = [];
+            let totalRefund = 0;
+
+            for (const [productId, qty] of Object.entries(returnItems)) {
+                if (qty > 0) {
+                    const originalItem = currentInvoice.invoice_items.find(i => i.product_id === productId);
+                    itemsToReturn.push({
+                        product_id: productId,
+                        quantity: qty,
+                        price: originalItem.price,
+                        cost: originalItem.cost || 0
+                    });
+                    totalRefund += qty * originalItem.price;
+                }
+            }
+
+            if (itemsToReturn.length === 0) {
+                showError('الرجاء تحديد منتجات للاسترجاع');
+                return;
+            }
+
+            if (await confirm(`هل أنت متأكد من استرجاع منتجات بقيمة ${formatPrice(totalRefund)}؟`)) {
+                try {
+                    // 1. Create Return Invoice
+                    const { data: returnInv, error: invError } = await supabase
+                        .from('invoices')
+                        .insert({
+                            shift_id: currentInvoice.shift_id, // Ideally current open shift, but for now link to original or null
+                            user_id: currentInvoice.user_id,
+                            customer_name: currentInvoice.customer_name,
+                            total_amount: totalRefund,
+                            payment_method: 'cash', // Assume cash refund
+                            type: 'return'
+                        })
+                        .select()
+                        .single();
+
+                    if (invError) throw invError;
+
+                    // 2. Add Return Items
+                    const returnItemsData = itemsToReturn.map(item => ({
+                        invoice_id: returnInv.id,
+                        product_id: item.product_id,
+                        quantity: item.quantity,
+                        price: item.price,
+                        cost: item.cost
+                    }));
+
+                    const { error: itemsError } = await supabase.from('invoice_items').insert(returnItemsData);
+                    if (itemsError) throw itemsError;
+
+                    // 3. Update Stock (Increase)
+                    for (const item of itemsToReturn) {
+                        // Fetch current stock first to be safe
+                        const { data: prod } = await supabase.from('products').select('stock').eq('id', item.product_id).single();
+                        if (prod) {
+                            await supabase.from('products').update({ stock: prod.stock + item.quantity }).eq('id', item.product_id);
+                        }
+                    }
+
+                    showSuccess('تمت عملية الاسترجاع بنجاح');
+                    document.getElementById('invoice-details').classList.remove('active');
+                    document.getElementById('invoice-id').value = '';
+
+                } catch (error) {
+                    console.error(error);
+                    showError('حدث خطأ أثناء الاسترجاع');
+                }
+            }
+        };
+    </script>
+</body>
+
+</html>
