@@ -1,5 +1,5 @@
-import { supabase } from './supabase-client.js';
-import { showError, showSuccess } from './utils.js';
+import { supabase } from '../js/supabase-client.js';
+import { showError, showSuccess } from '../js/utils.js';
 
 export class ShiftManager {
     constructor() {

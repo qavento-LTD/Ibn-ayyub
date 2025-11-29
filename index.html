@@ -146,6 +146,9 @@
             cursor: pointer;
             color: #666;
         }
+        .btn-outline{
+            color: white;
+        }
     </style>
 </head>
 
@@ -264,7 +267,7 @@
                 </div>
                 <div class="icon-card">
                     <i class="fas fa-headset"></i>
-                    <h3>دعم 24/7</h3>
+                    <h3>دعم 24</h3>
                     <p>خدمة عملاء متميزة</p>
                 </div>
             </div>
@@ -290,24 +293,17 @@
                     <div class="category-icon"><i class="fas fa-graduation-cap"></i></div>
                     <h3>هدايا التخرج</h3>
                 </a>
-                <a href="pages/categories/category.html?category=home-gifts" class="category-card">
-                    <div class="category-icon"><i class="fas fa-home"></i></div>
-                    <h3>هدايا المنزل</h3>
-                </a>
-                <a href="pages/categories/category.html?category=kids-gifts" class="category-card">
-                    <div class="category-icon"><i class="fas fa-baby"></i></div>
-                    <h3>هدايا الأطفال</h3>
-                </a>
+
             </div>
         </section>
 
         <!-- Deal of the Day (New Feature) -->
-        <section class="deal-section">
+        <!-- <section class="deal-section">
             <div class="container" style="max-width: 800px; margin: 0 auto;">
                 <h2 style="font-size: 2.5rem; margin-bottom: 10px;">عروض اليوم المميزة</h2>
                 <p style="font-size: 1.2rem; margin-bottom: 30px;">خصم يصل إلى 50% على باقات الهدايا المختارة. العرض
                     ينتهي قريباً!</p>
-
+            
                 <div class="countdown-container" id="countdown">
                     <div class="countdown-item">
                         <span class="countdown-number" id="hours">00</span>
@@ -322,11 +318,11 @@
                         <span class="countdown-label">ثانية</span>
                     </div>
                 </div>
-
+            
                 <a href="pages/products.html" class="btn btn-primary"
                     style="margin-top: 40px; background: white; color: var(--primary);">تسوق العروض الآن</a>
             </div>
-        </section>
+        </section> -->
 
         <!-- Products -->
         <section class="products" id="products">
@@ -428,7 +424,7 @@
     </footer>
 
     <!-- Newsletter Popup -->
-    <div class="popup-overlay" id="newsletterPopup">
+    <!-- <div class="popup-overlay" id="newsletterPopup">
         <div class="popup-content">
             <button class="close-popup" id="closePopup"><i class="fas fa-times"></i></button>
             <i class="fas fa-envelope-open-text"
@@ -441,7 +437,7 @@
             </form>
             <p style="font-size: 0.8rem; color: #999; margin-top: 10px;">لا تقلق، لا نرسل رسائل مزعجة.</p>
         </div>
-    </div>
+    </div> -->
 
     <script type="module" src="Front-End/Interaction/main.js"></script>
     <script type="module" src="js/home-reviews.js"></script>
@@ -467,8 +463,8 @@
         })();
 
         // Countdown Logic
-        const countdownDate = new Date().setHours(24, 0, 0, 0); // Next midnight
-        const updateCountdown = () => {
+      //  const countdownDate = new Date().setHours(24, 0, 0, 0); // Next midnight
+       /* const updateCountdown = () => {
             const now = new Date().getTime();
             const distance = countdownDate - now;
 
@@ -480,11 +476,12 @@
             document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
             document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
         };
+        
         setInterval(updateCountdown, 1000);
         updateCountdown();
-
+    */
         // Popup Logic
-        setTimeout(() => {
+      /*  setTimeout(() => {
             if (!localStorage.getItem('popupShown')) {
                 document.getElementById('newsletterPopup').classList.add('active');
                 localStorage.setItem('popupShown', 'true');
@@ -494,6 +491,7 @@
         document.getElementById('closePopup').onclick = () => {
             document.getElementById('newsletterPopup').classList.remove('active');
         };
+        */
     </script>
 </body>
 

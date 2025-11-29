@@ -1,4 +1,4 @@
-import { supabase } from './supabase-client.js';
+import { supabase } from '../js/supabase-client.js';
 
 // Get category from URL
 const urlParams = new URLSearchParams(window.location.search);
