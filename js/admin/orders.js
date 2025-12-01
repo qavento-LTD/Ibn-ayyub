@@ -49,6 +49,29 @@ async function loadOrders() {
     }
 }
 
+// Load Statistics
+async function loadStatistics() {
+    const today = new Date().toISOString().split('T')[0];
+
+    try {
+        // Orders today
+        const { data: ordersToday } = await supabase
+            .from('orders')
+            .select('total_amount, status')
+            .gte('created_at', today);
+
+        const countToday = ordersToday?.length || 0;
+        const pendingCount = ordersToday?.filter(o => o.status === 'pending').length || 0;
+        const revenueToday = ordersToday?.reduce((sum, o) => sum + (o.total_amount || 0), 0) || 0;
+
+        document.getElementById('orders-today').textContent = countToday;
+        document.getElementById('orders-pending').textContent = pendingCount;
+        document.getElementById('revenue-today').textContent = formatPrice(revenueToday);
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+    }
+}
+
 // Render Orders Table
 function renderOrders(orders) {
     const tableBody = document.getElementById('ordersTableBody');
@@ -75,7 +98,14 @@ function renderOrders(orders) {
             'ملغي': 'cancelled'
         };
         const statusKey = statusMap[order.status] || order.status; // fallback if already key
-        const statusClass = `status-${statusKey}`;
+        const statusClassMap = {
+            'pending': 'badge-warning',
+            'processing': 'badge-info',
+            'shipped': 'badge-info',
+            'delivered': 'badge-success',
+            'cancelled': 'badge-danger'
+        };
+        const statusClass = statusClassMap[statusKey] || 'badge-gray';
         const statusText = {
             'pending': 'قيد الانتظار',
             'processing': 'قيد التنفيذ',
@@ -89,7 +119,7 @@ function renderOrders(orders) {
             <td>${order.user_profiles?.full_name || 'مستخدم'}</td>
             <td style="font-weight: 700; color: var(--primary);">${formatPrice(order.total_amount)}</td>
             <td>${date}</td>
-            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+            <td><span class="badge ${statusClass}">${statusText}</span></td>
             <td>
                 <button class="action-btn view-btn" data-id="${order.id}">
                     <i class="fas fa-eye"></i> عرض
@@ -236,15 +266,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasAccess = await checkAccess();
     if (hasAccess) {
         loadOrders();
+        loadStatistics();
         initFilters();
-
-        // Modal Events
+        
+        // Setup modal event listeners
         document.getElementById('closeModal').addEventListener('click', closeModal);
-        document.getElementById('saveStatusBtn').addEventListener('click', saveStatusChange);
-
+        document.getElementById('saveStatus').addEventListener('click', saveStatusChange);
+        
         // Close modal on outside click
         document.getElementById('orderModal').addEventListener('click', (e) => {
-            if (e.target.id === 'orderModal') closeModal();
+            if (e.target.id === 'orderModal') {
+                closeModal();
+            }
         });
     }
 });

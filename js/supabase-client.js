@@ -182,3 +182,24 @@ export async function toggleVideoLike(videoId) {
         return { liked: true };
     }
 }
+
+// --- Storage Functions ---
+export async function uploadImage(file) {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { data, error } = await supabase.storage
+        .from('products')
+        .upload(filePath, file);
+
+    if (error) {
+        return { error };
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+    return { publicUrl, error: null };
+}

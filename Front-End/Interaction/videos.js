@@ -83,7 +83,17 @@ function renderCards(videoList, container) {
         const card = document.createElement('div');
         card.className = 'video-card-3d';
         card.innerHTML = `
-            <img src="${v.thumbnail_url || '../assets/images/logo.png'}" class="card-image" alt="${v.title}">
+            <div style="position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);">
+                ${v.thumbnail_url 
+                    ? `<img src="${v.thumbnail_url}" class="card-image" alt="${v.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                       <div style="display:none; position: absolute; inset: 0; align-items: center; justify-content: center;">
+                           <i class="fas fa-video" style="font-size: 3rem; color: var(--gray-dark); opacity: 0.3;"></i>
+                       </div>`
+                    : `<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+                           <i class="fas fa-video" style="font-size: 3rem; color: var(--gray-dark); opacity: 0.3;"></i>
+                       </div>`
+                }
+            </div>
             <div class="card-overlay">
                 <div class="card-title">${v.title}</div>
                 <div class="card-meta">
@@ -267,7 +277,15 @@ function showProductModal(products) {
     const itemsHtml = products.map(item => {
         const p = item.product;
         return `<div style="display:flex; gap:10px; margin-bottom:15px; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
-                <img src="${p.image_url || '../assets/images/logo.png'}" style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
+                ${p.image_url 
+                    ? `<img src="${p.image_url}" style="width:60px; height:60px; object-fit:cover; border-radius:8px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                       <div style="display:none; width:60px; height:60px; background: #f5f7fa; border-radius:8px; align-items:center; justify-content:center;">
+                           <i class="fas fa-gift" style="color: #ccc;"></i>
+                       </div>`
+                    : `<div style="width:60px; height:60px; background: #f5f7fa; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                           <i class="fas fa-gift" style="color: #ccc;"></i>
+                       </div>`
+                }
                 <div style="flex:1;"><div style="font-weight:bold;">${p.title}</div><div style="color:var(--primary);">${formatPrice(p.price)}</div></div>
                 <button onclick="addToCart('${p.id}')" style="background:var(--primary); color:white; border:none; width:35px; height:35px; border-radius:50%; cursor:pointer;"><i class="fas fa-plus"></i></button>
             </div>`;

@@ -2,7 +2,7 @@
 // Products Page JavaScript
 // =============================================
 
-import { getProducts, addToCart, getCurrentUser } from '../../js/supabase-client.js';
+import { getProductById, getProducts, addToCart, getCurrentUser } from '../../js/supabase-client.js';
 import { showSuccess, showError, showLoading } from '../../js/toast.js';
 import { formatPrice } from '../../js/utils.js';
 

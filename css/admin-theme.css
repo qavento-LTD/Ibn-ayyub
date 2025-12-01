@@ -321,29 +321,38 @@ ul {
     overflow-x: auto;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
+    background: white;
 }
 
 .data-table {
     width: 100%;
-    border-collapse: collapse;
-    white-space: nowrap;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: right;
+}
+
+.data-table thead {
+    background: #f8f9fa;
 }
 
 .data-table th {
-    background: #f8f9fa;
-    padding: 16px;
-    text-align: right;
-    font-weight: 700;
+    padding: 16px 20px;
+    font-weight: 600;
     color: var(--text-secondary);
     font-size: 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .data-table td {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 16px 20px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
     color: var(--text-main);
+    font-size: 0.95rem;
+    transition: background 0.2s;
 }
 
 .data-table tr:last-child td {
@@ -351,7 +360,7 @@ ul {
 }
 
 .data-table tr:hover td {
-    background: #f8f9fa;
+    background: #f9fafb;
 }
 
 /* Badges */
@@ -381,6 +390,32 @@ ul {
 .badge-info {
     background: #e7f1ff;
     color: #3742fa;
+}
+
+/* Actions */
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: white;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.action-btn.delete:hover {
+    background: var(--danger);
+    border-color: var(--danger);
 }
 
 /* Modals */

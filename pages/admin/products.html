@@ -5,9 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة المنتجات - لوحة التحكم</title>
-    <!-- CSS is injected by layout.js, but we include it here for faster initial paint -->
-    <link rel="stylesheet" href="../../css/admin-theme.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Page Specific Overrides */
         .products-grid {
@@ -27,84 +24,84 @@
             border: 1px solid var(--border-color);
         }
 
-        .stock-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
-
-        .stock-high {
-            background: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .stock-low {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .stock-out {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
-            background: white;
-            color: var(--text-secondary);
+        /* Image Upload Preview */
+        .image-upload-container {
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            display: inline-flex;
+            position: relative;
+            background: #f9fafb;
+        }
+
+        .image-upload-container:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            display: none;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+        }
+
+        .upload-placeholder i {
+            font-size: 2rem;
+            color: #9ca3af;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.8);
+            display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .action-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .action-btn.delete:hover {
-            background: var(--danger);
-            border-color: var(--danger);
+            z-index: 10;
+            border-radius: 8px;
+            display: none;
         }
     </style>
 </head>
 
 <body>
     <div class="admin-container">
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Header is injected by layout.js -->
-
-            <div
-                style="display: flex; justify-content: flex-end; margin-bottom: 20px; margin-top: -60px; position: relative; z-index: 901; pointer-events: none;">
-                <!-- Hack to place button in header area if needed, or just keep it in main content -->
-            </div>
-            <!-- We'll keep the button in the main flow for now, but maybe move it to header actions later via JS -->
-
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <!-- Search or Filters could go here -->
-                <div></div>
+            <!-- Header Area -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 4px;">المنتجات</h1>
+                    <p style="color: #6b7280; font-size: 0.9rem;">إدارة مخزون المنتجات والأسعار</p>
+                </div>
                 <button class="btn btn-primary" onclick="openModal()">
-                    <i class="fas fa-plus"></i> إضافة منتج
+                    <i class="fas fa-plus"></i> إضافة منتج جديد
                 </button>
             </div>
 
+            <!-- Products Table -->
             <div class="products-grid">
                 <div class="table-container">
                     <table class="data-table" id="products-table">
                         <thead>
                             <tr>
-                                <th>المنتج</th>
+                                <th style="width: 40%;">المنتج</th>
+                                <th>القسم</th>
                                 <th>السعر</th>
                                 <th>المخزون</th>
-                                <th>القسم</th>
                                 <th>الإجراءات</th>
                             </tr>
                         </thead>
@@ -113,21 +110,9 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="loading" style="padding: 40px; text-align: center;">
-                    <div class="spinner"
-                        style="border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto;">
-                    </div>
-                    <style>
-                        @keyframes spin {
-                            0% {
-                                transform: rotate(0deg);
-                            }
-
-                            100% {
-                                transform: rotate(360deg);
-                            }
-                        }
-                    </style>
+                <div id="loading" style="padding: 60px; text-align: center;">
+                    <div class="spinner" style="border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+                    <p style="color: #6b7280;">جاري تحميل البيانات...</p>
                 </div>
             </div>
         </main>
@@ -135,7 +120,7 @@
 
     <!-- Product Modal -->
     <div id="product-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h2 class="modal-title" id="modal-title">إضافة منتج جديد</h2>
                 <button class="close-modal" onclick="closeModal()">&times;</button>
@@ -143,10 +128,30 @@
 
             <form id="product-form">
                 <input type="hidden" id="product-id">
+                
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label class="form-label">صورة المنتج</label>
+                    <div class="image-upload-container" onclick="document.getElementById('product-image-file').click()">
+                        <input type="file" id="product-image-file" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
+                        <input type="hidden" id="product-image-url">
+                        
+                        <div id="upload-placeholder" class="upload-placeholder">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>اضغط لاختيار صورة من الجهاز</span>
+                            <span style="font-size: 0.8rem; color: #9ca3af;">PNG, JPG, WEBP (Max 2MB)</span>
+                        </div>
+                        <img id="image-preview" class="preview-image">
+                        
+                        <div id="upload-loading" class="loading-overlay">
+                            <div class="spinner" style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="form-group">
                     <label class="form-label">اسم المنتج</label>
-                    <input type="text" id="product-title" class="form-input" required>
+                    <input type="text" id="product-title" class="form-input" required placeholder="مثال: باقة ورد أحمر">
                 </div>
 
                 <div class="grid-2">
@@ -167,7 +172,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">الباركود</label>
-                        <input type="text" id="product-barcode" class="form-input" placeholder="امسح الباركود هنا...">
+                        <input type="text" id="product-barcode" class="form-input" placeholder="Scan...">
                     </div>
                 </div>
 
@@ -184,15 +189,12 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">رابط الصورة</label>
-                    <input type="url" id="product-image" class="form-input">
-                </div>
-
                 <div style="display: flex; gap: 12px; margin-top: 30px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">حفظ</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()"
-                        style="flex: 1;">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
+                        <span id="save-btn-text">حفظ التغييرات</span>
+                        <div id="save-spinner" class="spinner" style="display: none; width: 20px; height: 20px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1; justify-content: center;">إلغاء</button>
                 </div>
             </form>
         </div>
@@ -200,15 +202,16 @@
 
     <script type="module">
         import { initAdminLayout } from '../../js/admin/layout.js';
-        import { supabase } from '../../js/supabase-client.js';
+        import { supabase, uploadImage } from '../../js/supabase-client.js';
         import { formatPrice, isAdmin } from '../../js/utils.js';
         import { showSuccess, showError, confirm } from '../../js/toast.js';
 
         // Initialize Layout
-        initAdminLayout('products.html');
+        initAdminLayout('products');
 
         // Logic
         let currentProductId = null;
+        let selectedFile = null;
 
         async function loadProducts() {
             const container = document.getElementById('products-container');
@@ -225,31 +228,41 @@
                 loading.style.display = 'none';
 
                 if (!products.length) {
-                    container.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-secondary);">لا توجد منتجات</td></tr>';
+                    container.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #6b7280;">لا توجد منتجات مضافة حتى الآن</td></tr>';
                     return;
                 }
 
                 container.innerHTML = products.map(p => {
-                    const stockClass = p.stock <= 0 ? 'stock-out' : p.stock <= 5 ? 'stock-low' : 'stock-high';
-                    const stockText = p.stock <= 0 ? 'نفذت الكمية' : p.stock <= 5 ? `منخفض (${p.stock})` : `متوفر (${p.stock})`;
-
+                    const stockClass = p.stock <= 0 ? 'badge-danger' : p.stock <= 5 ? 'badge-warning' : 'badge-success';
+                    const stockText = p.stock <= 0 ? 'نفذت الكمية' : p.stock <= 5 ? 'منخفض' : 'متوفر';
+                    
                     return `
                         <tr>
                             <td>
-                                <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="product-info-cell">
                                     <img src="${p.image_url || '../../assets/images/logo.png'}" class="product-img" onerror="this.src='../../assets/images/logo.png'">
-                                    <div>
-                                        <div style="font-weight: 600; color: var(--text-main);">${p.title}</div>
-                                        <div style="font-size: 0.8rem; color: var(--text-secondary);">${p.barcode || '-'}</div>
+                                    <div class="product-details">
+                                        <div class="product-name">${p.title}</div>
+                                        <div class="product-meta">${p.barcode || 'بدون باركود'}</div>
                                     </div>
                                 </div>
                             </td>
+                            <td><span class="badge badge-gray">${getCategoryName(p.category)}</span></td>
                             <td style="font-weight: 700; color: var(--primary);">${formatPrice(p.price)}</td>
-                            <td><span class="stock-badge ${stockClass}">${stockText}</span></td>
-                            <td>${getCategoryName(p.category)}</td>
                             <td>
-                                <button class="action-btn" onclick="window.editProduct('${p.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn delete" onclick="window.deleteProduct('${p.id}')"><i class="fas fa-trash"></i></button>
+                                <span class="badge ${stockClass}">
+                                    ${stockText} (${p.stock})
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" onclick="window.editProduct('${p.id}')" title="تعديل">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon delete" onclick="window.deleteProduct('${p.id}')" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -257,7 +270,7 @@
 
             } catch (error) {
                 console.error(error);
-                loading.innerHTML = '<span style="color: var(--danger);">حدث خطأ في التحميل</span>';
+                loading.innerHTML = '<span style="color: var(--danger);">حدث خطأ في تحميل البيانات</span>';
             }
         }
 
@@ -273,13 +286,41 @@
             return map[cat] || cat;
         }
 
+        // File Selection Handler
+        window.handleFileSelect = (input) => {
+            if (input.files && input.files[0]) {
+                selectedFile = input.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const preview = document.getElementById('image-preview');
+                    const placeholder = document.getElementById('upload-placeholder');
+                    
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                
+                reader.readAsDataURL(selectedFile);
+            }
+        };
+
         window.openModal = async (id = null) => {
             const modal = document.getElementById('product-modal');
             const form = document.getElementById('product-form');
             const title = document.getElementById('modal-title');
+            const preview = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
 
             currentProductId = id;
+            selectedFile = null;
             modal.classList.add('active');
+            
+            // Reset Image State
+            preview.style.display = 'none';
+            preview.src = '';
+            placeholder.style.display = 'flex';
+            document.getElementById('product-image-file').value = '';
 
             if (id) {
                 title.textContent = 'تعديل المنتج';
@@ -291,11 +332,18 @@
                     document.getElementById('product-stock').value = data.stock;
                     document.getElementById('product-barcode').value = data.barcode || '';
                     document.getElementById('product-category').value = data.category;
-                    document.getElementById('product-image').value = data.image_url || '';
+                    document.getElementById('product-image-url').value = data.image_url || '';
+                    
+                    if (data.image_url) {
+                        preview.src = data.image_url;
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+                    }
                 }
             } else {
                 title.textContent = 'إضافة منتج جديد';
                 form.reset();
+                document.getElementById('product-image-url').value = '';
             }
         };
 
@@ -306,40 +354,68 @@
         window.editProduct = (id) => window.openModal(id);
 
         window.deleteProduct = async (id) => {
-            if (await confirm('هل أنت متأكد من الحذف؟')) {
+            if (await confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) {
                 await supabase.from('products').delete().eq('id', id);
-                showSuccess('تم الحذف');
+                showSuccess('تم حذف المنتج بنجاح');
                 loadProducts();
             }
         };
 
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const saveBtn = e.target.querySelector('button[type="submit"]');
+            const btnText = document.getElementById('save-btn-text');
+            const spinner = document.getElementById('save-spinner');
+            
+            // Loading State
+            saveBtn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
 
-            const data = {
-                title: document.getElementById('product-title').value,
-                price: document.getElementById('product-price').value,
-                cost_price: document.getElementById('product-cost').value || 0,
-                stock: document.getElementById('product-stock').value,
-                barcode: document.getElementById('product-barcode').value || null,
-                category: document.getElementById('product-category').value,
-                image_url: document.getElementById('product-image').value || null
-            };
+            try {
+                let imageUrl = document.getElementById('product-image-url').value;
 
-            let error;
-            if (currentProductId) {
-                ({ error } = await supabase.from('products').update(data).eq('id', currentProductId));
-            } else {
-                ({ error } = await supabase.from('products').insert(data));
-            }
+                // Handle Image Upload if file selected
+                if (selectedFile) {
+                    const uploadResult = await uploadImage(selectedFile);
+                    if (uploadResult.error) {
+                        throw new Error('فشل رفع الصورة: ' + uploadResult.error.message);
+                    }
+                    imageUrl = uploadResult.publicUrl;
+                }
 
-            if (error) {
-                showError('حدث خطأ');
-                console.error(error);
-            } else {
-                showSuccess('تم الحفظ');
+                const data = {
+                    title: document.getElementById('product-title').value,
+                    price: document.getElementById('product-price').value,
+                    cost_price: document.getElementById('product-cost').value || 0,
+                    stock: document.getElementById('product-stock').value,
+                    barcode: document.getElementById('product-barcode').value || null,
+                    category: document.getElementById('product-category').value,
+                    image_url: imageUrl || null
+                };
+
+                let error;
+                if (currentProductId) {
+                    ({ error } = await supabase.from('products').update(data).eq('id', currentProductId));
+                } else {
+                    ({ error } = await supabase.from('products').insert(data));
+                }
+
+                if (error) throw error;
+
+                showSuccess('تم حفظ المنتج بنجاح');
                 closeModal();
                 loadProducts();
+
+            } catch (error) {
+                console.error(error);
+                showError(error.message || 'حدث خطأ أثناء الحفظ');
+            } finally {
+                // Reset Loading State
+                saveBtn.disabled = false;
+                btnText.style.display = 'block';
+                spinner.style.display = 'none';
             }
         });
 

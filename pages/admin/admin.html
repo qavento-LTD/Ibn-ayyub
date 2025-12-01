@@ -528,10 +528,11 @@
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="../../js/admin/layout.js"></script>
-    <script type="module" src="../../js/shifts.js">
-        
+    <script type="module">
+        import { initAdminLayout } from '../../js/admin/layout.js';
+        initAdminLayout('admin');
     </script>
+    <script type="module" src="../../js/shifts.js"></script>
     <script type="module">
         import { POSSystem } from '../../js/pos.js';
         import { ShiftManager } from '../../js/shifts.js';
@@ -546,6 +547,7 @@
         window.showToast = showToast;
         window.closeModal = (id) => document.getElementById(id).classList.remove('active');
         window.showShiftModal = () => window.shiftManager.showShiftModal();
+        window.updateShiftStatus = updateShiftStatus;
         
         // --- Multi-Invoice System ---
         let invoices = {

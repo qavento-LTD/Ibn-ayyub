@@ -5,20 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة الطلبات - لوحة التحكم</title>
-    <!-- CSS is injected by layout.js, but we include it here for faster initial paint -->
     <link rel="stylesheet" href="../../css/admin-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Page Specific Overrides */
-        .orders-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
-            padding: 24px;
-            border: 1px solid var(--border-color);
-        }
-
         .filters {
             display: flex;
             gap: 10px;
@@ -40,59 +30,6 @@
 
         .filter-btn.active,
         .filter-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            display: inline-block;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-processing {
-            background: #cce5ff;
-            color: #004085;
-        }
-
-        .status-shipped {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-delivered {
-            background: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .action-btn {
-            padding: 6px 16px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
-            background: white;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-        }
-
-        .action-btn:hover {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
@@ -129,11 +66,32 @@
 
 <body>
     <div class="admin-container">
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Header is injected by layout.js -->
+            <!-- Header Area -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 4px;">الطلبات</h1>
+                    <p style="color: #6b7280; font-size: 0.9rem;">متابعة وإدارة طلبات العملاء</p>
+                </div>
+            </div>
 
-            <div class="orders-card">
+            <!-- Statistics Cards -->
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                <div class="stat-card" style="background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px;">طلبات اليوم</div>
+                    <div id="orders-today" style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">0</div>
+                </div>
+                <div class="stat-card" style="background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px;">قيد الانتظار</div>
+                    <div id="orders-pending" style="font-size: 1.5rem; font-weight: 800; color: var(--warning);">0</div>
+                </div>
+                <div class="stat-card" style="background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px;">إيرادات اليوم</div>
+                    <div id="revenue-today" style="font-size: 1.5rem; font-weight: 800; color: var(--success);">0.00 ج.م</div>
+                </div>
+            </div>
+
+            <div class="card">
                 <div class="filters">
                     <button class="filter-btn active" data-status="all">الكل</button>
                     <button class="filter-btn" data-status="pending">قيد الانتظار</button>
@@ -161,26 +119,12 @@
                     </table>
                 </div>
 
-                <div id="loading" style="padding: 40px; text-align: center;">
-                    <div class="spinner"
-                        style="border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto;">
-                    </div>
-                    <p style="margin-top: 10px; color: var(--text-secondary);">جاري تحميل الطلبات...</p>
-                    <style>
-                        @keyframes spin {
-                            0% {
-                                transform: rotate(0deg);
-                            }
-
-                            100% {
-                                transform: rotate(360deg);
-                            }
-                        }
-                    </style>
+                <div id="loading" style="padding: 60px; text-align: center;">
+                    <div class="spinner" style="border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+                    <p style="color: #6b7280;">جاري تحميل الطلبات...</p>
                 </div>
 
-                <div id="noResults"
-                    style="display: none; text-align: center; padding: 40px; color: var(--text-secondary);">
+                <div id="noResults" style="display: none; text-align: center; padding: 40px; color: #6b7280;">
                     لا توجد طلبات
                 </div>
             </div>
@@ -230,8 +174,7 @@
             <div class="order-products">
                 <h4 style="margin-bottom: 16px; font-weight: 700;">المنتجات</h4>
                 <div id="modalProductsList"></div>
-                <div
-                    style="border-top: 1px solid var(--border-color); margin-top: 16px; padding-top: 16px; display: flex; justify-content: space-between; font-weight: 700;">
+                <div style="border-top: 1px solid var(--border-color); margin-top: 16px; padding-top: 16px; display: flex; justify-content: space-between; font-weight: 700;">
                     <span>الإجمالي</span>
                     <span id="modalTotal" style="color: var(--primary);"></span>
                 </div>
@@ -245,7 +188,7 @@
 
     <script type="module">
         import { initAdminLayout } from '../../js/admin/layout.js';
-        initAdminLayout('orders.html');
+        initAdminLayout('orders');
     </script>
     <script type="module" src="../../js/admin/orders.js"></script>
 </body>

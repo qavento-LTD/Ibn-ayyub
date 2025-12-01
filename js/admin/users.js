@@ -59,7 +59,7 @@ function renderUsers(users) {
 
     users.forEach(user => {
         const row = document.createElement('tr');
-        const roleClass = user.role === 'admin' ? 'role-admin' : 'role-customer';
+        const roleClass = user.role === 'admin' ? 'badge-danger' : 'badge-info';
         const roleText = user.role === 'admin' ? 'مسؤول' : 'عميل';
         const joinedDate = new Date(user.created_at).toLocaleDateString('ar-SA');
 
@@ -67,7 +67,7 @@ function renderUsers(users) {
             <td>${user.full_name || 'غير محدد'}</td>
             <td>${user.email || 'غير متوفر'}</td>
             <td>${user.phone || '-'}</td>
-            <td><span class="role-badge ${roleClass}">${roleText}</span></td>
+            <td><span class="badge ${roleClass}">${roleText}</span></td>
             <td>${joinedDate}</td>
             <td>
                 <button class="action-btn edit-role-btn" data-id="${user.id}" data-role="${user.role}" data-name="${user.full_name}">

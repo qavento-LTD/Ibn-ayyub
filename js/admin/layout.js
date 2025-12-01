@@ -172,7 +172,27 @@ const AdminLayout = {
     }
 };
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+// Helper to initialize layout with specific active page
+export function initAdminLayout(activePageId) {
+    // Wait for DOM if not ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => initAdminLayout(activePageId));
+        return;
+    }
+
     AdminLayout.init();
-});
+    
+    // Override active link if provided
+    if (activePageId) {
+        const links = document.querySelectorAll('.menu-item');
+        links.forEach(link => {
+            if (link.dataset.page === activePageId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+}
+
+export { AdminLayout };
