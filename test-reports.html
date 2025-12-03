@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار صفحة التقارير</title>
+    <link rel="stylesheet" href="./css/admin-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <main class="main-content">
+            <h1>اختبار تحميل الصفحة</h1>
+            <p>إذا ظهرت هذه الرسالة، فالصفحة تعمل بشكل صحيح.</p>
+            <div id="test-output"></div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initAdminLayout } from './js/admin/layout.js';
+        
+        document.getElementById('test-output').innerHTML = '<p style="color: green;">✅ JavaScript يعمل بشكل صحيح!</p>';
+        
+        try {
+            initAdminLayout('reports');
+            document.getElementById('test-output').innerHTML += '<p style="color: green;">✅ Layout تم تحميله بنجاح!</p>';
+        } catch (error) {
+            document.getElementById('test-output').innerHTML += '<p style="color: red;">❌ خطأ في تحميل Layout: ' + error.message + '</p>';
+            console.error('Layout error:', error);
+        }
+    </script>
+</body>
+</html>

@@ -139,24 +139,20 @@
         <main class="main-content">
             <!-- Header is injected by layout.js -->
 
-            <div
-                style="display: flex; justify-content: flex-end; margin-bottom: 20px; margin-top: -60px; position: relative; z-index: 901; pointer-events: none;">
-                <!-- Hack to place filter in header area -->
-                <div class="date-filter" style="pointer-events: auto;">
+            <!-- Date Filter and Export Button -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap;">
+                <div class="date-filter">
                     <input type="date" id="startDate" class="date-input">
                     <span style="align-self: center; color: var(--text-secondary);">إلى</span>
                     <input type="date" id="endDate" class="date-input">
                     <button class="filter-btn" onclick="loadReports()">عرض</button>
                 </div>
-            </div>
-
-            <!-- Summary Cards -->
-            <!-- Export Button -->
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
                 <button class="btn btn-secondary" onclick="exportReport()">
                     <i class="fas fa-file-pdf"></i> تصدير التقرير (PDF)
                 </button>
             </div>
+
+            <!-- Summary Cards -->
 
             <div class="stats-grid">
                 <div class="stat-card">
@@ -248,180 +244,209 @@
     </div>
 
     <script type="module">
-        import { initAdminLayout } from '../../js/admin/layout.js';
-        import { supabase } from '../../js/supabase-client.js';
-        import { formatPrice } from '../../js/utils.js';
-
-        initAdminLayout('reports');
-
-        // Set default dates (Today)
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('startDate').value = today;
-        document.getElementById('endDate').value = today;
-
-        window.loadReports = async () => {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-
-            // Adjust end date to include the full day
-            const endDateTime = new Date(endDate);
-            endDateTime.setHours(23, 59, 59, 999);
-
+        (async () => {
+            console.log('🔄 Starting reports page initialization...');
+            
             try {
-                // 1. Fetch Invoices (Sales & Returns)
-                const { data: invoices, error: invError } = await supabase
-                    .from('invoices')
-                    .select('*')
-                    .gte('created_at', startDate)
-                    .lte('created_at', endDateTime.toISOString())
-                    .order('created_at', { ascending: false });
+                console.log('📦 Importing modules...');
+                const { initAdminLayout } = await import('../../js/admin/layout.js');
+                const { supabase } = await import('../../js/supabase-client.js');
+                const { formatPrice } = await import('../../js/utils.js');
+                console.log('✅ Modules imported successfully');
 
-                if (invError) throw invError;
+                console.log('🎨 Initializing admin layout...');
+                initAdminLayout('reports');
+                console.log('✅ Admin layout initialized');
 
-                // 2. Fetch Expenses
-                const { data: expenses, error: expError } = await supabase
-                    .from('expenses')
-                    .select('*')
-                    .gte('created_at', startDate)
-                    .lte('created_at', endDateTime.toISOString());
+                // Set default dates (Today)
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('startDate').value = today;
+                document.getElementById('endDate').value = today;
+                console.log('📅 Default dates set to:', today);
 
-                if (expError) throw expError;
+                window.loadReports = async () => {
+                    console.log('📊 Loading reports...');
+                    const startDate = document.getElementById('startDate').value;
+                    const endDate = document.getElementById('endDate').value;
 
-                // 3. Fetch Shifts
-                const { data: shifts, error: shiftError } = await supabase
-                    .from('shifts')
-                    .select('*, user_profiles(full_name)')
-                    .gte('start_time', startDate)
-                    .lte('start_time', endDateTime.toISOString())
-                    .order('start_time', { ascending: false });
+                    // Adjust end date to include the full day
+                    const endDateTime = new Date(endDate);
+                    endDateTime.setHours(23, 59, 59, 999);
 
-                if (shiftError) throw shiftError;
+                    try {
+                        // 1. Fetch Invoices (Sales & Returns)
+                        console.log('🔍 Fetching invoices...');
+                        const { data: invoices, error: invError } = await supabase
+                            .from('invoices')
+                            .select('*')
+                            .gte('created_at', startDate)
+                            .lte('created_at', endDateTime.toISOString())
+                            .order('created_at', { ascending: false });
 
-                // Calculate Totals
-                const totalSales = invoices
-                    .filter(inv => inv.type === 'sale')
-                    .reduce((sum, inv) => sum + inv.total_amount, 0);
+                        if (invError) throw invError;
+                        console.log('✅ Invoices fetched:', invoices?.length || 0);
 
-                const totalReturns = invoices
-                    .filter(inv => inv.type === 'return')
-                    .reduce((sum, inv) => sum + inv.total_amount, 0);
+                        // 2. Fetch Expenses
+                        console.log('🔍 Fetching expenses...');
+                        const { data: expenses, error: expError } = await supabase
+                            .from('expenses')
+                            .select('*')
+                            .gte('created_at', startDate)
+                            .lte('created_at', endDateTime.toISOString());
 
-                const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+                        if (expError) throw expError;
+                        console.log('✅ Expenses fetched:', expenses?.length || 0);
 
-                const netProfit = totalSales - totalReturns - totalExpenses;
+                        // 3. Fetch Shifts
+                        console.log('🔍 Fetching shifts...');
+                        const { data: shifts, error: shiftError } = await supabase
+                            .from('shifts')
+                            .select('*, user_profiles(full_name)')
+                            .gte('start_time', startDate)
+                            .lte('start_time', endDateTime.toISOString())
+                            .order('start_time', { ascending: false });
 
-                // Update UI Cards
-                document.getElementById('total-sales').textContent = formatPrice(totalSales);
-                document.getElementById('total-returns').textContent = formatPrice(totalReturns);
-                document.getElementById('total-expenses').textContent = formatPrice(totalExpenses);
-                document.getElementById('net-profit').textContent = formatPrice(netProfit);
+                        if (shiftError) throw shiftError;
+                        console.log('✅ Shifts fetched:', shifts?.length || 0);
 
-                // Update Shifts Table
-                const shiftsTable = document.getElementById('shifts-table');
-                shiftsTable.innerHTML = shifts.map(shift => `
-                    <tr>
-                        <td>#${shift.id}</td>
-                        <td>${shift.user_profiles?.full_name || 'غير معروف'}</td>
-                        <td>${new Date(shift.start_time).toLocaleString('ar-SA')}</td>
-                        <td>${shift.end_time ? new Date(shift.end_time).toLocaleString('ar-SA') : '-'}</td>
-                        <td>${formatPrice(shift.start_cash)}</td>
-                        <td>${shift.end_cash ? formatPrice(shift.end_cash) : '-'}</td>
-                        <td><span class="status-badge ${shift.status === 'open' ? 'status-open' : 'status-closed'}">
-                            ${shift.status === 'open' ? 'مفتوحة' : 'مغلقة'}
-                        </span></td>
-                    </tr>
-                `).join('') || '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--text-secondary);">لا توجد ورديات</td></tr>';
+                        // Calculate Totals
+                        const totalSales = invoices
+                            .filter(inv => inv.type === 'sale')
+                            .reduce((sum, inv) => sum + inv.total_amount, 0);
 
-                // Update Invoices Table
-                const invoicesTable = document.getElementById('invoices-table');
-                invoicesTable.innerHTML = invoices.slice(0, 20).map(inv => `
-                    <tr>
-                        <td>#${inv.id.slice(0, 8)}</td>
-                        <td>${new Date(inv.created_at).toLocaleString('ar-SA')}</td>
-                        <td>${inv.customer_name || 'عميل عام'}</td>
-                        <td style="color: ${inv.type === 'return' ? '#ff4757' : '#2ed573'}">
-                            ${inv.type === 'return' ? '-' : ''}${formatPrice(inv.total_amount)}
-                        </td>
-                        <td>${inv.type === 'sale' ? 'بيع' : 'مرتجع'}</td>
-                    </tr>
-                `).join('') || '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-secondary);">لا توجد فواتير</td></tr>';
+                        const totalReturns = invoices
+                            .filter(inv => inv.type === 'return')
+                            .reduce((sum, inv) => sum + inv.total_amount, 0);
 
+                        const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+                        const netProfit = totalSales - totalReturns - totalExpenses;
+
+                        console.log('💰 Totals calculated:', { totalSales, totalReturns, totalExpenses, netProfit });
+
+                        // Update UI Cards
+                        document.getElementById('total-sales').textContent = formatPrice(totalSales);
+                        document.getElementById('total-returns').textContent = formatPrice(totalReturns);
+                        document.getElementById('total-expenses').textContent = formatPrice(totalExpenses);
+                        document.getElementById('net-profit').textContent = formatPrice(netProfit);
+
+                        // Update Shifts Table
+                        const shiftsTable = document.getElementById('shifts-table');
+                        shiftsTable.innerHTML = shifts.map(shift => `
+                            <tr>
+                                <td>#${shift.id}</td>
+                                <td>${shift.user_profiles?.full_name || 'غير معروف'}</td>
+                                <td>${new Date(shift.start_time).toLocaleString('ar-SA')}</td>
+                                <td>${shift.end_time ? new Date(shift.end_time).toLocaleString('ar-SA') : '-'}</td>
+                                <td>${formatPrice(shift.start_cash)}</td>
+                                <td>${shift.end_cash ? formatPrice(shift.end_cash) : '-'}</td>
+                                <td><span class="status-badge ${shift.status === 'open' ? 'status-open' : 'status-closed'}">
+                                    ${shift.status === 'open' ? 'مفتوحة' : 'مغلقة'}
+                                </span></td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--text-secondary);">لا توجد ورديات</td></tr>';
+
+                        // Update Invoices Table
+                        const invoicesTable = document.getElementById('invoices-table');
+                        invoicesTable.innerHTML = invoices.slice(0, 20).map(inv => `
+                            <tr>
+                                <td>#${inv.id.slice(0, 8)}</td>
+                                <td>${new Date(inv.created_at).toLocaleString('ar-SA')}</td>
+                                <td>${inv.customer_name || 'عميل عام'}</td>
+                                <td style="color: ${inv.type === 'return' ? '#ff4757' : '#2ed573'}">
+                                    ${inv.type === 'return' ? '-' : ''}${formatPrice(inv.total_amount)}
+                                </td>
+                                <td>${inv.type === 'sale' ? 'بيع' : 'مرتجع'}</td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-secondary);">لا توجد فواتير</td></tr>';
+
+                        console.log('✅ Reports loaded successfully!');
+                    } catch (error) {
+                        console.error('❌ Error loading reports:', error);
+                        alert('حدث خطأ أثناء تحميل التقارير: ' + error.message);
+                    }
+                };
+
+                // Export Report Function
+                window.exportReport = () => {
+                    const startDate = document.getElementById('startDate').value;
+                    const endDate = document.getElementById('endDate').value;
+                    const totalSales = document.getElementById('total-sales').textContent;
+                    const totalExpenses = document.getElementById('total-expenses').textContent;
+                    const totalReturns = document.getElementById('total-returns').textContent;
+                    const netProfit = document.getElementById('net-profit').textContent;
+
+                    const content = `
+                        <div style="direction: rtl; font-family: 'Tajawal', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
+                            <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid #E63946; padding-bottom: 20px;">
+                                <h1 style="margin: 0 0 10px 0; color: #1d3557;">تقرير المبيعات</h1>
+                                <div style="font-size: 1.1rem; color: #457B9D;">من ${startDate} إلى ${endDate}</div>
+                                <div style="margin-top: 10px; color: #6b7280;">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')}</div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;">
+                                <div style="background: #e3f9f5; padding: 20px; border-radius: 12px; border-right: 4px solid #2ed573;">
+                                    <div style="color: #457B9D; font-size: 0.9rem; margin-bottom: 8px;">إجمالي المبيعات</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold; color: #2ed573;">${totalSales}</div>
+                                </div>
+                                <div style="background: #ffe3e3; padding: 20px; border-radius: 12px; border-right: 4px solid #ff4757;">
+                                    <div style="color: #457B9D; font-size: 0.9rem; margin-bottom: 8px;">المصروفات</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold; color: #ff4757;">${totalExpenses}</div>
+                                </div>
+                                <div style="background: #fff4e5; padding: 20px; border-radius: 12px; border-right: 4px solid #ffa502;">
+                                    <div style="color: #457B9D; font-size: 0.9rem; margin-bottom: 8px;">المرتجعات</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold; color: #ffa502;">${totalReturns}</div>
+                                </div>
+                                <div style="background: #e7f1ff; padding: 20px; border-radius: 12px; border-right: 4px solid #3742fa;">
+                                    <div style="color: #457B9D; font-size: 0.9rem; margin-bottom: 8px;">صافي الربح</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold; color: #3742fa;">${netProfit}</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 60px; padding-top: 20px; border-top: 2px dashed #cbd5e0; text-align: center; color: #6b7280; font-size: 0.9rem;">
+                                <p>تم إنشاء هذا التقرير بواسطة نظام إدارة المبيعات - هديتي</p>
+                                <p style="margin-top: 10px;">التوقيع: ........................</p>
+                            </div>
+                        </div>
+                    `;
+
+                    const printWindow = window.open('', '', 'width=800,height=600');
+                    printWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>تقرير المبيعات - ${startDate} إلى ${endDate}</title>
+                                <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+                                <style>
+                                    body { margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+                                    @media print {
+                                        @page { margin: 20mm; }
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                ${content}
+                                <script>
+                                    window.onload = function() {
+                                        window.print();
+                                    }
+                                <\/script>
+                            </body>
+                        </html>
+                    `);
+                };
+
+                // Initial Load
+                console.log('🚀 Loading initial reports...');
+                await loadReports();
+                console.log('✅ Page initialization complete!');
+                
             } catch (error) {
-                console.error('Error loading reports:', error);
+                console.error('❌ Fatal error during initialization:', error);
+                alert('حدث خطأ في تحميل الصفحة: ' + error.message);
             }
-        };
-
-        // Export Report Function
-        window.exportReport = () => {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const totalSales = document.getElementById('total-sales').textContent;
-            const totalExpenses = document.getElementById('total-expenses').textContent;
-            const totalReturns = document.getElementById('total-returns').textContent;
-            const netProfit = document.getElementById('net-profit').textContent;
-
-            const content = `
-                <div style="direction: rtl; font-family: 'Tajawal', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
-                    <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid #E63946; padding-bottom: 20px;">
-                        <h1 style="margin: 0 0 10px 0; color: #1d3557;">تقرير المبيعات</h1>
-                        <div style="font-size: 1.1rem; color: #457B9D;">من ${startDate} إلى ${endDate}</div>
-                        <div style="margin-top: 10px; color: #6b7280;">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')}</div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;">
-                        <div style="background: #e3f9f5; padding: 20px; border-radius: 12px; border-right: 4px solid #2ed573;">
-                            <div style="color: #457B9D; font-size: 0.9rem; margin-bottom: 8px;">إجمالي المبيعات</div>
-                            <div style="font-size: 1.8rem; font-weight: bold; color: #2ed573;">${totalSales}</div>
-                        </div>
-                        <div style="background: #ffe3e3; padding: 20px; border-radius: 12px; border-right: 4px solid #ff4757;">
-                            <div style="color: #457B9D; font-size: 0.9rem; margin-bottom: 8px;">المصروفات</div>
-                            <div style="font-size: 1.8rem; font-weight: bold; color: #ff4757;">${totalExpenses}</div>
-                        </div>
-                        <div style="background: #fff4e5; padding: 20px; border-radius: 12px; border-right: 4px solid #ffa502;">
-                            <div style="color: #457B9D; font-size: 0.9rem; margin-bottom: 8px;">المرتجعات</div>
-                            <div style="font-size: 1.8rem; font-weight: bold; color: #ffa502;">${totalReturns}</div>
-                        </div>
-                        <div style="background: #e7f1ff; padding: 20px; border-radius: 12px; border-right: 4px solid #3742fa;">
-                            <div style="color: #457B9D; font-size: 0.9rem; margin-bottom: 8px;">صافي الربح</div>
-                            <div style="font-size: 1.8rem; font-weight: bold; color: #3742fa;">${netProfit}</div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 60px; padding-top: 20px; border-top: 2px dashed #cbd5e0; text-align: center; color: #6b7280; font-size: 0.9rem;">
-                        <p>تم إنشاء هذا التقرير بواسطة نظام إدارة المبيعات - هديتي</p>
-                        <p style="margin-top: 10px;">التوقيع: ........................</p>
-                    </div>
-                </div>
-            `;
-
-            const printWindow = window.open('', '', 'width=800,height=600');
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>تقرير المبيعات - ${startDate} إلى ${endDate}</title>
-                        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
-                        <style>
-                            body { margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
-                            @media print {
-                                @page { margin: 20mm; }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        ${content}
-                        <script>
-                            window.onload = function() {
-                                window.print();
-                            }
-                        </script>
-                    </body>
-                </html>
-            `);
-        };
-
-        // Initial Load
-        loadReports();
+        })();
     </script>
 </body>
 
 </html>
+```
