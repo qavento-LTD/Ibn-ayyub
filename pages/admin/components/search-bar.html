@@ -1,0 +1,8 @@
+<!-- Search Bar Component -->
+<div class="search-bar">
+    <i class="fas fa-search" style="color: var(--text-secondary);"></i>
+    <input type="text" id="product-search" placeholder="بحث باسم المنتج أو الباركود (F2)..." autocomplete="off">
+    <button class="btn btn-secondary" onclick="document.getElementById('product-search').value=''; renderSearchResults([]);">
+        <i class="fas fa-times"></i>
+    </button>
+</div>

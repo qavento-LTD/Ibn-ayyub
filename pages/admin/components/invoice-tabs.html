@@ -1,0 +1,14 @@
+<!-- Invoice Tabs Component -->
+<div class="invoice-tabs" id="invoice-tabs">
+    <div class="invoice-tab active" data-invoice-id="1" onclick="switchInvoice(1)">
+        <i class="fas fa-receipt"></i>
+        <span>فاتورة 1</span>
+        <span class="close-invoice" onclick="event.stopPropagation(); closeInvoice(1)">
+            <i class="fas fa-times"></i>
+        </span>
+    </div>
+    <button class="new-invoice-btn" onclick="createNewInvoice()">
+        <i class="fas fa-plus"></i>
+        فاتورة جديدة
+    </button>
+</div>

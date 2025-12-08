@@ -1,0 +1,21 @@
+<!-- Print Options Modal Component -->
+<div class="modal" id="print-options-modal">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <div style="margin-bottom: 20px; color: var(--success); font-size: 4rem;">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h3 class="modal-title">تم الدفع بنجاح!</h3>
+        <p style="margin-bottom: 30px; color: var(--text-secondary);">كيف تريد طباعة الفاتورة؟</p>
+        <div style="display: grid; gap: 12px;">
+            <button class="btn btn-primary" onclick="printCurrentInvoice('thermal')" style="justify-content: center;">
+                <i class="fas fa-receipt"></i> إيصال حراري (صغير)
+            </button>
+            <button class="btn btn-secondary" onclick="printCurrentInvoice('standard')" style="justify-content: center;">
+                <i class="fas fa-file-invoice"></i> فاتورة A4 (قياسي)
+            </button>
+            <button class="btn" onclick="closeModal('print-options-modal')" style="margin-top: 10px; color: var(--text-secondary);">
+                إغلاق بدون طباعة
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+<!-- Cart Section Component -->
+<div class="cart-section">
+    <div class="cart-header">
+        <h3 style="margin: 0;"><i class="fas fa-shopping-basket"></i> سلة المشتريات</h3>
+        <button class="btn btn-sm btn-danger" onclick="window.pos.clearCart()" style="padding: 6px 12px; font-size: 0.8rem;">
+            <i class="fas fa-trash"></i> تفريغ
+        </button>
+    </div>
+    <div id="cart-items" class="cart-items">
+        <!-- Cart Items injected here -->
+        <div style="text-align: center; margin-top: 50px; color: var(--text-secondary);">
+            <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
+            <p>السلة فارغة</p>
+        </div>
+    </div>
+    <div class="cart-footer">
+        <div class="form-group" style="margin-bottom: 15px;">
+            <input type="text" id="customer-name" class="form-input" placeholder="اسم العميل (اختياري)">
+        </div>
+        <div class="summary-row">
+            <span>عدد العناصر</span>
+            <span id="cart-count">0</span>
+        </div>
+        <div class="summary-row">
+            <span>الضريبة (0%)</span>
+            <span>0.00 جنية</span>
+        </div>
+        <div class="total-row">
+            <span>الإجمالي</span>
+            <span id="cart-total" style="color: var(--primary);">0.00 جنية</span>
+        </div>
+        <button class="btn btn-primary checkout-btn" onclick="handleCheckout()">
+            <i class="fas fa-money-bill-wave"></i> إتمام الدفع (F9)
+        </button>
+    </div>
+</div>

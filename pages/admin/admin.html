@@ -16,40 +16,19 @@
     <div class="admin-container">
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Header is injected by layout.js -->
+<div id="admin-header"></div>
             
             <div class="pos-grid">
                 <!-- Left: Products -->
                 <div class="products-section">
                     <!-- Search & Filter -->
-                    <div class="search-bar">
-                        <i class="fas fa-search" style="color: var(--text-secondary);"></i>
-                        <input type="text" id="product-search" placeholder="بحث باسم المنتج أو الباركود (F2)..." autocomplete="off">
-                        <button class="btn btn-secondary" onclick="document.getElementById('product-search').value=''; renderSearchResults([]);">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
+<div id="search-bar"></div>
                     
                     <!-- Invoice Tabs -->
-                    <div class="invoice-tabs" id="invoice-tabs">
-                        <div class="invoice-tab active" data-invoice-id="1" onclick="switchInvoice(1)">
-                            <i class="fas fa-receipt"></i>
-                            <span>فاتورة 1</span>
-                            <span class="close-invoice" onclick="event.stopPropagation(); closeInvoice(1)">
-                                <i class="fas fa-times"></i>
-                            </span>
-                        </div>
-                        <button class="new-invoice-btn" onclick="createNewInvoice()">
-                            <i class="fas fa-plus"></i>
-                            فاتورة جديدة
-                        </button>
-                    </div>
+<div id="invoice-tabs"></div>
                     
                     <!-- Categories -->
-                    <div class="categories-scroll" id="categories-container">
-                        <div class="category-pill active" onclick="filterByCategory('all')">الكل</div>
-                        <!-- Categories injected here -->
-                    </div>
+<div id="category-pills"></div>
                     
                     <!-- Products Grid -->
                     <div id="search-results" class="products-grid">
@@ -57,109 +36,12 @@
                     </div>
                 </div>
                 
-                <!-- Right: Cart -->
-                <div class="cart-section">
-                    
-                    <div class="cart-header">
-                        <h3 style="margin: 0;"><i class="fas fa-shopping-basket"></i> سلة المشتريات</h3>
-                        <button class="btn btn-sm btn-danger" onclick="window.pos.clearCart()" style="padding: 6px 12px; font-size: 0.8rem;">
-                            <i class="fas fa-trash"></i> تفريغ
-                        </button>
-                    </div>
-                    
-                    <div id="cart-items" class="cart-items">
-                        <!-- Cart Items injected here -->
-                        <div style="text-align: center; margin-top: 50px; color: var(--text-secondary);">
-                            <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
-                            <p>السلة فارغة</p>
-                        </div>
-                    </div>
-                    
-                    <div class="cart-footer">
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <input type="text" id="customer-name" class="form-input" placeholder="اسم العميل (اختياري)">
-                        </div>
-                        
-                        <div class="summary-row">
-                            <span>عدد العناصر</span>
-                            <span id="cart-count">0</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>الضريبة (0%)</span>
-                            <span>0.00 جنية</span>
-                        </div>
-                        <div class="total-row">
-                            <span>الإجمالي</span>
-                            <span id="cart-total" style="color: var(--primary);">0.00 جنية</span>
-                        </div>
-                        
-                        <button class="btn btn-primary checkout-btn" onclick="handleCheckout()">
-                            <i class="fas fa-money-bill-wave"></i> إتمام الدفع (F9)
-                        </button>
-                    </div>
-                </div>
+<div id="cart-section"></div>
             </div>
         </main>
     </div>
     
-    <!-- Modals -->
-    
-    <!-- Shift Modal -->
-    <div id="shift-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">إدارة الوردية</h3>
-                <button class="close-modal" onclick="closeModal('shift-modal')">&times;</button>
-            </div>
-            <div id="shift-modal-body">
-                <!-- Content injected by JS -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- Print Options Modal -->
-    <div id="print-options-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <div style="margin-bottom: 20px; color: var(--success); font-size: 4rem;">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h3 class="modal-title">تم الدفع بنجاح!</h3>
-            <p style="margin-bottom: 30px; color: var(--text-secondary);">كيف تريد طباعة الفاتورة؟</p>
-            
-            <div style="display: grid; gap: 12px;">
-                <button class="btn btn-primary" onclick="printCurrentInvoice('thermal')" style="justify-content: center;">
-                    <i class="fas fa-receipt"></i> إيصال حراري (صغير)
-                </button>
-                <button class="btn btn-secondary" onclick="printCurrentInvoice('standard')" style="justify-content: center;">
-                    <i class="fas fa-file-invoice"></i> فاتورة A4 (قياسي)
-                </button>
-                <button class="btn" onclick="closeModal('print-options-modal')" style="margin-top: 10px; color: var(--text-secondary);">
-                    إغلاق بدون طباعة
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Keyboard Shortcuts Help -->
-    <div id="shortcuts-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">اختصارات لوحة المفاتيح</h3>
-                <button class="close-modal" onclick="closeModal('shortcuts-modal')">&times;</button>
-            </div>
-            <div class="grid-2">
-                <div style="padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                    <strong>F2</strong> <span style="float: left;">بحث عن منتج</span>
-                </div>
-                <div style="padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                    <strong>F9</strong> <span style="float: left;">إتمام الدفع</span>
-                </div>
-                <div style="padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                    <strong>Esc</strong> <span style="float: left;">إغلاق النوافذ</span>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="admin-modals"></div>
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -172,6 +54,7 @@
         import { POSSystem } from '../../js/pos.js';
         import { ShiftManager } from '../../js/shifts.js';
         import { formatPrice, showToast } from '../../js/utils.js';
+        import { initAdminComponents } from '../../js/admin/components.js';
         
         // Initialize Systems
         window.pos = new POSSystem();
@@ -202,7 +85,7 @@
             
             // Add tab
             const tabsContainer = document.getElementById('invoice-tabs');
-            const newInvoiceBtn = tabsContainer.querySelector('.new-invoice-btn');
+            const newInvoiceBtn = tabsContainer.querySelector('.new-invoice-btn .close-invoice');
             
             const tab = document.createElement('div');
             tab.className = 'invoice-tab';
@@ -290,6 +173,12 @@
         
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize Components
+            await initAdminComponents();
+
+            // Setup Search Logic (now that elements exist)
+            setupSearchLogic();
+
             // Check Shift
             await updateShiftStatus();
             
@@ -300,7 +189,8 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'F2') {
                     e.preventDefault();
-                    document.getElementById('product-search').focus();
+                    const searchInput = document.getElementById('product-search');
+                    if (searchInput) searchInput.focus();
                 }
                 if (e.key === 'F9') {
                     e.preventDefault();
@@ -313,44 +203,48 @@
         });
         
         // --- Search Logic ---
-        const searchInput = document.getElementById('product-search');
-        let searchTimeout;
-        
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            const query = e.target.value.trim();
+        function setupSearchLogic() {
+            const searchInput = document.getElementById('product-search');
+            let searchTimeout;
             
-            if (query.length < 1) {
-                loadInitialProducts(); // Show default if empty
-                return;
-            }
-            
-            searchTimeout = setTimeout(async () => {
-                const results = await window.pos.searchProduct(query);
-                renderSearchResults(results);
-            }, 300);
-        });
-        
-        searchInput.addEventListener('keypress', async (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
+            if (!searchInput) return;
+
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
                 const query = e.target.value.trim();
-                if (!query) return;
                 
-                const results = await window.pos.searchProduct(query);
-                
-                if (results.length > 0) {
-                    const exactMatch = results.find(p => p.barcode === query);
-                    const productToAdd = exactMatch || results[0];
-                    window.pos.addToCart(productToAdd);
-                    searchInput.value = '';
-                    searchInput.focus();
-                    showToast(`تم إضافة ${productToAdd.title}`, 'success');
-                } else {
-                    showToast('المنتج غير موجود', 'error');
+                if (query.length < 1) {
+                    loadInitialProducts(); // Show default if empty
+                    return;
                 }
-            }
-        });
+                
+                searchTimeout = setTimeout(async () => {
+                    const results = await window.pos.searchProduct(query);
+                    renderSearchResults(results);
+                }, 300);
+            });
+            
+            searchInput.addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const query = e.target.value.trim();
+                    if (!query) return;
+                    
+                    const results = await window.pos.searchProduct(query);
+                    
+                    if (results.length > 0) {
+                        const exactMatch = results.find(p => p.barcode === query);
+                        const productToAdd = exactMatch || results[0];
+                        window.pos.addToCart(productToAdd);
+                        searchInput.value = '';
+                        searchInput.focus();
+                        showToast(`تم إضافة ${productToAdd.title}`, 'success');
+                    } else {
+                        showToast('المنتج غير موجود', 'error');
+                    }
+                }
+            });
+        }
         
         // --- Render Functions ---
         async function loadInitialProducts() {

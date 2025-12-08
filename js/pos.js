@@ -104,6 +104,12 @@ export class POSSystem {
         }
     }
 
+    // Clear cart
+    clearCart() {
+        this.cart = [];
+        this.renderCart();
+    }
+
     // Calculate totals
     getTotals() {
         return this.cart.reduce((acc, item) => {
